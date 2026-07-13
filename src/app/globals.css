@@ -1,26 +1,211 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+ * Sunrise Editorial — design language
+ * Navy + amber brand palette (unchanged) on a warm paper base, with a serif
+ * display voice (Fraunces), monospace labels (IBM Plex Mono), hairline rules
+ * instead of heavy shadows, and generous editorial whitespace.
+ * See docs/design-language.md.
+ */
+
+@theme {
+  /* Brand palette — unchanged navy + amber (design.md §2.1) */
+  --color-primary: #1e3a8a;
+  --color-primary-dark: #16276b;
+  --color-accent: #f59e0b;
+  --color-accent-ink: #7a4d06; /* accent, darkened for text on paper (≥4.5:1) */
+
+  /* Warm editorial neutrals — "paper & ink" */
+  --color-bg: #fbfaf6; /* warm paper */
+  --color-bg-alt: #f2ece0; /* warm sand — alternating sections */
+  --color-text: #1c1b17; /* warm ink */
+  --color-text-muted: #6d685c; /* warm gray */
+  --color-border: #ddd6c6; /* hairline / input border */
+  --color-hairline: #e7e1d4; /* lighter rules */
+
+  --color-success: #15803d;
+  --color-error: #b91c1c;
+
+  /* Radius — crisper editorial edges (design.md §2.3, refined) */
+  --radius-card: 0.25rem; /* 4px */
+  --radius-lg: 0.75rem; /* soft panels */
+  --radius-pill: 999px;
+
+  /* Shadow — barely-there; structure comes from hairlines */
+  --shadow-card: 0 1px 2px rgba(28, 27, 23, 0.05);
+  --shadow-card-hover: 0 20px 44px -28px rgba(28, 27, 23, 0.4);
+
+  /* Layout — design.md §3 */
+  --container-content: 75rem; /* 1200px */
+  --breakpoint-sm: 30rem;
+  --breakpoint-md: 48rem;
+  --breakpoint-lg: 64rem;
+  --breakpoint-xl: 80rem;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* Fonts — variables set by next/font in the root layout */
+  --font-heading: var(--font-fraunces), Georgia, "Times New Roman", serif;
+  --font-body: var(--font-inter), system-ui, sans-serif;
+  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
+  --font-sans: var(--font-inter), system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+@layer base {
+  html {
+    @media (prefers-reduced-motion: no-preference) {
+      scroll-behavior: smooth;
+    }
+  }
+
+  body {
+    background-color: var(--color-bg);
+    color: var(--color-text);
+    font-family: var(--font-inter), system-ui, sans-serif;
+    line-height: 1.65;
+    text-rendering: optimizeLegibility;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
+    font-optical-sizing: auto;
+    line-height: 1.12;
+    font-weight: 600;
+    letter-spacing: -0.014em;
+    color: var(--color-text);
+  }
+
+  h1 {
+    letter-spacing: -0.02em;
+  }
+
+  /* Editorial eyebrow — small mono, uppercase, letter-spaced. */
+  .eyebrow {
+    font-family: var(--font-plex-mono), ui-monospace, monospace;
+    font-size: 0.6875rem;
+    line-height: 1;
+    font-weight: 500;
+    text-transform: uppercase;
+    letter-spacing: 0.22em;
+  }
+
+  /* Focus — design.md §7: 2px accent outline, never removed */
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background-color: color-mix(in srgb, var(--color-accent) 28%, transparent);
+    color: var(--color-text);
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/*
+ * Rich-text content — shared by the admin editor (contentEditable) and the
+ * public blog body. Hand-rolled (no typography plugin).
+ */
+.admin-prose > * + * {
+  margin-top: 1rem;
+}
+.admin-prose p {
+  line-height: 1.7;
+}
+.admin-prose h2 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  line-height: 1.2;
+  margin-top: 1.75rem;
+}
+.admin-prose h3 {
+  font-family: var(--font-fraunces), Georgia, serif;
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin-top: 1.5rem;
+}
+.admin-prose h4 {
+  font-weight: 600;
+  margin-top: 1.25rem;
+}
+.admin-prose ul,
+.admin-prose ol {
+  padding-left: 1.5rem;
+}
+.admin-prose ul {
+  list-style: disc;
+}
+.admin-prose ol {
+  list-style: decimal;
+}
+.admin-prose li + li {
+  margin-top: 0.35rem;
+}
+.admin-prose blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding-left: 1rem;
+  color: var(--color-text-muted);
+  font-style: italic;
+}
+.admin-prose a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.admin-prose strong {
+  font-weight: 600;
+}
+
+/*
+ * Admin theme — a self-contained clean/neutral design system for the dashboard,
+ * decoupled from the public site's warm editorial identity. Re-maps the shared
+ * design tokens to a slate + blue palette and forces Inter (no serif/mono),
+ * scoped to `.admin-scope` so the public site is untouched.
+ */
+.admin-scope {
+  --color-bg: #ffffff;
+  --color-bg-alt: #f8fafc; /* slate-50 canvas */
+  --color-text: #0f172a; /* slate-900 */
+  --color-text-muted: #64748b; /* slate-500 */
+  --color-border: #e2e8f0; /* slate-200 */
+  --color-hairline: #eef2f6; /* slate-100 */
+  --color-primary: #2563eb; /* blue-600 */
+  --color-primary-dark: #1d4ed8; /* blue-700 */
+  --color-accent: #2563eb;
+  --color-accent-ink: #1d4ed8;
+  --color-success: #16a34a;
+  --color-error: #dc2626;
+  --radius-card: 0.5rem; /* softer inputs/buttons */
+  /* Drop the editorial Plex Mono for a neutral system monospace. */
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+
+  font-family: var(--font-inter), system-ui, sans-serif;
+  color: var(--color-text);
+}
+
+/* Neutralise the editorial serif/mono type inside the admin. */
+.admin-scope h1,
+.admin-scope h2,
+.admin-scope h3,
+.admin-scope h4,
+.admin-scope h5,
+.admin-scope h6,
+.admin-scope .font-heading {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+}
+
+.admin-scope .eyebrow {
+  font-family: var(--font-inter), system-ui, sans-serif;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
 }

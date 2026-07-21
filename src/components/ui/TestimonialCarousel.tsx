@@ -1,18 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import PlaceholderImage from "./PlaceholderImage";
 import { initials } from "@/lib/format";
-import type { PlaceholderTone, Testimonial } from "@/data/types";
-
-const AVATAR_TONES: PlaceholderTone[] = [
-  "primary",
-  "dusk",
-  "forest",
-  "accent",
-  "stone",
-  "mist",
-];
+import type { Testimonial } from "@/data/types";
 
 interface TestimonialCarouselProps {
   items: Testimonial[];
@@ -51,23 +41,30 @@ export default function TestimonialCarousel({
                 inert={!current}
                 className="w-full shrink-0 px-1"
               >
-                <figure className="mx-auto max-w-2xl text-center">
-                  <span className="mx-auto block w-16 overflow-hidden rounded-pill">
-                    <PlaceholderImage
-                      aspect="1/1"
-                      tone={AVATAR_TONES[itemIndex % AVATAR_TONES.length]}
-                      label={initials(testimonial.name)}
-                    />
-                  </span>
-                  <blockquote className="mt-4 text-base leading-relaxed text-text md:text-lg">
+                <figure className="mx-auto max-w-3xl px-2 text-center md:px-6">
+                  <div
+                    aria-hidden="true"
+                    className="font-heading text-6xl leading-[0.6] text-[#c6d2f0]"
+                  >
+                    &ldquo;
+                  </div>
+                  <blockquote className="mt-5 font-heading text-lg font-medium leading-normal tracking-[-0.01em] text-text md:text-2xl">
                     &ldquo;{testimonial.quote}&rdquo;
                   </blockquote>
-                  <figcaption className="mt-4">
-                    <span className="block font-heading font-semibold text-text">
-                      {testimonial.name}
+                  <figcaption className="mt-7 flex items-center justify-center gap-3.5">
+                    <span
+                      aria-hidden="true"
+                      className="flex h-12 w-12 items-center justify-center rounded-[0.75rem] bg-[image:var(--gradient-brand)] font-heading text-base font-semibold text-white"
+                    >
+                      {initials(testimonial.name)}
                     </span>
-                    <span className="block text-sm text-text-muted">
-                      {testimonial.role}
+                    <span className="text-left">
+                      <span className="block text-[0.9375rem] font-semibold text-ink">
+                        {testimonial.name}
+                      </span>
+                      <span className="block text-sm text-faint">
+                        {testimonial.role}
+                      </span>
                     </span>
                   </figcaption>
                 </figure>
@@ -87,7 +84,7 @@ export default function TestimonialCarousel({
             type="button"
             onClick={() => goTo(index - 1)}
             aria-label="Previous testimonial"
-            className="flex h-10 w-10 items-center justify-center rounded-pill border border-border text-primary transition-colors hover:bg-bg-alt"
+            className="flex h-10 w-10 items-center justify-center rounded-pill border border-border bg-surface text-primary transition-colors hover:border-primary/40 hover:bg-primary-soft"
           >
             <svg
               viewBox="0 0 24 24"
@@ -131,7 +128,7 @@ export default function TestimonialCarousel({
             type="button"
             onClick={() => goTo(index + 1)}
             aria-label="Next testimonial"
-            className="flex h-10 w-10 items-center justify-center rounded-pill border border-border text-primary transition-colors hover:bg-bg-alt"
+            className="flex h-10 w-10 items-center justify-center rounded-pill border border-border bg-surface text-primary transition-colors hover:border-primary/40 hover:bg-primary-soft"
           >
             <svg
               viewBox="0 0 24 24"

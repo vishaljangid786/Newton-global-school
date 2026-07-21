@@ -13,13 +13,14 @@ const QUICK_LINKS = [
 ];
 
 const columnHeading =
-  "mb-4 font-mono text-[0.6875rem] font-medium uppercase tracking-[0.2em] text-white/70";
-const footerLink = "text-sm text-white/75 transition-colors hover:text-white hover:underline";
+  "mb-4 text-xs font-semibold uppercase tracking-[0.12em] text-white";
+const footerLink =
+  "text-sm text-[#9ca6b8] transition-colors hover:text-[#8fa6f2]";
 
-/** Site footer — design.md §3.2: 4 columns on primary-dark, light text. */
+/** Site footer — design.md §3.2: 4 columns on deep navy, light text. */
 export default function Footer() {
   return (
-    <footer className="border-t-2 border-accent bg-primary-dark text-white">
+    <footer className="bg-footer text-[#9ca6b8]">
       <div className="mx-auto grid max-w-content gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
         {/* 1 — About + socials */}
         <div>
@@ -31,7 +32,7 @@ export default function Footer() {
               className="h-16 w-auto"
             />
           </span>
-          <p className="mt-4 text-sm leading-relaxed text-white/75">
+          <p className="mt-4 max-w-xs text-sm leading-relaxed">
             {site.tagline}. Three campuses across Jaipur, one promise: a safe,
             joyful school where every child is known by name.
           </p>
@@ -40,7 +41,7 @@ export default function Footer() {
               <li key={social.name}>
                 <a
                   href={social.href}
-                  className="flex h-9 w-9 items-center justify-center rounded-pill bg-white/10 text-white/85 transition-colors hover:bg-white/20 hover:text-white"
+                  className="flex h-9 w-9 items-center justify-center rounded-btn bg-white/10 text-white/85 transition-colors hover:bg-white/20 hover:text-white"
                 >
                   <SocialIcon name={social.name} className="h-4.5 w-4.5" />
                   <span className="sr-only">
@@ -71,18 +72,13 @@ export default function Footer() {
           <h2 className={columnHeading}>Our Branches</h2>
           <ul className="flex flex-col gap-2.5">
             <FooterBranches />
-            <li>
-              <Link href="/branches" className={`${footerLink} font-semibold`}>
-                View all campuses →
-              </Link>
-            </li>
           </ul>
         </nav>
 
         {/* 4 — Head office contact */}
         <div>
           <h2 className={columnHeading}>Head Office</h2>
-          <address className="flex flex-col gap-2.5 text-sm not-italic text-white/75">
+          <address className="flex flex-col gap-2.5 text-sm not-italic">
             <span>{site.headOffice.address}</span>
             <a href={`tel:${site.headOffice.phone}`} className={footerLink}>
               {site.headOffice.phone}
@@ -90,7 +86,7 @@ export default function Footer() {
             <a href={`mailto:${site.headOffice.email}`} className={footerLink}>
               {site.headOffice.email}
             </a>
-            <span className="text-xs text-white/50">
+            <span className="text-xs text-[#6b7488]">
               {site.headOffice.officeHours}
             </span>
           </address>
@@ -99,7 +95,7 @@ export default function Footer() {
 
       {/* Bottom strip */}
       <div className="border-t border-white/10">
-        <p className="mx-auto max-w-content px-4 py-4 text-center text-xs text-white/60">
+        <p className="mx-auto max-w-content px-4 py-4 text-center text-xs text-[#6b7488]">
           © {new Date().getFullYear()} {site.name}. All rights reserved.
         </p>
       </div>

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Fraunces, IBM_Plex_Mono, Inter } from "next/font/google";
+import { Instrument_Sans, Sora } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
@@ -7,26 +7,19 @@ import ChromeGate from "@/components/layout/ChromeGate";
 import NotificationBanner from "@/components/layout/NotificationBanner";
 import { site } from "@/data/site";
 
-/* Display serif — the editorial voice of the redesign (headings, numerals). */
-const fraunces = Fraunces({
+/* Display sans — the corporate voice of the redesign (headings, numerals). */
+const sora = Sora({
   subsets: ["latin"],
-  variable: "--font-fraunces",
+  weight: ["500", "600"],
+  variable: "--font-sora",
   display: "swap",
-  axes: ["opsz", "SOFT"],
 });
 
 /* Body sans. */
-const inter = Inter({
+const instrument = Instrument_Sans({
   subsets: ["latin"],
-  variable: "--font-inter",
-  display: "swap",
-});
-
-/* Monospace — eyebrows, labels, breadcrumbs, meta. */
-const plexMono = IBM_Plex_Mono({
-  weight: ["400", "500"],
-  subsets: ["latin"],
-  variable: "--font-plex-mono",
+  weight: ["400", "500", "600"],
+  variable: "--font-instrument",
   display: "swap",
 });
 
@@ -48,7 +41,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${fraunces.variable} ${inter.variable} ${plexMono.variable} h-full antialiased`}
+      className={`${sora.variable} ${instrument.variable} h-full antialiased`}
     >
       <body className="flex min-h-full flex-col bg-bg font-body text-text">
         <a

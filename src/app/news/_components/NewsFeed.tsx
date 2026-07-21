@@ -133,8 +133,8 @@ export default function NewsFeed({ items }: NewsFeedProps) {
               onClick={() => applyType(filter.value)}
               className={`rounded-pill px-4 py-1.5 text-sm transition-colors ${
                 type === filter.value
-                  ? "bg-accent font-semibold text-primary-dark"
-                  : "border border-border bg-bg font-medium text-text hover:bg-border/40"
+                  ? "bg-primary font-semibold text-white"
+                  : "border border-border bg-surface font-medium text-text-muted hover:border-primary/40 hover:text-primary"
               }`}
             >
               {filter.label}
@@ -155,7 +155,7 @@ export default function NewsFeed({ items }: NewsFeedProps) {
             onChange={(event) =>
               applyBranch(event.target.value as BranchSlug | "all")
             }
-            className="rounded-card border border-border bg-bg px-3 py-2 text-sm text-text"
+            className="rounded-btn border border-border bg-surface px-3 py-2 text-sm text-text"
           >
             <option value="all">All campuses</option>
             {branches.map((branch) => (
@@ -174,7 +174,7 @@ export default function NewsFeed({ items }: NewsFeedProps) {
 
       {/* Feed grid — design.md §4.6.3, cards 3-up → 2-up → 1-up (§3) */}
       {filtered.length === 0 ? (
-        <p className="mt-4 rounded-card bg-bg px-6 py-10 text-center text-sm text-text-muted shadow-card">
+        <p className="mt-4 rounded-card border border-hairline bg-surface px-6 py-10 text-center text-sm text-text-muted shadow-card">
           No updates match these filters yet. Try a different type or campus.
         </p>
       ) : (

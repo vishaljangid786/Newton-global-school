@@ -22,7 +22,7 @@ export default function MapEmbed({
 
   return (
     <div
-      className={`relative flex aspect-video min-h-56 w-full flex-col items-center justify-center overflow-hidden rounded-card border border-border bg-bg-alt px-6 py-6 text-center ${className}`}
+      className={`relative flex min-h-56 w-full flex-col items-center justify-center overflow-hidden rounded-card border border-border bg-bg-alt px-6 py-6 text-center ${className}`}
     >
       {/* Decorative street-grid pattern */}
       <svg
@@ -70,7 +70,7 @@ export default function MapEmbed({
         href={googleMapsUrl(address)}
         target="_blank"
         rel="noopener noreferrer"
-        className="relative mt-4 inline-flex items-center gap-1.5 rounded-card bg-primary px-4 py-2 text-sm font-semibold text-white transition-colors hover:bg-primary-dark"
+        className="relative mt-4 inline-flex items-center gap-1.5 rounded-pill bg-primary px-5 py-2 text-sm font-semibold text-white shadow-[0_8px_18px_-8px_rgba(30,58,138,0.5)] transition-colors hover:bg-primary-dark"
       >
         Open in Google Maps
         <svg

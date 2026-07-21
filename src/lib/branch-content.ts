@@ -41,6 +41,7 @@ function mergeOverride(base: Branch, o: BranchOverrideRow | undefined): Branch {
     principal: {
       name: o.principal_name ?? base.principal.name,
       message: o.principal_message ?? base.principal.message,
+      photoUrl: o.principal_photo_url ?? base.principal.photoUrl,
     },
     quickFacts: {
       students: o.students ?? base.quickFacts.students,
@@ -60,7 +61,7 @@ export async function getBranchContent(
   if (!base) return undefined;
 
   const rows = await tryQuery<BranchOverrideRow>(
-    `SELECT branch_slug, principal_name, principal_message, students,
+    `SELECT branch_slug, principal_name, principal_message, principal_photo_url, students,
             campus_size, grades, phone, email, address, facilities, updated_at
      FROM branch_overrides WHERE branch_slug = ? LIMIT 1`,
     [slug]
@@ -73,7 +74,7 @@ export async function getBranchOverride(
   slug: string
 ): Promise<BranchOverrideRow | null> {
   const rows = await query<BranchOverrideRow>(
-    `SELECT branch_slug, principal_name, principal_message, students,
+    `SELECT branch_slug, principal_name, principal_message, principal_photo_url, students,
             campus_size, grades, phone, email, address, facilities, updated_at
      FROM branch_overrides WHERE branch_slug = ? LIMIT 1`,
     [slug]

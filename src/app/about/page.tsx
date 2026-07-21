@@ -282,9 +282,9 @@ export default function AboutPage() {
               {ACCREDITATIONS.map((item) => (
                 <li
                   key={item}
-                  className="flex items-center rounded-card border border-border bg-bg-alt px-6 py-4"
+                  className="flex items-center rounded-btn border border-hairline bg-surface px-6 py-4 shadow-card"
                 >
-                  <span className="font-heading text-sm font-semibold uppercase tracking-[0.14em] text-text-muted">
+                  <span className="font-heading text-sm font-semibold uppercase tracking-[0.06em] text-text-muted">
                     {item}
                   </span>
                 </li>

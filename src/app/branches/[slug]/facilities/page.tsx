@@ -7,8 +7,13 @@ import PlaceholderImage from "@/components/ui/PlaceholderImage";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { getBranchBySlugAsync } from "@/lib/branches-store";
+import { getBranchContent } from "@/lib/branch-content";
 import { site } from "@/data/site";
 import type { PlaceholderTone } from "@/data/types";
+
+// Facilities are admin-editable (branches table + branch_overrides), so this
+// page always renders fresh from the DB.
+export const dynamic = "force-dynamic";
 
 interface BranchPageProps {
   params: Promise<{ slug: string }>;
@@ -96,7 +101,7 @@ const FACILITY_ROWS: FacilityRow[] = [
 
 export default async function BranchFacilitiesPage({ params }: BranchPageProps) {
   const { slug } = await params;
-  const branch = await getBranchBySlugAsync(slug);
+  const branch = await getBranchContent(slug);
   if (!branch) notFound();
 
   return (
@@ -163,6 +168,33 @@ export default async function BranchFacilitiesPage({ params }: BranchPageProps) 
                 </Reveal>
               );
             })}
+          </div>
+
+          {/* Full facility list — everything the campus offers, DB-backed */}
+          <div className="mt-14 rounded-card border border-hairline bg-surface p-6 shadow-card md:p-8">
+            <SectionHeading
+              align="left"
+              overline="At a glance"
+              title={`Everything at ${branch.name}`}
+              subtitle="The complete, up-to-date list of spaces and services on this campus."
+            />
+            <ul
+              aria-label={`All facilities at ${branch.name}`}
+              className="mt-6 flex flex-wrap gap-2.5"
+            >
+              {branch.facilities.map((facility) => (
+                <li
+                  key={facility}
+                  className="flex items-center gap-2 rounded-btn border border-border bg-bg-alt px-3.5 py-2 text-sm font-medium text-text"
+                >
+                  <span
+                    aria-hidden="true"
+                    className="h-1.5 w-1.5 rounded-pill bg-accent"
+                  />
+                  {facility}
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>

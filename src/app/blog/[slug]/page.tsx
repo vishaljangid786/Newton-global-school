@@ -68,7 +68,7 @@ export default async function BlogPostPage({ params }: PageProps) {
       />
       <article className="bg-bg py-12 md:py-16">
         <div className="mx-auto max-w-3xl px-4">
-          <p className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-text-muted">
+          <p className="text-sm font-medium text-text-muted">
             {published ? `${published} · ` : ""}by {post.author_name}
           </p>
 

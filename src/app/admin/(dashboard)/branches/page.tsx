@@ -1,5 +1,8 @@
 import Link from "next/link";
-import { requireSuperAdmin } from "@/lib/dal";
+import { redirect } from "next/navigation";
+import { requireUser } from "@/lib/dal";
+import { canManageBranch } from "@/lib/rbac";
+import { getAllBranches } from "@/lib/branches-store";
 import { tryQuery } from "@/lib/db";
 import {
   AdminCard,
@@ -19,8 +22,57 @@ interface BranchListRow {
   status: "draft" | "published";
 }
 
-export default async function BranchesManagerPage() {
-  await requireSuperAdmin();
+/**
+ * Unified Branches section: campus records (add/edit/publish/delete — super
+ * admin) and public-page content editing live together. Branch admins are
+ * taken straight to their own campus's content editor.
+ */
+export default async function BranchesPage() {
+  const user = await requireUser();
+  const superAdmin = user.role === "super_admin";
+
+  if (!superAdmin) {
+    const all = await getAllBranches({ includeUnpublished: true });
+    const editable = all.filter((b) => canManageBranch(user, b.slug));
+
+    if (editable.length === 0) {
+      return (
+        <div className="space-y-6">
+          <PageHeader title="Branches" />
+          <EmptyState>You don&apos;t have a branch assigned to edit.</EmptyState>
+        </div>
+      );
+    }
+
+    // One campus → skip the list, land on its content editor.
+    if (editable.length === 1) {
+      redirect(`/admin/branches/${editable[0].slug}/content`);
+    }
+
+    return (
+      <div className="space-y-8">
+        <PageHeader
+          title="Branches"
+          description="Pick a campus to edit its public page content."
+        />
+        <div className="space-y-3">
+          {editable.map((b) => (
+            <AdminCard key={b.slug}>
+              <div className="flex flex-wrap items-start justify-between gap-3">
+                <div>
+                  <h3 className="font-heading text-base text-text">{b.name}</h3>
+                  <p className="mt-1 text-xs text-text-muted">
+                    {b.area} · /branches/{b.slug}
+                  </p>
+                </div>
+                <BranchRowActions slug={b.slug} canManage={false} />
+              </div>
+            </AdminCard>
+          ))}
+        </div>
+      </div>
+    );
+  }
 
   const all = await tryQuery<BranchListRow>(
     `SELECT slug, name, area, status FROM branches ORDER BY established, created_at`
@@ -30,7 +82,7 @@ export default async function BranchesManagerPage() {
     <div className="space-y-8">
       <PageHeader
         title="Branches"
-        description="Add, edit, publish or delete any campus. New branches stay drafts until you publish them."
+        description="Manage campuses and their public page content. New branches stay drafts until you publish them."
         action={
           <Link href="/admin/branches/new" className={adminButtonPrimary}>
             Add branch
@@ -63,7 +115,7 @@ export default async function BranchesManagerPage() {
                     {b.area} · /branches/{b.slug}
                   </p>
                 </div>
-                <BranchRowActions slug={b.slug} status={b.status} />
+                <BranchRowActions slug={b.slug} status={b.status} canManage />
               </div>
             </AdminCard>
           ))}

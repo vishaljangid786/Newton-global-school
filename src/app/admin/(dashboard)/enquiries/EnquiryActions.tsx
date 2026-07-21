@@ -29,7 +29,7 @@ export default function EnquiryActions({
           const next = e.target.value;
           startTransition(() => updateEnquiryStatus(id, next));
         }}
-        className="cursor-pointer rounded-md border border-border bg-white px-2.5 py-1.5 text-xs font-medium capitalize text-text transition-colors hover:border-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15"
+        className="cursor-pointer rounded-md border border-border bg-white px-2.5 py-1.5 text-base font-medium capitalize text-text transition-colors hover:border-primary focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 sm:text-xs"
       >
         {STATUSES.map((s) => (
           <option key={s} value={s}>

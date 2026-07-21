@@ -14,6 +14,7 @@ const EMPTY = {
   established: "",
   grades: "",
   principalName: "",
+  principalPhotoUrl: "",
   principalMessage: "",
   students: "",
   campusSize: "",

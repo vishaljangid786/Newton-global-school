@@ -68,14 +68,19 @@ export default function NewsPage() {
       />
 
       {/* §4.6.2–.4 Filter row + combined feed + load more */}
-      <section className="bg-bg-alt py-10 md:py-16">
+      <section className="py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
-          <SectionHeading
-            overline="Stay Updated"
-            title="The latest from our campuses"
-            subtitle="Browse everything in one feed, or narrow it down by type and campus."
-            align="left"
-          />
+          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+            <SectionHeading
+              overline="Newsroom"
+              title="The latest from our campuses"
+              align="left"
+            />
+            <p className="max-w-xs text-[0.96875rem] leading-relaxed text-text-muted">
+              Browse everything in one feed, or narrow it down by type and
+              campus.
+            </p>
+          </div>
           <div className="mt-8">
             <NewsFeed items={feed} />
           </div>

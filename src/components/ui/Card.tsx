@@ -12,8 +12,8 @@ interface CardProps {
 }
 
 /**
- * Card primitive — paper surface framed by a hairline border with a
- * barely-there shadow (editorial: structure from rules, not drop shadows).
+ * Card primitive — white surface with a hairline border and a whisper
+ * shadow (corporate: structure from rules, depth kept faint).
  */
 export default function Card({
   children,
@@ -22,9 +22,9 @@ export default function Card({
 }: CardProps) {
   return (
     <div
-      className={`overflow-hidden rounded-card border border-border bg-bg shadow-card ${
+      className={`relative overflow-hidden rounded-card border border-hairline bg-surface shadow-card ${
         hoverLift
-          ? "transition-[transform,box-shadow,border-color] duration-200 hover:-translate-y-1 hover:border-primary/30 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+          ? "transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0"
           : ""
       } ${className}`}
     >

@@ -1,10 +1,11 @@
 "use server";
 
 import { revalidatePath } from "next/cache";
-import { mutate } from "@/lib/db";
+import { mutate, query } from "@/lib/db";
 import { authorizeAction } from "@/lib/dal";
 import { canManageBranch } from "@/lib/rbac";
 import { isValidBranchRef } from "@/lib/branches-store";
+import { UploadError, fileFromForm, saveUploadedImage } from "@/lib/uploads";
 
 export interface BranchFormState {
   error?: string;
@@ -58,14 +59,35 @@ export async function saveBranchOverride(
   const facilitiesJson =
     facilitiesList.length > 0 ? JSON.stringify(facilitiesList) : null;
 
+  // Principal photo: a new upload replaces it, "remove" clears it, otherwise
+  // the previously saved override (if any) is kept.
+  let photoUrl: string | null = null;
+  const photoFile = fileFromForm(formData, "principal_photo");
+  if (photoFile) {
+    try {
+      photoUrl = await saveUploadedImage(photoFile, "principal");
+    } catch (error) {
+      if (error instanceof UploadError) return { error: error.message };
+      throw error;
+    }
+  } else if (String(formData.get("principal_photo_remove") ?? "") !== "1") {
+    const prior = await query<{ principal_photo_url: string | null }>(
+      "SELECT principal_photo_url FROM branch_overrides WHERE branch_slug = ? LIMIT 1",
+      [slug]
+    );
+    photoUrl = prior[0]?.principal_photo_url ?? null;
+  }
+
   await mutate(
     `INSERT INTO branch_overrides
-       (branch_slug, principal_name, principal_message, students, campus_size,
-        grades, phone, email, address, facilities, updated_by)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+       (branch_slug, principal_name, principal_message, principal_photo_url,
+        students, campus_size, grades, phone, email, address, facilities,
+        updated_by)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
        principal_name = VALUES(principal_name),
        principal_message = VALUES(principal_message),
+       principal_photo_url = VALUES(principal_photo_url),
        students = VALUES(students),
        campus_size = VALUES(campus_size),
        grades = VALUES(grades),
@@ -78,6 +100,7 @@ export async function saveBranchOverride(
       slug,
       principalName,
       principalMessage,
+      photoUrl,
       students,
       campusSize,
       grades,
@@ -92,6 +115,6 @@ export async function saveBranchOverride(
   // Refresh the public branch pages that read this content.
   revalidatePath(`/branches/${slug}`);
   revalidatePath(`/branches/${slug}/contact`);
-  revalidatePath("/admin/branch");
+  revalidatePath(`/admin/branches/${slug}/content`);
   return { ok: true };
 }

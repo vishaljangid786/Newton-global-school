@@ -1,10 +1,9 @@
 import type { ReactNode } from "react";
 
-/** Shared presentational pieces for the admin dashboard. */
+/** Shared presentational pieces for the admin dashboard (Corporate Light). */
 
-/** Subtle, crisp card shadow for the neutral admin surfaces. */
-export const adminCardShadow =
-  "shadow-[0_1px_2px_rgba(15,23,42,0.04),0_1px_3px_rgba(15,23,42,0.06)]";
+/** Whisper card shadow — structure comes from the hairline border. */
+export const adminCardShadow = "shadow-[0_6px_20px_rgba(30,45,80,0.04)]";
 
 export function PageHeader({
   title,
@@ -21,9 +20,12 @@ export function PageHeader({
     <div className="flex flex-wrap items-end justify-between gap-4 border-b border-hairline pb-5">
       <div>
         {eyebrow ? (
-          <p className="eyebrow mb-2 text-accent-ink">{eyebrow}</p>
+          <p className="eyebrow mb-2 flex items-center gap-2 text-primary">
+            <span aria-hidden="true" className="h-px w-5 bg-primary/35" />
+            {eyebrow}
+          </p>
         ) : null}
-        <h1 className="font-heading text-[1.75rem] leading-tight text-text">
+        <h1 className="font-heading text-[1.625rem] leading-tight text-ink">
           {title}
         </h1>
         {description ? (
@@ -44,7 +46,7 @@ export function AdminCard({
 }) {
   return (
     <div
-      className={`rounded-lg border border-border/70 bg-white p-5 ${adminCardShadow} ${className}`}
+      className={`rounded-card border border-hairline bg-surface p-5 ${adminCardShadow} ${className}`}
     >
       {children}
     </div>
@@ -65,10 +67,10 @@ export function SectionCard({
 }) {
   return (
     <div
-      className={`overflow-hidden rounded-lg border border-border/70 bg-white ${adminCardShadow} ${className}`}
+      className={`overflow-hidden rounded-card border border-hairline bg-surface ${adminCardShadow} ${className}`}
     >
       <div className="border-b border-hairline px-5 py-4 sm:px-6">
-        <h2 className="font-heading text-base text-text">{title}</h2>
+        <h2 className="font-heading text-base text-ink">{title}</h2>
         {description ? (
           <p className="mt-0.5 text-sm text-text-muted">{description}</p>
         ) : null}
@@ -92,16 +94,16 @@ export function StatCard({
   return (
     <AdminCard className="flex items-center gap-4">
       {icon ? (
-        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+        <span className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-[0.625rem] bg-primary-soft text-primary">
           {icon}
         </span>
       ) : null}
       <div className="min-w-0">
-        <p className="eyebrow text-text-muted">{label}</p>
-        <p className="mt-1.5 font-heading text-[1.75rem] leading-none text-text">
+        <p className="eyebrow text-faint">{label}</p>
+        <p className="mt-1.5 font-heading text-[1.75rem] leading-none text-ink">
           {value}
         </p>
-        {hint ? <p className="mt-1.5 text-xs text-text-muted">{hint}</p> : null}
+        {hint ? <p className="mt-1.5 text-xs text-faint">{hint}</p> : null}
       </div>
     </AdminCard>
   );
@@ -117,6 +119,9 @@ const BADGE_TONES: Record<string, string> = {
   success: "border-green-200 bg-green-50 text-green-700",
   warning: "border-amber-200 bg-amber-50 text-amber-700",
   neutral: "border-slate-200 bg-slate-100 text-slate-600",
+  student: "border-blue-200 bg-blue-50 text-blue-700",
+  parent: "border-violet-200 bg-violet-50 text-violet-700",
+  teacher: "border-teal-200 bg-teal-50 text-teal-700",
 };
 
 export function StatusBadge({ tone, children }: { tone: string; children: ReactNode }) {
@@ -139,9 +144,9 @@ export function EmptyState({
 }) {
   return (
     <div
-      className={`flex flex-col items-center gap-4 rounded-lg border border-border/70 bg-white px-6 py-14 text-center ${adminCardShadow}`}
+      className={`flex flex-col items-center gap-4 rounded-card border border-hairline bg-surface px-6 py-14 text-center ${adminCardShadow}`}
     >
-      <span className="inline-flex h-12 w-12 items-center justify-center rounded-pill bg-bg-alt text-text-muted">
+      <span className="inline-flex h-12 w-12 items-center justify-center rounded-pill bg-primary-soft text-primary">
         {icon ?? (
           <svg viewBox="0 0 24 24" className="h-6 w-6" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true" strokeLinecap="round" strokeLinejoin="round">
             <path d="M4 13h4l1.5 3h5L16 13h4" />
@@ -169,13 +174,13 @@ export function FieldLabel({
 }
 
 export const adminInputClasses =
-  "w-full rounded-card border border-border bg-white px-3.5 py-2.5 text-sm text-text transition-shadow placeholder:text-text-muted/70 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15";
+  "w-full rounded-btn border border-border bg-surface px-3.5 py-2.5 text-base text-text transition-shadow placeholder:text-faint focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 sm:text-sm";
 
 export const adminButtonPrimary =
-  "inline-flex items-center justify-center gap-2 rounded-card bg-primary px-4 py-2.5 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60";
+  "inline-flex items-center justify-center gap-2 rounded-btn bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60";
 
 export const adminButtonOutline =
-  "inline-flex items-center justify-center gap-2 rounded-card border border-border bg-white px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:border-primary hover:bg-primary/5";
+  "inline-flex items-center justify-center gap-2 rounded-btn border border-border bg-surface px-4 py-2.5 text-sm font-semibold text-text transition-colors hover:border-primary/40 hover:text-primary";
 
 export const adminButtonDanger =
-  "inline-flex items-center justify-center gap-2 rounded-card border border-error/40 bg-white px-3 py-2 text-sm font-medium text-error transition-colors hover:bg-error/5";
+  "inline-flex items-center justify-center gap-2 rounded-btn border border-error/40 bg-surface px-3 py-2 text-sm font-medium text-error transition-colors hover:bg-error/5";

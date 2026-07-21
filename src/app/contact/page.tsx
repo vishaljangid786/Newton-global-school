@@ -1,13 +1,12 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import ButtonLink from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import ContactForm from "@/components/forms/ContactForm";
 import MapEmbed from "@/components/ui/MapEmbed";
 import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
-import { branches } from "@/data/branches";
+import { getAllBranches } from "@/lib/branches-store";
 import { site } from "@/data/site";
 
 export const metadata: Metadata = {
@@ -15,12 +14,15 @@ export const metadata: Metadata = {
   description: `Get in touch with ${site.name}, Jaipur — head office address, phone and hours, campus contact pages and a general inquiry form.`,
 };
 
+// Includes published custom branches; falls back to built-ins when DB is offline.
+export const dynamic = "force-dynamic";
+
 /** Small icon tile used beside each head-office detail row. */
 function DetailIcon({ children }: { children: ReactNode }) {
   return (
     <span
       aria-hidden="true"
-      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-card bg-primary/10 text-primary"
+      className="flex h-10 w-10 shrink-0 items-center justify-center rounded-card bg-primary-soft text-primary"
     >
       <svg
         viewBox="0 0 24 24"
@@ -38,7 +40,8 @@ function DetailIcon({ children }: { children: ReactNode }) {
   );
 }
 
-export default function ContactPage() {
+export default async function ContactPage() {
+  const branches = await getAllBranches();
   return (
     <>
       {/* §4.9.1 — Page hero */}
@@ -49,12 +52,12 @@ export default function ContactPage() {
       />
 
       {/* §4.9.2 — Head office card + map embed */}
-      <section className="bg-bg py-10 md:py-16">
+      <section className="py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <SectionHeading
             overline="Reach Us"
             title="Head Office"
-            subtitle="Our head office in C-Scheme coordinates admissions, transport and administration for all three campuses."
+            subtitle="Our head office in C-Scheme coordinates admissions, transport and administration for all our campuses."
           />
           <div className="mt-10 grid items-stretch gap-6 lg:grid-cols-2">
             <Reveal className="h-full">
@@ -146,61 +149,115 @@ export default function ContactPage() {
         </div>
       </section>
 
-      {/* §4.9.3 — Branch contact quick-cards */}
-      <section className="bg-bg-alt py-10 md:py-16">
+      {/* §4.9.3 — Campus directory: one hairline panel, numbered rows */}
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <SectionHeading
             overline="Campus Contacts"
             title="Contact a Campus Directly"
             subtitle="For admissions visits, fee queries or day-to-day matters, the campus office is your fastest route."
           />
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {branches.map((branch, index) => (
-              <Reveal key={branch.slug} delay={index * 100} className="h-full">
-                <Card hoverLift className="flex h-full flex-col p-6">
-                  <h3 className="font-heading text-lg font-semibold text-primary">
-                    {branch.name}
-                  </h3>
-                  <p className="mt-1 text-sm font-medium text-text-muted">
-                    {branch.area}
-                  </p>
-                  <p className="mt-3 text-sm leading-relaxed text-text">
-                    {branch.address}
-                  </p>
-                  <p className="mt-3 text-sm text-text">
+          <Reveal className="mt-10">
+            <div className="overflow-hidden rounded-card border border-hairline bg-surface shadow-card">
+              {/* Column labels (desktop only) */}
+              <div
+                aria-hidden="true"
+                className="hidden grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_minmax(0,1fr)_3.75rem] gap-x-6 border-b border-hairline bg-bg-alt px-7 py-3 md:grid"
+              >
+                <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-faint">
+                  Campus
+                </span>
+                <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-faint">
+                  Address
+                </span>
+                <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.1em] text-faint">
+                  Phone &amp; Email
+                </span>
+                <span />
+              </div>
+              <ul className="divide-y divide-hairline">
+                {branches.map((branch, index) => (
+                  <li
+                    key={branch.slug}
+                    className="group relative flex flex-col gap-2.5 px-5 py-5 pr-16 transition-colors hover:bg-bg-alt md:grid md:grid-cols-[minmax(0,1.1fr)_minmax(0,1.4fr)_minmax(0,1fr)_3.75rem] md:items-center md:gap-x-6 md:px-7 md:pr-7"
+                  >
+                    {/* Campus name + area */}
+                    <div className="flex items-start gap-3">
+                      <span
+                        aria-hidden="true"
+                        className="pt-0.5 font-heading text-[0.8125rem] font-semibold text-accent"
+                      >
+                        {String(index + 1).padStart(2, "0")}
+                      </span>
+                      <div className="min-w-0">
+                        <h3 className="font-heading text-base font-semibold text-ink">
+                          {branch.name}
+                        </h3>
+                        <p className="mt-1 flex items-center gap-1.5 text-[0.8125rem] font-medium text-primary">
+                          <span
+                            aria-hidden="true"
+                            className="h-1.5 w-1.5 shrink-0 rounded-pill bg-accent"
+                          />
+                          {branch.area}
+                        </p>
+                      </div>
+                    </div>
+
+                    {/* Address */}
+                    <p className="text-sm leading-relaxed text-text-muted md:pr-2">
+                      {branch.address}
+                    </p>
+
+                    {/* Phone + email — kept above the stretched row link */}
+                    <div className="relative z-10 min-w-0 text-sm">
+                      <a
+                        href={`tel:${branch.phone}`}
+                        className="whitespace-nowrap font-semibold text-primary hover:underline"
+                      >
+                        {branch.phone}
+                      </a>
+                      <a
+                        href={`mailto:${branch.email}`}
+                        className="mt-0.5 block truncate font-medium text-text-muted hover:text-primary hover:underline"
+                      >
+                        {branch.email}
+                      </a>
+                    </div>
+
+                    {/* Whole row links to the campus contact page */}
                     <a
-                      href={`tel:${branch.phone}`}
-                      className="whitespace-nowrap font-semibold text-primary hover:underline"
-                    >
-                      {branch.phone}
-                    </a>
-                  </p>
-                  <p className="mt-1 break-words text-sm text-text">
-                    <a
-                      href={`mailto:${branch.email}`}
-                      className="font-semibold text-primary hover:underline"
-                    >
-                      {branch.email}
-                    </a>
-                  </p>
-                  <div className="mt-auto pt-6">
-                    <ButtonLink
                       href={`/branches/${branch.slug}/contact`}
-                      size="sm"
+                      className="absolute inset-0 md:static md:justify-self-end"
+                      aria-label={`${branch.name} — campus contact page`}
                     >
-                      Campus Contact Page
-                      <span className="sr-only">: {branch.name}</span>
-                    </ButtonLink>
-                  </div>
-                </Card>
-              </Reveal>
-            ))}
-          </div>
+                      <span
+                        aria-hidden="true"
+                        className="absolute right-5 top-5 flex h-9 w-9 items-center justify-center rounded-pill border border-border bg-surface text-primary transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-white md:static"
+                      >
+                        <svg
+                          viewBox="0 0 24 24"
+                          className="h-4 w-4"
+                          fill="none"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          focusable="false"
+                        >
+                          <path d="M5 12h14m-6-6 6 6-6 6" />
+                        </svg>
+                      </span>
+                    </a>
+                  </li>
+                ))}
+              </ul>
+            </div>
+          </Reveal>
         </div>
       </section>
 
       {/* §4.9.4 — General inquiry form */}
-      <section className="bg-bg py-10 md:py-16">
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <SectionHeading
             overline="Write to Us"

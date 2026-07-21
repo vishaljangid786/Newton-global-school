@@ -20,14 +20,14 @@ export default function DateChip({
   return (
     <time
       dateTime={date}
-      className={`flex w-14 shrink-0 flex-col items-center justify-center rounded-card border border-primary/15 bg-primary/5 py-2 text-primary ${className}`}
+      className={`flex w-14 shrink-0 flex-col items-center justify-center rounded-xl border border-primary/10 bg-primary-soft py-2 text-primary ${className}`}
     >
       <span aria-hidden="true" className="font-heading text-xl font-semibold leading-none">
         {parts.day}
       </span>
       <span
         aria-hidden="true"
-        className="mt-1 font-mono text-[10px] font-medium uppercase leading-none tracking-[0.12em]"
+        className="mt-1 text-[10px] font-semibold uppercase leading-none tracking-[0.06em]"
       >
         {parts.month}
       </span>

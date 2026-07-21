@@ -64,33 +64,45 @@ export default async function AdminOverviewPage() {
   const enq = branchScopeFilter(user, "branch_slug");
   const notif = branchScopeFilter(user, "branch_ref", true);
   const blog = branchScopeFilter(user, "branch_ref", true);
+  const testi = branchScopeFilter(user, "branch_ref", true);
 
-  const [totalEnq, newEnq, activeNotif, publishedBlogs, draftBlogs, recent] =
-    await Promise.all([
-      count(`SELECT COUNT(*) n FROM enquiries WHERE ${enq.clause}`, enq.params),
-      count(
-        `SELECT COUNT(*) n FROM enquiries WHERE status='new' AND ${enq.clause}`,
-        enq.params
-      ),
-      count(
-        `SELECT COUNT(*) n FROM notifications WHERE active=1 AND ${notif.clause}`,
-        notif.params
-      ),
-      count(
-        `SELECT COUNT(*) n FROM blog_posts WHERE status='published' AND ${blog.clause}`,
-        blog.params
-      ),
-      count(
-        `SELECT COUNT(*) n FROM blog_posts WHERE status='draft' AND ${blog.clause}`,
-        blog.params
-      ),
-      tryQuery<EnquiryRow>(
-        `SELECT id, student_name, parent_name, branch_slug, grade, status, created_at
-         FROM enquiries WHERE ${enq.clause}
-         ORDER BY created_at DESC LIMIT 5`,
-        enq.params
-      ),
-    ]);
+  const [
+    totalEnq,
+    newEnq,
+    activeNotif,
+    publishedBlogs,
+    draftBlogs,
+    liveTestimonials,
+    recent,
+  ] = await Promise.all([
+    count(`SELECT COUNT(*) n FROM enquiries WHERE ${enq.clause}`, enq.params),
+    count(
+      `SELECT COUNT(*) n FROM enquiries WHERE status='new' AND ${enq.clause}`,
+      enq.params
+    ),
+    count(
+      `SELECT COUNT(*) n FROM notifications WHERE active=1 AND ${notif.clause}`,
+      notif.params
+    ),
+    count(
+      `SELECT COUNT(*) n FROM blog_posts WHERE status='published' AND ${blog.clause}`,
+      blog.params
+    ),
+    count(
+      `SELECT COUNT(*) n FROM blog_posts WHERE status='draft' AND ${blog.clause}`,
+      blog.params
+    ),
+    count(
+      `SELECT COUNT(*) n FROM testimonials WHERE status='published' AND ${testi.clause}`,
+      testi.params
+    ),
+    tryQuery<EnquiryRow>(
+      `SELECT id, student_name, parent_name, branch_slug, grade, status, created_at
+       FROM enquiries WHERE ${enq.clause}
+       ORDER BY created_at DESC LIMIT 5`,
+      enq.params
+    ),
+  ]);
 
   const scopeLabel = isSuperAdmin(user)
     ? "All campuses"
@@ -126,9 +138,9 @@ export default async function AdminOverviewPage() {
           }
         />
         <StatCard
-          label="Published"
+          label="Blog posts"
           value={publishedBlogs}
-          hint="blogs"
+          hint={`${draftBlogs} draft${draftBlogs === 1 ? "" : "s"}`}
           icon={
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
               <path d="M4 4h11l5 5v11H4z" strokeLinejoin="round" />
@@ -137,13 +149,13 @@ export default async function AdminOverviewPage() {
           }
         />
         <StatCard
-          label="Drafts"
-          value={draftBlogs}
-          hint="blogs"
+          label="Testimonials"
+          value={liveTestimonials}
+          hint="live on campus pages"
           icon={
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
-              <path d="M12 20h9" strokeLinecap="round" />
-              <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" strokeLinejoin="round" />
+              <path d="M4 5h16v11H9l-5 4z" strokeLinejoin="round" />
+              <path d="M8.5 9.5h.01M12 9.5h.01M15.5 9.5h.01" strokeLinecap="round" />
             </svg>
           }
         />
@@ -203,9 +215,9 @@ export default async function AdminOverviewPage() {
                 <Link
                   key={a.href}
                   href={a.href}
-                  className={`group flex items-center gap-3 rounded-lg border border-border/70 bg-white px-4 py-3 ${adminCardShadow} transition-colors hover:border-primary/40`}
+                  className={`group flex items-center gap-3 rounded-card border border-hairline bg-surface px-4 py-3 ${adminCardShadow} transition-colors hover:border-primary/40`}
                 >
-                  <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-lg bg-primary/10 text-primary">
+                  <span className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-btn bg-primary-soft text-primary">
                     {a.icon}
                   </span>
                   <span className="min-w-0 flex-1">
@@ -271,6 +283,17 @@ const quickActions: QuickAction[] = [
       <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
         <path d="M3 21h18M5 21V7l7-4 7 4v14" strokeLinejoin="round" />
         <path d="M9 21v-5h6v5" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  {
+    href: "/admin/testimonials",
+    label: "Add a testimonial",
+    sub: "A student, parent or teacher voice",
+    icon: (
+      <svg viewBox="0 0 24 24" className="h-4 w-4" fill="none" stroke="currentColor" strokeWidth="1.7" aria-hidden="true">
+        <path d="M4 5h16v11H9l-5 4z" strokeLinejoin="round" />
+        <path d="M8.5 9.5h.01M12 9.5h.01M15.5 9.5h.01" strokeLinecap="round" />
       </svg>
     ),
   },

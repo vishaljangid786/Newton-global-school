@@ -218,7 +218,7 @@ export default function AcademicsPage() {
       />
 
       {/* 2. Curriculum overview — §4.4.2 */}
-      <section className="bg-bg py-10 md:py-16">
+      <section className="py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <div className="grid items-start gap-10 lg:grid-cols-[3fr_2fr]">
             <div>
@@ -278,7 +278,7 @@ export default function AcademicsPage() {
                           className="flex justify-between gap-4"
                         >
                           <span className="text-text">{branch.name}</span>
-                          <span className="whitespace-nowrap font-medium text-primary">
+                          <span className="text-right font-medium text-primary">
                             {branch.grades}
                           </span>
                         </li>
@@ -293,7 +293,7 @@ export default function AcademicsPage() {
       </section>
 
       {/* 3. Grade levels — §4.4.3 */}
-      <section className="bg-bg-alt py-10 md:py-16">
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <SectionHeading
             overline="Grade Levels"
@@ -343,7 +343,7 @@ export default function AcademicsPage() {
       </section>
 
       {/* 4. Teaching methodology — §4.4.4 */}
-      <section className="bg-bg py-10 md:py-16">
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <SectionHeading
             overline="How We Teach"
@@ -353,20 +353,28 @@ export default function AcademicsPage() {
           <div className="mt-10 space-y-12 md:space-y-16">
             {methodologyRows.map((row, index) => (
               <Reveal key={row.title}>
-                <div className="grid items-center gap-6 md:grid-cols-2 md:gap-10">
-                  <PlaceholderImage
-                    label={row.imageLabel}
-                    aspect="4/3"
-                    tone={row.tone}
-                    className={`rounded-card shadow-card ${
-                      index % 2 === 1 ? "md:order-2" : ""
-                    }`}
-                  />
+                <div className="grid items-center gap-6 md:grid-cols-2 md:gap-12">
+                  <div
+                    className={`relative ${index % 2 === 1 ? "md:order-2" : ""}`}
+                  >
+                    <div className="overflow-hidden rounded-lg shadow-frame">
+                      <PlaceholderImage aspect="4/3" tone={row.tone} />
+                    </div>
+                    <span className="absolute bottom-4 left-4 rounded-btn border border-hairline bg-surface px-3.5 py-2 text-xs font-medium text-text">
+                      {row.imageLabel}
+                    </span>
+                  </div>
                   <div className={index % 2 === 1 ? "md:order-1" : ""}>
-                    <h3 className="text-xl text-text md:text-2xl">
+                    <p
+                      aria-hidden="true"
+                      className="font-heading text-[0.9375rem] font-semibold text-accent"
+                    >
+                      {String(index + 1).padStart(2, "0")}
+                    </p>
+                    <h3 className="mt-2 text-xl text-ink md:text-2xl">
                       {row.title}
                     </h3>
-                    <div className="mt-3 space-y-3 text-base text-text">
+                    <div className="mt-3 space-y-3 text-base leading-[1.7] text-[#4a5563]">
                       {row.paragraphs.map((paragraph) => (
                         <p key={paragraph.slice(0, 24)}>{paragraph}</p>
                       ))}
@@ -380,7 +388,7 @@ export default function AcademicsPage() {
       </section>
 
       {/* 5. Beyond academics — §4.4.5 */}
-      <section className="bg-bg-alt py-10 md:py-16">
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <SectionHeading
             overline="Beyond Academics"
@@ -392,7 +400,7 @@ export default function AcademicsPage() {
               <Card key={item.title} className="p-6">
                 <span
                   aria-hidden="true"
-                  className="inline-flex h-12 w-12 items-center justify-center rounded-card bg-primary/10 text-primary"
+                  className="inline-flex h-12 w-12 items-center justify-center rounded-card bg-primary-soft text-primary"
                 >
                   {item.icon}
                 </span>
@@ -407,7 +415,7 @@ export default function AcademicsPage() {
       </section>
 
       {/* 6. Downloads — §4.4.6 (PDFs pending per §10) */}
-      <section className="bg-bg py-10 md:py-16">
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <SectionHeading
             overline="Downloads"
@@ -420,7 +428,7 @@ export default function AcademicsPage() {
                 <div className="flex items-start justify-between gap-3">
                   <span
                     aria-hidden="true"
-                    className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-primary/10 text-primary"
+                    className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-card bg-primary-soft text-primary"
                   >
                     <svg {...iconProps}>
                       <path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8l-5-5z" />

@@ -14,7 +14,9 @@ import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { getBranchBySlugAsync } from "@/lib/branches-store";
 import { getBranchContent } from "@/lib/branch-content";
-import { getGalleryItems } from "@/data/gallery";
+import { getPublishedTestimonials } from "@/lib/testimonials-store";
+import { getMergedGalleryItems } from "@/lib/gallery-store";
+import BranchTestimonials from "./_components/BranchTestimonials";
 import { getNoticesForBranch } from "@/data/notices";
 import { site } from "@/data/site";
 import { initials } from "@/lib/format";
@@ -160,8 +162,15 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
   const heroTone = branch.heroTone ?? HERO_TONES[branch.slug] ?? "primary";
   const latestNotices = getNoticesForBranch(branch.slug).slice(0, 3);
   const highlights = buildHighlights(branch);
+  const testimonialGroups = await getPublishedTestimonials(branch.slug);
+  const hasTestimonials =
+    testimonialGroups.student.length > 0 ||
+    testimonialGroups.parent.length > 0 ||
+    testimonialGroups.teacher.length > 0;
 
   // §5.1.6 — one image per gallery category for a varied 4-up strip.
+  // Merged list puts admin uploads first, so real photos win over placeholders.
+  const mergedGallery = await getMergedGalleryItems({ branch: branch.slug });
   const galleryCategories: GalleryCategory[] = [
     "Sports",
     "Annual Day",
@@ -169,9 +178,7 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
     "Trips",
   ];
   const galleryPicks = galleryCategories
-    .map(
-      (category) => getGalleryItems({ branch: branch.slug, category })[0]
-    )
+    .map((category) => mergedGallery.find((item) => item.category === category))
     .filter((item) => item !== undefined);
 
   // §9 — schema.org/School JSON-LD (no geo coordinates in the data model).
@@ -203,40 +210,43 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
         }}
       />
 
-      {/* 1. Hero — §5.1.1 */}
-      <section className="relative overflow-hidden text-white">
-        <PlaceholderImage fill tone={heroTone} />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 bg-gradient-to-r from-primary-dark/90 via-primary-dark/70 to-primary/40"
-        />
-        <div className="relative mx-auto max-w-content px-4 py-16 md:py-24">
-          <Breadcrumbs
-            tone="light"
-            items={[
-              { label: "Branches", href: "/branches" },
-              { label: branch.name },
-            ]}
-          />
-          <h1 className="mt-5 max-w-3xl text-[1.75rem] leading-tight md:text-[2.5rem]">
-            {site.name}, {branch.name}
-          </h1>
-          <p className="mt-3 max-w-2xl text-base text-white/85 md:text-lg">
-            {branch.area} · {branch.grades}
-          </p>
-          <div className="mt-7 flex flex-wrap gap-3">
-            <ButtonLink
-              href={`/branches/${branch.slug}/admissions`}
-              variant="accent"
-            >
-              Admissions
-            </ButtonLink>
-            <Link
-              href={`/branches/${branch.slug}/contact`}
-              className="inline-flex items-center justify-center gap-2 rounded-card border border-white/70 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/10"
-            >
-              Contact Us
-            </Link>
+      {/* 1. Hero — §5.1.1: framed image card, matching the home hero */}
+      <section className="border-b border-[#e6ebf2] bg-bg-alt">
+        <div className="mx-auto max-w-content px-4 pb-10 pt-8 md:pt-10">
+          <div className="relative overflow-hidden rounded-lg border border-[#e1e7f0] shadow-frame">
+            <div className="relative">
+              <PlaceholderImage fill tone={heroTone} />
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(16,24,44,0.84),rgba(16,24,44,0.5)_56%,rgba(16,24,44,0.12))]"
+              />
+              <div className="relative flex min-h-[22rem] max-w-2xl flex-col justify-center px-6 py-10 md:min-h-[24rem] md:px-14">
+                <Breadcrumbs
+                  tone="light"
+                  items={[
+                    { label: "Branches", href: "/branches" },
+                    { label: branch.name },
+                  ]}
+                />
+                <h1 className="mt-4 max-w-3xl text-[1.75rem] leading-tight text-white md:text-[2.5rem]">
+                  {site.name}, {branch.name}
+                </h1>
+                <p className="mt-3 max-w-2xl text-base text-[#d5dcea] md:text-lg">
+                  {branch.area} · {branch.grades}
+                </p>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <ButtonLink href={`/branches/${branch.slug}/admissions`}>
+                    Admissions
+                  </ButtonLink>
+                  <Link
+                    href={`/branches/${branch.slug}/contact`}
+                    className="inline-flex items-center justify-center gap-2 rounded-btn border border-white/40 bg-white/10 px-6 py-3 text-sm font-semibold text-white transition-colors hover:bg-white/20"
+                  >
+                    Contact Us
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
@@ -275,12 +285,21 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
         <div className="mx-auto max-w-content px-4">
           <div className="grid items-start gap-8 md:grid-cols-[2fr_5fr] md:gap-12">
             <div className="mx-auto w-full max-w-64 md:max-w-none">
-              <PlaceholderImage
-                aspect="1/1"
-                tone="mist"
-                label={initials(branch.principal.name)}
-                className="rounded-card shadow-card"
-              />
+              {branch.principal.photoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={branch.principal.photoUrl}
+                  alt={`${branch.principal.name}, Principal of ${branch.name}`}
+                  className="aspect-square w-full rounded-card border border-hairline object-cover shadow-card"
+                />
+              ) : (
+                <PlaceholderImage
+                  aspect="1/1"
+                  tone="mist"
+                  label={initials(branch.principal.name)}
+                  className="rounded-card shadow-card"
+                />
+              )}
             </div>
             <div>
               <SectionHeading
@@ -342,7 +361,25 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
         </div>
       </section>
 
-      {/* 5. Latest branch notices — §5.1.5 */}
+      {/* 5. Testimonials — student, parent and teacher voices (DB-backed) */}
+      {hasTestimonials ? (
+        <section className="border-t border-hairline py-10 md:py-16">
+          <div className="mx-auto max-w-content px-4">
+            <SectionHeading
+              overline="Testimonials"
+              title="What our school family says"
+              subtitle={`Students, parents and teachers on everyday life at ${branch.name}.`}
+            />
+            <Reveal>
+              <div className="mt-8">
+                <BranchTestimonials groups={testimonialGroups} />
+              </div>
+            </Reveal>
+          </div>
+        </section>
+      ) : null}
+
+      {/* 6. Latest branch notices — §5.1.5 */}
       <section className="bg-bg-alt py-10 md:py-16">
         <div className="mx-auto max-w-content px-4">
           <div className="flex flex-wrap items-end justify-between gap-4">
@@ -390,12 +427,22 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
             <div className="mt-10 grid grid-cols-2 gap-4 lg:grid-cols-4">
               {galleryPicks.map((item) => (
                 <figure key={item.id}>
-                  <PlaceholderImage
-                    aspect="4/3"
-                    tone={item.tone}
-                    label={item.category}
-                    className="rounded-card shadow-card"
-                  />
+                  {item.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img
+                      src={item.imageUrl}
+                      alt={item.caption}
+                      loading="lazy"
+                      className="aspect-[4/3] w-full rounded-card object-cover shadow-card"
+                    />
+                  ) : (
+                    <PlaceholderImage
+                      aspect="4/3"
+                      tone={item.tone}
+                      label={item.category}
+                      className="rounded-card shadow-card"
+                    />
+                  )}
                   <figcaption className="mt-2 text-sm text-text-muted">
                     {item.caption}
                   </figcaption>

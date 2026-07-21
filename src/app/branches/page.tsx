@@ -145,7 +145,7 @@ export default async function BranchesPage() {
             subtitle="Grades offered and key facilities, side by side. Scroll the table sideways on smaller screens."
           />
           <Reveal className="mt-10">
-            <div className="overflow-x-auto rounded-card border border-border bg-bg shadow-card">
+            <div className="relative overflow-x-auto rounded-card border border-hairline bg-surface shadow-card">
               <table className="w-full min-w-[720px] border-collapse text-left text-sm">
                 <caption className="sr-only">
                   Comparison of {site.name} campuses by grades offered and key

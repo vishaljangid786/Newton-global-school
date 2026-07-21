@@ -8,8 +8,8 @@ import {
   useState,
   type KeyboardEvent as ReactKeyboardEvent,
 } from "react";
-import SocialIcon from "@/components/ui/SocialIcon";
 import { getBranchBySlug, isBranchSlug } from "@/data/branches";
+import { useBranches } from "@/components/hooks/useBranches";
 import { site } from "@/data/site";
 import type { BranchSlug } from "@/data/types";
 
@@ -21,8 +21,9 @@ interface NavItem {
 }
 
 /**
- * Primary nav (design.md §3.1 order). "Branches" is a single combined tab
- * linking to the /branches page — campuses are no longer listed separately.
+ * Full nav (design.md §3.1 order) — used by the mobile drawer, where space
+ * is vertical. "Branches" is a single combined tab linking to the /branches
+ * page — campuses are no longer listed separately.
  */
 const NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/" },
@@ -31,6 +32,20 @@ const NAV_ITEMS: NavItem[] = [
   { label: "Academics", href: "/academics" },
   { label: "Admissions", href: "/admissions" },
   { label: "News & Events", href: "/news" },
+  { label: "Blog", href: "/blog" },
+  { label: "Gallery", href: "/gallery" },
+  { label: "Contact", href: "/contact" },
+];
+
+/**
+ * Trimmed desktop nav: "Home" lives on the logo, "Admissions" on the CTA
+ * button, and "News & Events" shortens to "News" — keeps the glass bar airy.
+ */
+const DESKTOP_NAV_ITEMS: NavItem[] = [
+  { label: "About", href: "/about" },
+  { label: "Branches", href: "/branches" },
+  { label: "Academics", href: "/academics" },
+  { label: "News", href: "/news" },
   { label: "Blog", href: "/blog" },
   { label: "Gallery", href: "/gallery" },
   { label: "Contact", href: "/contact" },
@@ -49,20 +64,46 @@ function branchSlugFromPath(pathname: string): BranchSlug | null {
 }
 
 const desktopLinkBase =
-  "rounded-card px-2.5 py-2 text-sm font-medium transition-colors hover:text-primary";
+  "rounded-btn px-2.5 py-2 text-[0.90625rem] font-medium transition-colors";
 const desktopLinkActive = "text-primary font-semibold";
-const desktopLinkIdle = "text-text";
+const desktopLinkIdle = "text-text-muted hover:text-ink";
 
 export default function Header() {
   const pathname = usePathname();
+  const campuses = useBranches();
 
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [branchesOpen, setBranchesOpen] = useState(false);
   const [lastBranch, setLastBranch] = useState<BranchSlug | null>(null);
 
   const drawerRef = useRef<HTMLDivElement>(null);
   const drawerCloseRef = useRef<HTMLButtonElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
+  const branchesMenuRef = useRef<HTMLLIElement>(null);
+
+  /* ——— Branches dropdown: close on outside click / Esc / route change ——— */
+  useEffect(() => {
+    setBranchesOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (!branchesOpen) return;
+    const onPointerDown = (event: PointerEvent) => {
+      if (!branchesMenuRef.current?.contains(event.target as Node)) {
+        setBranchesOpen(false);
+      }
+    };
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setBranchesOpen(false);
+    };
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [branchesOpen]);
 
   /* ——— Sticky shadow after 8px of scroll (design.md §3.1, §7) ——— */
   useEffect(() => {
@@ -137,6 +178,85 @@ export default function Header() {
 
   const renderDesktopLink = (item: NavItem) => {
     const active = isActive(pathname, item.href);
+
+    /* "Branches" gets a dynamic submenu listing every published campus. */
+    if (item.href === "/branches") {
+      return (
+        <li key={item.href} ref={branchesMenuRef} className="relative">
+          <button
+            type="button"
+            aria-expanded={branchesOpen}
+            aria-haspopup="menu"
+            onClick={() => setBranchesOpen((open) => !open)}
+            className={`${desktopLinkBase} inline-flex items-center gap-1 ${
+              active ? desktopLinkActive : desktopLinkIdle
+            }`}
+          >
+            {item.label}
+            <span
+              className={`ml-0.5 rounded-pill px-1.5 py-0.5 text-[0.65625rem] font-semibold leading-none ${
+                active
+                  ? "bg-primary-soft text-primary"
+                  : "bg-bg-alt text-faint"
+              }`}
+            >
+              {campuses.length}
+            </span>
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              focusable="false"
+              className={`h-3.5 w-3.5 transition-transform ${branchesOpen ? "rotate-180" : ""}`}
+            >
+              <path
+                d="m6 9 6 6 6-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          {branchesOpen ? (
+            <div className="absolute left-1/2 top-full z-50 mt-2 w-72 -translate-x-1/2 overflow-hidden rounded-card border border-hairline bg-surface shadow-card-hover">
+              <ul className="max-h-[19.5rem] overflow-y-auto overscroll-contain p-1.5">
+                {campuses.map((campus) => (
+                  <li key={campus.slug}>
+                    <Link
+                      href={`/branches/${campus.slug}`}
+                      className="flex items-start gap-2.5 rounded-btn px-3 py-2.5 transition-colors hover:bg-bg-alt"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-pill bg-accent"
+                      />
+                      <span className="min-w-0">
+                        <span className="block truncate text-sm font-medium text-ink">
+                          {campus.name}
+                        </span>
+                        <span className="block truncate text-xs text-faint">
+                          {campus.area}
+                        </span>
+                      </span>
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/branches"
+                className="block border-t border-hairline px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary-soft"
+              >
+                View all branches
+                <span aria-hidden="true"> →</span>
+              </Link>
+            </div>
+          ) : null}
+        </li>
+      );
+    }
+
     return (
       <li key={item.href}>
         <Link
@@ -157,92 +277,61 @@ export default function Header() {
         <Link
           href={item.href}
           aria-current={active ? "page" : undefined}
-          className={`block rounded-card px-3 py-2.5 text-base font-medium ${
-            active ? "bg-bg-alt text-primary" : "text-text hover:bg-bg-alt"
+          className={`block rounded-btn px-3 py-2.5 text-base font-medium ${
+            active
+              ? "bg-primary-soft text-primary"
+              : "text-text hover:bg-bg-alt"
           }`}
         >
           {item.label}
+          {item.href === "/branches" ? (
+            <span className="ml-2 rounded-pill bg-bg-alt px-2 py-0.5 text-xs font-semibold text-faint">
+              {campuses.length}
+            </span>
+          ) : null}
         </Link>
+        {/* Nested campus list under "Branches" */}
+        {item.href === "/branches" ? (
+          <ul className="mb-1 ml-3 mt-0.5 space-y-0.5 border-l border-hairline pl-3">
+            {campuses.map((campus) => {
+              const campusActive = isActive(
+                pathname,
+                `/branches/${campus.slug}`
+              );
+              return (
+                <li key={campus.slug}>
+                  <Link
+                    href={`/branches/${campus.slug}`}
+                    aria-current={campusActive ? "page" : undefined}
+                    className={`block rounded-btn px-3 py-2 text-sm ${
+                      campusActive
+                        ? "bg-primary-soft font-medium text-primary"
+                        : "text-text-muted hover:bg-bg-alt hover:text-text"
+                    }`}
+                  >
+                    {campus.name}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
       </li>
     );
   };
 
   return (
-    <header
-      className={`sticky top-0 z-50 bg-bg transition-shadow ${
-        scrolled ? "shadow-card" : "shadow-none"
-      }`}
-    >
-      {/* Top utility bar — desktop only (design.md §3.1) */}
-      <div className="hidden bg-primary-dark text-white lg:block">
-        <div className="mx-auto flex max-w-content items-center justify-between gap-4 px-4 py-1.5 text-xs">
-          <div className="flex items-center gap-5">
-            <a
-              href={`tel:${site.headOffice.phone}`}
-              className="flex items-center gap-1.5 hover:underline"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-3.5 w-3.5"
-                aria-hidden="true"
-                focusable="false"
-              >
-                <path
-                  fill="currentColor"
-                  d="M6.62 10.79a15.05 15.05 0 0 0 6.59 6.59l2.2-2.2a1 1 0 0 1 1.02-.24 11.36 11.36 0 0 0 3.57.57 1 1 0 0 1 1 1V20a1 1 0 0 1-1 1A17 17 0 0 1 3 4a1 1 0 0 1 1-1h3.5a1 1 0 0 1 1 1c0 1.25.2 2.45.57 3.57a1 1 0 0 1-.25 1.02Z"
-                />
-              </svg>
-              {site.headOffice.phone}
-            </a>
-            <a
-              href={`mailto:${site.headOffice.email}`}
-              className="flex items-center gap-1.5 hover:underline"
-            >
-              <svg
-                viewBox="0 0 24 24"
-                className="h-3.5 w-3.5"
-                aria-hidden="true"
-                focusable="false"
-              >
-                <path
-                  fill="currentColor"
-                  d="M20 4H4a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2Zm0 4-8 5-8-5V6l8 5 8-5Z"
-                />
-              </svg>
-              {site.headOffice.email}
-            </a>
-          </div>
-          <div className="flex items-center gap-4">
-            {lastBranchData ? (
-              <Link
-                href={`/branches/${lastBranchData.slug}`}
-                className="flex items-center gap-1.5 rounded-pill bg-white/10 px-3 py-0.5 font-medium hover:bg-white/20"
-              >
-                <span aria-hidden="true">★</span>
-                Your campus: {lastBranchData.name}
-              </Link>
-            ) : null}
-            <ul className="flex items-center gap-3">
-              {site.socialLinks.map((social) => (
-                <li key={social.name}>
-                  <a
-                    href={social.href}
-                    className="block text-white/80 hover:text-white"
-                  >
-                    <SocialIcon name={social.name} />
-                    <span className="sr-only">
-                      {site.name} on {social.name}
-                    </span>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </div>
-      </div>
-
-      {/* Main bar */}
-      <div className="border-b border-hairline">
+    <>
+      <header
+        className={`sticky top-0 z-50 border-b bg-bg/90 backdrop-blur-lg transition-[border-color,box-shadow] ${
+          scrolled
+            ? "border-hairline shadow-[0_8px_30px_-16px_rgba(27,37,54,0.16)]"
+            : "border-hairline shadow-none"
+        }`}
+      >
+      {/* Main bar — single glass sticky bar (utility bar removed; phone/email
+          and socials live in the footer, F1 quick link moved inline). */}
+      <div>
         <div className="mx-auto flex max-w-content items-center justify-between gap-4 px-4 py-3">
           {/* Logo */}
           <Link
@@ -254,23 +343,23 @@ export default function Header() {
             <img
               src="/newton-logo.png"
               alt={`${site.name} logo`}
-              className="h-12 w-auto md:h-14"
+              className="h-10 w-auto md:h-12"
             />
           </Link>
 
           {/* Desktop nav */}
           <nav aria-label="Main" className="hidden lg:block">
-            <ul className="flex items-center gap-0.5">
-              {NAV_ITEMS.map(renderDesktopLink)}
+            <ul className="flex items-center gap-1">
+              {DESKTOP_NAV_ITEMS.map(renderDesktopLink)}
             </ul>
           </nav>
 
           <div className="flex items-center gap-2">
             <Link
               href="/admissions"
-              className="hidden rounded-card bg-accent px-4 py-2.5 text-sm font-semibold text-primary-dark transition-colors hover:bg-accent/90 md:inline-block"
+              className="hidden rounded-btn bg-[image:var(--gradient-brand)] px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-[1.06] md:inline-block"
             >
-              Admissions Open — Apply
+              Apply Now
             </Link>
 
             {/* Mobile hamburger */}
@@ -302,28 +391,39 @@ export default function Header() {
         </div>
       </div>
 
-      {/* Mobile overlay */}
-      {drawerOpen ? (
-        <div
-          className="fixed inset-0 z-40 bg-black/40 lg:hidden"
-          aria-hidden="true"
-          onClick={() => setDrawerOpen(false)}
-        />
-      ) : null}
+      </header>
 
-      {/* Mobile slide-in drawer (design.md §3.1) */}
+      {/* Mobile drawer layer — a sibling of the header (backdrop-blur on the
+          header would make it the containing block for fixed descendants) and
+          an overflow-hidden viewport wrapper, so the off-canvas drawer never
+          widens the page and makes mobile browsers zoom out. */}
       <div
-        ref={drawerRef}
-        id="mobile-drawer"
-        role="dialog"
-        aria-modal="true"
-        aria-label="Site menu"
-        inert={!drawerOpen}
-        onKeyDown={onDrawerKeyDown}
-        className={`fixed inset-y-0 right-0 z-50 flex h-full w-80 max-w-[85vw] flex-col bg-bg shadow-card-hover transition-transform duration-300 lg:hidden ${
-          drawerOpen ? "translate-x-0" : "translate-x-full"
+        className={`fixed inset-0 z-50 overflow-hidden lg:hidden ${
+          drawerOpen ? "" : "pointer-events-none"
         }`}
       >
+        {/* Overlay */}
+        {drawerOpen ? (
+          <div
+            className="absolute inset-0 bg-black/40"
+            aria-hidden="true"
+            onClick={() => setDrawerOpen(false)}
+          />
+        ) : null}
+
+        {/* Slide-in drawer (design.md §3.1) */}
+        <div
+          ref={drawerRef}
+          id="mobile-drawer"
+          role="dialog"
+          aria-modal="true"
+          aria-label="Site menu"
+          inert={!drawerOpen}
+          onKeyDown={onDrawerKeyDown}
+          className={`absolute inset-y-0 right-0 flex w-80 max-w-[85vw] flex-col rounded-l-2xl bg-surface shadow-card-hover transition-transform duration-300 ${
+            drawerOpen ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
         <div className="flex items-center justify-between border-b border-hairline px-4 py-3">
           <span className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -361,9 +461,12 @@ export default function Header() {
           {lastBranchData ? (
             <Link
               href={`/branches/${lastBranchData.slug}`}
-              className="mb-3 flex items-center gap-2 rounded-card bg-bg-alt px-3 py-2.5 text-sm font-medium text-primary"
+              className="mb-3 flex items-center gap-2 rounded-btn bg-bg-alt px-3 py-2.5 text-sm font-medium text-primary"
             >
-              <span aria-hidden="true">★</span>
+              <span
+                aria-hidden="true"
+                className="h-1.5 w-1.5 rounded-pill bg-accent"
+              />
               Your campus: {lastBranchData.name}
             </Link>
           ) : null}
@@ -375,12 +478,13 @@ export default function Header() {
         <div className="border-t border-hairline p-4">
           <Link
             href="/admissions"
-            className="block rounded-card bg-accent px-4 py-3 text-center text-sm font-semibold text-primary-dark hover:bg-accent/90"
+            className="block rounded-btn bg-[image:var(--gradient-brand)] px-4 py-3 text-center text-sm font-semibold text-white transition hover:brightness-[1.06]"
           >
             Admissions Open — Apply
           </Link>
         </div>
+        </div>
       </div>
-    </header>
+    </>
   );
 }

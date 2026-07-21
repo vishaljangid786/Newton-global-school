@@ -1,4 +1,4 @@
-import { useId, type CSSProperties } from "react";
+import type { CSSProperties } from "react";
 import type { PlaceholderTone } from "@/data/types";
 
 type Aspect = "16/9" | "4/3" | "1/1";
@@ -16,30 +16,31 @@ interface PlaceholderImageProps {
 }
 
 /**
- * Decorative stand-in for site photos. Renders a muted, tonal gradient (kept
- * low-saturation so it reads as elegant rather than garish) with a fine dot
- * texture and an inset hairline frame; always aria-hidden.
+ * Decorative stand-in for site photos. Renders a modern mesh gradient —
+ * 2–3 layered radial color washes over a base tint — with a soft corner
+ * glow; always aria-hidden. Swap for real photography via next/image later
+ * without changing call sites.
  */
-const GRADIENTS: Record<PlaceholderTone, string> = {
+const MESHES: Record<PlaceholderTone, string> = {
   primary:
-    "linear-gradient(145deg, color-mix(in srgb, var(--color-primary) 90%, black), var(--color-primary-dark))",
+    "radial-gradient(at 20% 15%, color-mix(in srgb, var(--color-primary) 80%, white) 0, transparent 55%), radial-gradient(at 85% 90%, color-mix(in srgb, var(--color-accent) 35%, var(--color-primary-dark)) 0, transparent 60%), linear-gradient(145deg, var(--color-primary), var(--color-primary-dark))",
   accent:
-    "linear-gradient(145deg, color-mix(in srgb, var(--color-accent) 62%, #5c3a06), color-mix(in srgb, var(--color-accent) 30%, var(--color-primary-dark)))",
-  mist: "linear-gradient(145deg, var(--color-bg-alt), color-mix(in srgb, var(--color-primary) 16%, var(--color-bg-alt)))",
+    "radial-gradient(at 15% 20%, color-mix(in srgb, var(--color-accent) 60%, white) 0, transparent 55%), radial-gradient(at 90% 85%, var(--color-primary-dark) 0, transparent 65%), linear-gradient(145deg, #6e8ef2, #4c6fe6)",
+  mist: "radial-gradient(at 25% 20%, white 0, transparent 55%), radial-gradient(at 85% 80%, color-mix(in srgb, var(--color-primary) 18%, var(--color-bg-alt)) 0, transparent 60%), linear-gradient(145deg, var(--color-bg-alt), #e3e9f5)",
   forest:
-    "linear-gradient(145deg, color-mix(in srgb, var(--color-success) 60%, var(--color-primary-dark)), var(--color-primary-dark))",
-  dusk: "linear-gradient(145deg, var(--color-primary-dark), color-mix(in srgb, var(--color-primary-dark) 62%, var(--color-accent)))",
+    "radial-gradient(at 20% 15%, color-mix(in srgb, var(--color-success) 70%, white) 0, transparent 55%), radial-gradient(at 85% 90%, var(--color-primary-dark) 0, transparent 65%), linear-gradient(145deg, color-mix(in srgb, var(--color-success) 65%, var(--color-primary-dark)), var(--color-primary-dark))",
+  dusk: "radial-gradient(at 80% 15%, color-mix(in srgb, var(--color-accent) 45%, var(--color-primary)) 0, transparent 55%), radial-gradient(at 15% 85%, var(--color-primary) 0, transparent 60%), linear-gradient(145deg, var(--color-primary-dark), #1e1b4b)",
   stone:
-    "linear-gradient(145deg, color-mix(in srgb, var(--color-text-muted) 70%, var(--color-bg-alt)), color-mix(in srgb, var(--color-text-muted) 60%, var(--color-primary-dark)))",
+    "radial-gradient(at 20% 20%, color-mix(in srgb, var(--color-text-muted) 45%, white) 0, transparent 55%), radial-gradient(at 85% 85%, var(--color-primary-dark) 0, transparent 65%), linear-gradient(145deg, color-mix(in srgb, var(--color-text-muted) 75%, var(--color-bg-alt)), color-mix(in srgb, var(--color-text-muted) 55%, var(--color-primary-dark)))",
 };
 
 /** Label color per tone — "mist" sits on a light background. */
 const LABEL_CLASSES: Record<PlaceholderTone, string> = {
-  primary: "text-white/85",
+  primary: "text-white/90",
   accent: "text-white/90",
   mist: "text-primary/70",
-  forest: "text-white/85",
-  dusk: "text-white/85",
+  forest: "text-white/90",
+  dusk: "text-white/90",
   stone: "text-white/90",
 };
 
@@ -50,8 +51,7 @@ export default function PlaceholderImage({
   tone = "primary",
   className = "",
 }: PlaceholderImageProps) {
-  const patternId = useId();
-  const style: CSSProperties = { backgroundImage: GRADIENTS[tone] };
+  const style: CSSProperties = { backgroundImage: MESHES[tone] };
   if (!fill) {
     style.aspectRatio = aspect.replace("/", " / ");
   }
@@ -64,40 +64,11 @@ export default function PlaceholderImage({
         fill ? "absolute inset-0 h-full w-full" : "relative w-full"
       } ${className}`}
     >
-      {/* Fine dot texture */}
-      <svg
-        className="absolute inset-0 h-full w-full"
-        aria-hidden="true"
-        focusable="false"
-      >
-        <defs>
-          <pattern
-            id={patternId}
-            width="20"
-            height="20"
-            patternUnits="userSpaceOnUse"
-          >
-            <circle cx="1.5" cy="1.5" r="1" fill="currentColor" />
-          </pattern>
-        </defs>
-        <rect
-          width="100%"
-          height="100%"
-          fill={`url(#${patternId})`}
-          className={tone === "mist" ? "text-primary/12" : "text-white/12"}
-        />
-      </svg>
-      {/* Soft corner highlight */}
-      <div className="absolute -left-1/4 -top-1/3 h-2/3 w-2/3 rounded-full bg-white/10 blur-2xl" />
-      {/* Inset hairline frame — "framed photograph" feel */}
-      <div
-        className={`pointer-events-none absolute inset-0 ring-1 ring-inset ${
-          tone === "mist" ? "ring-primary/10" : "ring-white/15"
-        }`}
-      />
+      {/* Soft corner glow */}
+      <div className="absolute -left-1/4 -top-1/3 h-2/3 w-2/3 rounded-full bg-white/15 blur-3xl" />
       {label ? (
         <span
-          className={`absolute inset-0 flex items-center justify-center px-4 text-center font-mono text-[0.625rem] font-medium uppercase tracking-[0.2em] ${LABEL_CLASSES[tone]}`}
+          className={`absolute inset-0 flex items-center justify-center px-4 text-center text-xs font-semibold ${LABEL_CLASSES[tone]}`}
         >
           {label}
         </span>

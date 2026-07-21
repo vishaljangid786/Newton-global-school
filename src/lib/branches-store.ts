@@ -28,6 +28,7 @@ export interface CustomBranchRow {
   grades: string;
   principal_name: string;
   principal_message: string | null;
+  principal_photo_url: string | null;
   students: number | null;
   campus_size: string;
   facilities: unknown;
@@ -38,8 +39,8 @@ export interface CustomBranchRow {
 }
 
 const COLS = `slug, name, area, address, phone, email, established, grades,
-  principal_name, principal_message, students, campus_size, facilities,
-  hero_tone, status, created_at, updated_at`;
+  principal_name, principal_message, principal_photo_url, students,
+  campus_size, facilities, hero_tone, status, created_at, updated_at`;
 
 function parseFacilities(value: unknown): string[] {
   if (Array.isArray(value)) return value as string[];
@@ -71,6 +72,7 @@ export function mapCustomBranch(r: CustomBranchRow): Branch {
       message:
         r.principal_message ||
         "Welcome to our campus. We look forward to sharing more about our school community here soon.",
+      photoUrl: r.principal_photo_url,
     },
     quickFacts: {
       students: r.students ?? 0,

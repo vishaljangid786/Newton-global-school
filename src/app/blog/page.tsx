@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import PageHero from "@/components/ui/PageHero";
 import BlogCard from "@/components/ui/BlogCard";
+import SectionHeading from "@/components/ui/SectionHeading";
 import { getPublishedBlogs } from "@/lib/blog";
 import { site } from "@/data/site";
 
@@ -20,17 +21,45 @@ export default async function BlogIndexPage() {
       <PageHero
         title="From the Newton Blog"
         subtitle="Stories, updates and reflections from our campuses and the wider school community."
-        badge="Blog"
         breadcrumbs={[{ label: "Blog" }]}
       />
-      <section className="bg-bg py-12 md:py-16">
+      <section className="py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
-          {posts.length === 0 ? (
-            <p className="rounded-lg border border-dashed border-border bg-bg-alt px-6 py-12 text-center text-sm text-text-muted">
-              No blog posts have been published yet. Please check back soon.
+          <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+            <SectionHeading
+              overline="Latest Posts"
+              title="Stories from around Newton"
+            />
+            <p className="max-w-xs text-[0.96875rem] leading-relaxed text-text-muted">
+              Written by our teachers and campus teams — classroom ideas,
+              event recaps and school news.
             </p>
+          </div>
+          {posts.length === 0 ? (
+            <div className="mt-9 flex flex-col items-center gap-4 rounded-card border border-hairline bg-surface px-6 py-14 text-center shadow-card">
+              <span className="flex h-12 w-12 items-center justify-center rounded-pill bg-primary-soft text-primary">
+                <svg
+                  viewBox="0 0 24 24"
+                  className="h-6 w-6"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.6"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  aria-hidden="true"
+                  focusable="false"
+                >
+                  <path d="M12 20h9" />
+                  <path d="M16.5 3.5a2.1 2.1 0 0 1 3 3L7 19l-4 1 1-4z" />
+                </svg>
+              </span>
+              <p className="max-w-sm text-sm text-text-muted">
+                No blog posts have been published yet. Our teachers are
+                writing — please check back soon.
+              </p>
+            </div>
           ) : (
-            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-9 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
               {posts.map((post) => (
                 <BlogCard key={post.slug} post={post} />
               ))}

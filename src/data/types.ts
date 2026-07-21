@@ -41,6 +41,8 @@ export interface Principal {
   name: string;
   /** 3–4 sentence welcome message. */
   message: string;
+  /** Admin-uploaded portrait (site-relative /uploads/… path); placeholder when absent. */
+  photoUrl?: string | null;
 }
 
 export interface Branch {
@@ -121,6 +123,8 @@ export interface GalleryItem {
   category: GalleryCategory;
   branch: BranchSlug;
   tone: PlaceholderTone;
+  /** Admin-uploaded photo (site-relative /uploads/… path); tone placeholder when absent. */
+  imageUrl?: string;
 }
 
 export type Department =

@@ -156,7 +156,7 @@ export function useSimpleForm<N extends string>({
 const LABEL_CLASSES = "mb-1.5 block text-sm font-medium text-text";
 
 function inputClasses(hasError: boolean): string {
-  return `w-full rounded-card border bg-bg px-3.5 py-3 text-sm text-text transition-colors ${
+  return `w-full rounded-btn border bg-surface px-3.5 py-3 text-base text-text transition-colors focus:border-primary/40 sm:text-sm ${
     hasError ? "border-error" : "border-border"
   }`;
 }

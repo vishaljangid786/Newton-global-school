@@ -44,6 +44,7 @@ export interface BranchOverrideRow {
   branch_slug: string;
   principal_name: string | null;
   principal_message: string | null;
+  principal_photo_url: string | null;
   students: number | null;
   campus_size: string | null;
   grades: string | null;

@@ -199,7 +199,13 @@ const facultyByBranch: Record<BranchSlug, BranchFaculty> = {
   },
 };
 
-/** Principal + staff directory for one branch. */
-export function getFacultyForBranch(slug: BranchSlug): BranchFaculty {
+/**
+ * Principal + staff directory for one branch. Only the three built-in
+ * campuses have a static directory — custom (admin-created) branches return
+ * undefined, and pages fall back to the branch's own principal data.
+ */
+export function getFacultyForBranch(
+  slug: BranchSlug
+): BranchFaculty | undefined {
   return facultyByBranch[slug];
 }

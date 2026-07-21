@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Badge from "./Badge";
 import Card from "./Card";
 import PlaceholderImage from "./PlaceholderImage";
 import { branchLabel, formatDate } from "@/lib/format";
@@ -23,20 +22,29 @@ export default function NewsCard({
 }: NewsCardProps) {
   const href = `/news/${post.slug}`;
   return (
-    <Card hoverLift className={`flex h-full flex-col ${className}`}>
-      <PlaceholderImage aspect="16/9" tone={tone} label="School News" />
+    <Card hoverLift className={`group flex h-full flex-col ${className}`}>
+      <div className="overflow-hidden">
+        <PlaceholderImage
+          aspect="16/9"
+          tone={tone}
+          label="School News"
+          className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
+        />
+      </div>
       <div className="flex flex-1 flex-col p-6">
-        <div className="flex flex-wrap items-center gap-3">
-          <time
-            dateTime={post.date}
-            className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-text-muted"
-          >
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-faint">
+          <time dateTime={post.date} className="font-medium">
             {formatDate(post.date)}
           </time>
-          <Badge>{branchLabel(post.branch)}</Badge>
+          <span aria-hidden="true" className="text-[#c3cbd8]">
+            ·
+          </span>
+          <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.04em] text-primary">
+            {branchLabel(post.branch)}
+          </span>
         </div>
-        <h3 className="mt-3 font-heading text-lg font-semibold leading-snug">
-          <Link href={href} className="text-text transition-colors hover:text-primary">
+        <h3 className="mt-2.5 font-heading text-lg font-semibold leading-snug">
+          <Link href={href} className="text-ink transition-colors hover:text-primary">
             {post.title}
           </Link>
         </h3>

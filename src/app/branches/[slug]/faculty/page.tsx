@@ -40,7 +40,16 @@ export default async function BranchFacultyPage({ params }: BranchPageProps) {
   const branch = await getBranchBySlugAsync(slug);
   if (!branch) notFound();
 
-  const { principal, staff } = getFacultyForBranch(branch.slug);
+  // Custom (admin-created) branches have no static directory — build the
+  // principal card from the branch's own data and show no staff grid yet.
+  const directory = getFacultyForBranch(branch.slug);
+  const principal = directory?.principal ?? {
+    name: branch.principal.name,
+    designation: "Principal",
+    qualification: "",
+    department: "Administration" as const,
+  };
+  const staff = directory?.staff ?? [];
 
   return (
     <>
@@ -69,26 +78,28 @@ export default async function BranchFacultyPage({ params }: BranchPageProps) {
       </section>
 
       {/* 2. Staff grid — §5.4 (photo 1:1, name, designation, qualification) */}
-      <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
-          <SectionHeading
-            overline="Our Teachers"
-            title="Meet the Team"
-            subtitle={`${staff.length} coordinators, subject leads and class teachers across departments.`}
-          />
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {staff.map((member, index) => (
-              <Reveal key={member.name} delay={(index % 3) * 100}>
-                <FacultyCard
-                  member={member}
-                  tone={PORTRAIT_TONES[index % PORTRAIT_TONES.length]}
-                  className="h-full"
-                />
-              </Reveal>
-            ))}
+      {staff.length > 0 ? (
+        <section className="border-t border-hairline py-12 md:py-14">
+          <div className="mx-auto max-w-content px-4">
+            <SectionHeading
+              overline="Our Teachers"
+              title="Meet the Team"
+              subtitle={`${staff.length} coordinators, subject leads and class teachers across departments.`}
+            />
+            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {staff.map((member, index) => (
+                <Reveal key={member.name} delay={(index % 3) * 100}>
+                  <FacultyCard
+                    member={member}
+                    tone={PORTRAIT_TONES[index % PORTRAIT_TONES.length]}
+                    className="h-full"
+                  />
+                </Reveal>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* 3. Careers strip */}
       <section className="bg-bg py-10 md:py-16">

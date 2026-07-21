@@ -228,7 +228,7 @@ export default async function BranchAboutPage({ params }: BranchPageProps) {
             {achievements.map((achievement) => (
               <li
                 key={achievement}
-                className="flex items-start gap-4 rounded-card bg-bg p-5 shadow-card"
+                className="flex items-start gap-4 rounded-card border border-hairline bg-surface p-5 shadow-card"
               >
                 <span
                   aria-hidden="true"

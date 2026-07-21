@@ -160,6 +160,106 @@ async function seedBranches(conn) {
   }
 }
 
+// One voice per role per campus so the branch pages have real content to
+// show. Seeded only when the table is empty — admin edits are never touched.
+const SEED_TESTIMONIALS = [
+  // City Center
+  {
+    branch_ref: "city-center",
+    author_name: "Aarav Saxena",
+    author_role: "student",
+    role_detail: "Grade 11 student",
+    quote:
+      "The robotics lab is open every afternoon and the teachers actually let us break things and fix them. I built my first line-following robot here in Grade 8 — now I mentor the juniors' club.",
+  },
+  {
+    branch_ref: "city-center",
+    author_name: "Amit Purohit",
+    author_role: "parent",
+    role_detail: "Parent, Grade 6",
+    quote:
+      "The teachers know my son as a person, not a roll number. His class teacher noticed his interest in robotics before we did, and now he lives for the after-school club.",
+  },
+  {
+    branch_ref: "city-center",
+    author_name: "Mrs. Nidhi Saxena",
+    author_role: "teacher",
+    role_detail: "Senior Physics Teacher, 14 years at Newton",
+    quote:
+      "I have taught at three schools and nowhere else have I been given this much room to teach beyond the textbook. Small classes mean I can run a demonstration for every concept, not just the exam-heavy ones.",
+  },
+  // Green Valley
+  {
+    branch_ref: "green-valley",
+    author_name: "Ishita Rawal",
+    author_role: "student",
+    role_detail: "Grade 8 student",
+    quote:
+      "My favourite class is the one under the neem tree — we do poetry there in winter. The kitchen garden lunch weeks are the best thing about this school, and I say that as someone who hates vegetables.",
+  },
+  {
+    branch_ref: "green-valley",
+    author_name: "Ritu Khandelwal",
+    author_role: "parent",
+    role_detail: "Parent, Grade 4",
+    quote:
+      "We moved cities twice and Newton made both transitions painless — same curriculum, same warmth, just a different campus. My daughter settled into Green Valley within a week.",
+  },
+  {
+    branch_ref: "green-valley",
+    author_name: "Mr. Kabir Anand",
+    author_role: "teacher",
+    role_detail: "Head of Environmental Science",
+    quote:
+      "Where else does a science teacher get a six-acre living laboratory? My students log rainfall, compost the canteen waste and argue about bird counts — that curiosity is the whole point of teaching.",
+  },
+  // Riverside
+  {
+    branch_ref: "riverside",
+    author_name: "Vihaan Choudhary",
+    author_role: "student",
+    role_detail: "Grade 5 student",
+    quote:
+      "I learnt to swim in school! Our coach says I started as a sinking stone and now I have two district medals. Also the library has beanbags, which is very important.",
+  },
+  {
+    branch_ref: "riverside",
+    author_name: "Shreya and Karan Malhotra",
+    author_role: "parent",
+    role_detail: "Parents, KG and Grade 2",
+    quote:
+      "As first-time school parents we had a hundred questions. The Riverside team answered every single one, and the phonics programme has our five-year-old reading bedtime stories to us.",
+  },
+  {
+    branch_ref: "riverside",
+    author_name: "Ms. Farah Qureshi",
+    author_role: "teacher",
+    role_detail: "Early Years Coordinator",
+    quote:
+      "Riverside lets us design the early years around joy — sensory garden mornings, phonics through song, assessment without pressure. Watching a four-year-old fall in love with books never gets old.",
+  },
+];
+
+async function seedTestimonials(conn) {
+  const [existing] = await conn.execute(
+    "SELECT COUNT(*) AS n FROM testimonials"
+  );
+  if (existing[0].n > 0) {
+    console.log("Testimonials already present — skipped.");
+    return;
+  }
+  console.log("Seeding testimonials…");
+  for (const t of SEED_TESTIMONIALS) {
+    await conn.execute(
+      `INSERT INTO testimonials
+         (branch_ref, author_name, author_role, role_detail, quote, status)
+       VALUES (?, ?, ?, ?, ?, 'published')`,
+      [t.branch_ref, t.author_name, t.author_role, t.role_detail, t.quote]
+    );
+  }
+  console.log(`  ✓ seeded ${SEED_TESTIMONIALS.length} testimonials`);
+}
+
 async function main() {
   const conn = await mysql.createConnection({
     host: process.env.DB_HOST ?? "127.0.0.1",
@@ -190,6 +290,8 @@ async function main() {
   }
 
   await seedBranches(conn);
+
+  await seedTestimonials(conn);
 
   await conn.end();
   console.log("Done. Change these passwords after first login.");

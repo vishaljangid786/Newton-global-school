@@ -15,6 +15,8 @@ export interface BranchEditorValues {
   slug: string;
   principalName: string;
   principalMessage: string;
+  /** Currently saved principal photo (override or branch), "" when none. */
+  principalPhotoUrl: string;
   students: string;
   campusSize: string;
   grades: string;
@@ -83,6 +85,46 @@ export default function BranchEditorForm({
           defaultValue={values.principalMessage}
           className={adminInputClasses}
         />
+      </div>
+
+      <div>
+        <FieldLabel htmlFor="principal_photo">Principal&apos;s photo</FieldLabel>
+        <div className="flex flex-wrap items-start gap-4">
+          {values.principalPhotoUrl ? (
+            <span className="block h-20 w-20 shrink-0 overflow-hidden rounded-card border border-hairline bg-bg-alt">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={values.principalPhotoUrl}
+                alt="Current principal photo"
+                className="h-full w-full object-cover"
+              />
+            </span>
+          ) : null}
+          <div className="min-w-[min(16rem,100%)] flex-1">
+            <input
+              id="principal_photo"
+              name="principal_photo"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              className={`${adminInputClasses} file:mr-3 file:rounded-btn file:border-0 file:bg-primary-soft file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary`}
+            />
+            <p className="mt-1 text-xs text-text-muted">
+              JPG, PNG or WebP up to 5 MB. Uploading replaces the current
+              photo; without one, a placeholder with initials is shown.
+            </p>
+            {values.principalPhotoUrl ? (
+              <label className="mt-2 flex items-center gap-2 text-sm text-text">
+                <input
+                  type="checkbox"
+                  name="principal_photo_remove"
+                  value="1"
+                  className="h-4 w-4 rounded border-border text-primary"
+                />
+                Remove the current photo
+              </label>
+            ) : null}
+          </div>
+        </div>
       </div>
 
       <div className="grid gap-5 sm:grid-cols-2">

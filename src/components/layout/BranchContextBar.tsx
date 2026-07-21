@@ -48,7 +48,7 @@ export default function BranchContextBar({ branch }: { branch: Branch }) {
             id="branch-switcher"
             value={branch.slug}
             onChange={handleSwitch}
-            className="rounded-card border border-border bg-bg px-3 py-1.5 text-sm text-text"
+            className="rounded-btn border border-border bg-surface px-3 py-1.5 text-base text-text sm:text-sm"
           >
             {(campuses.some((c) => c.slug === branch.slug)
               ? campuses

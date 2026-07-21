@@ -118,6 +118,55 @@ CREATE TABLE IF NOT EXISTS branches (
   CONSTRAINT fk_branches_user FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Principal photos (added after initial release — MariaDB 10.3+/MySQL 8
+-- support ADD COLUMN IF NOT EXISTS so re-running this file stays safe).
+ALTER TABLE branches
+  ADD COLUMN IF NOT EXISTS principal_photo_url VARCHAR(500) NULL AFTER principal_message;
+ALTER TABLE branch_overrides
+  ADD COLUMN IF NOT EXISTS principal_photo_url VARCHAR(500) NULL AFTER principal_message;
+
+-- ————————————————————————————————————————————————————————————————
+-- Gallery images (admin-uploaded photos per campus; merged ahead of the
+-- static placeholder gallery on the public pages)
+-- ————————————————————————————————————————————————————————————————
+CREATE TABLE IF NOT EXISTS gallery_images (
+  id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  branch_ref VARCHAR(40) NOT NULL,
+  category   ENUM('Sports', 'Annual Day', 'Classrooms', 'Trips') NOT NULL,
+  caption    VARCHAR(200) NOT NULL,
+  -- Site-relative path (e.g. /uploads/gallery-….webp) or an absolute URL.
+  image_url  VARCHAR(500) NOT NULL,
+  created_by INT UNSIGNED NULL,
+  created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_gallery_branch (branch_ref),
+  KEY idx_gallery_category (category),
+  CONSTRAINT fk_gallery_user FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ————————————————————————————————————————————————————————————————
+-- Testimonials (branch-wise voices from students, parents and teachers;
+-- 'all' rows appear on every campus page)
+-- ————————————————————————————————————————————————————————————————
+CREATE TABLE IF NOT EXISTS testimonials (
+  id          INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  -- 'all' = shown on every branch, otherwise a branch slug.
+  branch_ref  VARCHAR(40) NOT NULL DEFAULT 'all',
+  author_name VARCHAR(120) NOT NULL,
+  author_role ENUM('student', 'parent', 'teacher') NOT NULL,
+  -- Free-text line under the name, e.g. "Grade 9 student" / "Parent of two".
+  role_detail VARCHAR(120) NOT NULL DEFAULT '',
+  quote       TEXT NOT NULL,
+  status      ENUM('draft', 'published') NOT NULL DEFAULT 'published',
+  created_by  INT UNSIGNED NULL,
+  created_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  updated_at  DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_testimonials_branch (branch_ref),
+  KEY idx_testimonials_status (status),
+  CONSTRAINT fk_testimonials_user FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 -- ————————————————————————————————————————————————————————————————
 -- Blog posts (branch-wise + group/"parent"-wide)
 -- ————————————————————————————————————————————————————————————————

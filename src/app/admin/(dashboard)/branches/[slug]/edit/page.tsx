@@ -48,6 +48,7 @@ export default async function EditBranchPage({ params }: PageProps) {
     established: b.established ? String(b.established) : "",
     grades: b.grades ?? "",
     principalName: b.principal_name ?? "",
+    principalPhotoUrl: b.principal_photo_url ?? "",
     principalMessage: b.principal_message ?? "",
     students: b.students != null ? String(b.students) : "",
     campusSize: b.campus_size ?? "",

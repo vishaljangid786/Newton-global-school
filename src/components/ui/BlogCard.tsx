@@ -1,5 +1,4 @@
 import Link from "next/link";
-import Badge from "./Badge";
 import Card from "./Card";
 import PlaceholderImage from "./PlaceholderImage";
 import { getBranchBySlug } from "@/data/branches";
@@ -29,23 +28,31 @@ export default function BlogCard({ post }: { post: PublicBlogCard }) {
   const href = `/blog/${post.slug}`;
   const published = formatPublished(post.published_at);
   return (
-    <Card hoverLift className="flex h-full flex-col">
-      <PlaceholderImage
-        aspect="16/9"
-        tone={post.cover_tone as PlaceholderTone}
-        label="Blog"
-      />
+    <Card hoverLift className="group flex h-full flex-col">
+      <div className="overflow-hidden">
+        <PlaceholderImage
+          aspect="16/9"
+          tone={post.cover_tone as PlaceholderTone}
+          label="Blog"
+          className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
+        />
+      </div>
       <div className="flex flex-1 flex-col p-6">
-        <div className="flex flex-wrap items-center gap-3">
+        <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-faint">
           {published ? (
-            <span className="font-mono text-[0.6875rem] uppercase tracking-[0.12em] text-text-muted">
-              {published}
-            </span>
+            <>
+              <span className="font-medium">{published}</span>
+              <span aria-hidden="true" className="text-[#c3cbd8]">
+                ·
+              </span>
+            </>
           ) : null}
-          <Badge>{audienceLabel(post.branch_ref)}</Badge>
+          <span className="text-[0.6875rem] font-semibold uppercase tracking-[0.04em] text-primary">
+            {audienceLabel(post.branch_ref)}
+          </span>
         </div>
-        <h3 className="mt-3 font-heading text-lg font-semibold leading-snug">
-          <Link href={href} className="text-text transition-colors hover:text-primary">
+        <h3 className="mt-2.5 font-heading text-lg font-semibold leading-snug">
+          <Link href={href} className="text-ink transition-colors hover:text-primary">
             {post.title}
           </Link>
         </h3>

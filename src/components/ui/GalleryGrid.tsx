@@ -14,6 +14,31 @@ import { branches } from "@/data/branches";
 import { branchLabel } from "@/lib/format";
 import type { BranchSlug, GalleryItem } from "@/data/types";
 
+/** Uploaded photo when present, tone placeholder otherwise. */
+function GalleryImage({
+  item,
+  aspect,
+  className = "",
+}: {
+  item: GalleryItem;
+  aspect: "4/3" | "16/9";
+  className?: string;
+}) {
+  if (item.imageUrl) {
+    return (
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        src={item.imageUrl}
+        alt={item.caption}
+        loading="lazy"
+        style={{ aspectRatio: aspect.replace("/", " / ") }}
+        className={`w-full object-cover ${className}`}
+      />
+    );
+  }
+  return <PlaceholderImage aspect={aspect} tone={item.tone} className={className} />;
+}
+
 const CATEGORY_FILTERS = [
   "All",
   "Sports",
@@ -86,8 +111,8 @@ export default function GalleryGrid({
               onClick={() => setCategory(filter)}
               className={`rounded-pill px-4 py-1.5 text-sm transition-colors ${
                 category === filter
-                  ? "bg-accent font-semibold text-primary-dark"
-                  : "bg-bg-alt font-medium text-text hover:bg-border/50"
+                  ? "bg-primary font-semibold text-white"
+                  : "border border-border bg-surface font-medium text-text-muted hover:border-primary/40 hover:text-primary"
               }`}
             >
               {filter}
@@ -109,7 +134,7 @@ export default function GalleryGrid({
               onChange={(event) =>
                 setBranchFilter(event.target.value as BranchSlug | "all")
               }
-              className="rounded-card border border-border bg-bg px-3 py-2 text-sm text-text"
+              className="rounded-btn border border-border bg-surface px-3 py-2 text-base text-text sm:text-sm"
             >
               <option value="all">All campuses</option>
               {branches.map((branch) => (
@@ -138,9 +163,9 @@ export default function GalleryGrid({
                 className="group block w-full rounded-card text-left"
               >
                 <span className="block overflow-hidden rounded-card">
-                  <PlaceholderImage
+                  <GalleryImage
+                    item={item}
                     aspect="4/3"
-                    tone={item.tone}
                     className="transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                   />
                 </span>
@@ -308,11 +333,20 @@ function Lightbox({ items, index, onNavigate, onClose }: LightboxProps) {
 
         <figure className="w-full max-w-3xl">
           <div className="overflow-hidden rounded-card">
-            <PlaceholderImage
-              aspect="16/9"
-              tone={item.tone}
-              label={item.category}
-            />
+            {item.imageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={item.imageUrl}
+                alt={item.caption}
+                className="max-h-[70vh] w-full object-contain"
+              />
+            ) : (
+              <PlaceholderImage
+                aspect="16/9"
+                tone={item.tone}
+                label={item.category}
+              />
+            )}
           </div>
           <figcaption className="mt-3 text-center text-sm text-white">
             {item.caption}

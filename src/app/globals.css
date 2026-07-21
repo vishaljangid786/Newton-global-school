@@ -1,42 +1,54 @@
 @import "tailwindcss";
 
 /*
- * Sunrise Editorial — design language
- * Navy + amber brand palette (unchanged) on a warm paper base, with a serif
- * display voice (Fraunces), monospace labels (IBM Plex Mono), hairline rules
- * instead of heavy shadows, and generous editorial whitespace.
+ * Newton Corporate Light — design language
+ * Royal-blue brand on a near-white cloud base: hairline-bordered sections,
+ * white cards with whisper shadows, Sora display voice + Instrument Sans
+ * body, dash-line eyebrows and two dark counterpoints (CTA card, footer).
  * See docs/design-language.md.
  */
 
 @theme {
-  /* Brand palette — unchanged navy + amber (design.md §2.1) */
-  --color-primary: #1e3a8a;
-  --color-primary-dark: #16276b;
-  --color-accent: #f59e0b;
-  --color-accent-ink: #7a4d06; /* accent, darkened for text on paper (≥4.5:1) */
+  /* Brand palette — royal blue */
+  --color-primary: #3e62d6;
+  --color-primary-dark: #2c49a8;
+  --color-primary-soft: #eaf0fe; /* tinted washes — chips, icon wells */
+  --color-accent: #4c6fe6; /* gradient start; dots, plus-marks, glows */
+  --color-accent-ink: #2c49a8; /* accent, darkened for text on white (≥4.5:1) */
 
-  /* Warm editorial neutrals — "paper & ink" */
-  --color-bg: #fbfaf6; /* warm paper */
-  --color-bg-alt: #f2ece0; /* warm sand — alternating sections */
-  --color-text: #1c1b17; /* warm ink */
-  --color-text-muted: #6d685c; /* warm gray */
-  --color-border: #ddd6c6; /* hairline / input border */
-  --color-hairline: #e7e1d4; /* lighter rules */
+  /* Cloud neutrals */
+  --color-bg: #f8fafc; /* page base */
+  --color-bg-alt: #f4f7fb; /* hero band, tinted wells */
+  --color-surface: #ffffff; /* cards, panels, inputs */
+  --color-panel: #eff3fc; /* tinted stats panel */
+  --color-text: #26303f;
+  --color-ink: #1b2536; /* headings, strong text */
+  --color-text-muted: #54606f;
+  --color-faint: #8791a0; /* meta lines, uppercase micro-labels */
+  --color-border: #e1e7f0;
+  --color-hairline: #eaeef3; /* section rules, card borders */
+
+  /* Dark counterpoints */
+  --color-dark: #1e2a44; /* CTA card */
+  --color-footer: #161f33;
 
   --color-success: #15803d;
   --color-error: #b91c1c;
 
-  /* Radius — crisper editorial edges (design.md §2.3, refined) */
-  --radius-card: 0.25rem; /* 4px */
-  --radius-lg: 0.75rem; /* soft panels */
+  /* Radius — crisp corporate surfaces */
+  --radius-btn: 0.5625rem; /* 9px — buttons, chips */
+  --radius-card: 0.875rem; /* 14px — cards */
+  --radius-lg: 1rem; /* 16px — hero frame, gallery tiles */
+  --radius-xl: 1.375rem; /* 22px — CTA card */
   --radius-pill: 999px;
 
-  /* Shadow — barely-there; structure comes from hairlines */
-  --shadow-card: 0 1px 2px rgba(28, 27, 23, 0.05);
-  --shadow-card-hover: 0 20px 44px -28px rgba(28, 27, 23, 0.4);
+  /* Shadows — whisper depth, structure comes from hairlines */
+  --shadow-card: 0 6px 20px rgba(30, 45, 80, 0.04);
+  --shadow-card-hover: 0 18px 40px rgba(20, 28, 44, 0.15);
+  --shadow-frame: 0 16px 44px rgba(30, 45, 80, 0.1); /* hero/story frames */
 
-  /* Layout — design.md §3 */
-  --container-content: 75rem; /* 1200px */
+  /* Layout */
+  --container-content: 72.5rem; /* 1160px */
   --breakpoint-sm: 30rem;
   --breakpoint-md: 48rem;
   --breakpoint-lg: 64rem;
@@ -45,14 +57,23 @@
 
 @theme inline {
   /* Fonts — variables set by next/font in the root layout */
-  --font-heading: var(--font-fraunces), Georgia, "Times New Roman", serif;
-  --font-body: var(--font-inter), system-ui, sans-serif;
-  --font-mono: var(--font-plex-mono), ui-monospace, SFMono-Regular, monospace;
-  --font-sans: var(--font-inter), system-ui, sans-serif;
+  --font-heading: var(--font-sora), var(--font-instrument), system-ui, sans-serif;
+  --font-body: var(--font-instrument), system-ui, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --font-sans: var(--font-instrument), system-ui, sans-serif;
+}
+
+/* Brand gradient — logo tile, Apply buttons, gallery CTA. */
+:root {
+  --gradient-brand: linear-gradient(135deg, #4c6fe6, #6e8ef2);
 }
 
 @layer base {
   html {
+    /* Guard against stray horizontal page overflow (mobile browsers zoom the
+       whole page out to fit it). `clip` keeps position:sticky working. */
+    overflow-x: clip;
+
     @media (prefers-reduced-motion: no-preference) {
       scroll-behavior: smooth;
     }
@@ -61,7 +82,7 @@
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
-    font-family: var(--font-inter), system-ui, sans-serif;
+    font-family: var(--font-instrument), system-ui, sans-serif;
     line-height: 1.65;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -73,36 +94,37 @@
   h4,
   h5,
   h6 {
-    font-family: var(--font-fraunces), Georgia, "Times New Roman", serif;
-    font-optical-sizing: auto;
-    line-height: 1.12;
+    font-family: var(--font-sora), var(--font-instrument), system-ui, sans-serif;
+    line-height: 1.15;
     font-weight: 600;
-    letter-spacing: -0.014em;
-    color: var(--color-text);
+    letter-spacing: -0.02em;
+    color: var(--color-ink);
   }
 
   h1 {
-    letter-spacing: -0.02em;
+    letter-spacing: -0.03em;
+    line-height: 1.07;
   }
 
-  /* Editorial eyebrow — small mono, uppercase, letter-spaced. */
+  /* Corporate eyebrow — small bold sans, uppercase, widely letter-spaced.
+     Call sites usually pair it with a 26px dash (SectionHeading). */
   .eyebrow {
-    font-family: var(--font-plex-mono), ui-monospace, monospace;
-    font-size: 0.6875rem;
+    font-family: var(--font-instrument), system-ui, sans-serif;
+    font-size: 0.75rem;
     line-height: 1;
-    font-weight: 500;
+    font-weight: 600;
     text-transform: uppercase;
-    letter-spacing: 0.22em;
+    letter-spacing: 0.14em;
   }
 
-  /* Focus — design.md §7: 2px accent outline, never removed */
+  /* Focus — design.md §7: 2px primary outline, never removed */
   :focus-visible {
-    outline: 2px solid var(--color-accent);
+    outline: 2px solid var(--color-primary);
     outline-offset: 2px;
   }
 
   ::selection {
-    background-color: color-mix(in srgb, var(--color-accent) 28%, transparent);
+    background-color: #d6e0fb;
     color: var(--color-text);
   }
 }
@@ -118,14 +140,14 @@
   line-height: 1.7;
 }
 .admin-prose h2 {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-heading);
   font-size: 1.5rem;
-  font-weight: 600;
+  font-weight: 700;
   line-height: 1.2;
   margin-top: 1.75rem;
 }
 .admin-prose h3 {
-  font-family: var(--font-fraunces), Georgia, serif;
+  font-family: var(--font-heading);
   font-size: 1.25rem;
   font-weight: 600;
   margin-top: 1.5rem;
@@ -163,33 +185,36 @@
 }
 
 /*
- * Admin theme — a self-contained clean/neutral design system for the dashboard,
- * decoupled from the public site's warm editorial identity. Re-maps the shared
- * design tokens to a slate + blue palette and forces Inter (no serif/mono),
- * scoped to `.admin-scope` so the public site is untouched.
+ * Admin theme — the dashboard now shares the public "Corporate Light"
+ * identity: royal blue on a cloud canvas, hairline borders, Sora headings.
+ * Scoped to `.admin-scope` so the two surfaces can still diverge later.
  */
 .admin-scope {
   --color-bg: #ffffff;
-  --color-bg-alt: #f8fafc; /* slate-50 canvas */
-  --color-text: #0f172a; /* slate-900 */
-  --color-text-muted: #64748b; /* slate-500 */
-  --color-border: #e2e8f0; /* slate-200 */
-  --color-hairline: #eef2f6; /* slate-100 */
-  --color-primary: #2563eb; /* blue-600 */
-  --color-primary-dark: #1d4ed8; /* blue-700 */
-  --color-accent: #2563eb;
-  --color-accent-ink: #1d4ed8;
+  --color-bg-alt: #f6f8fb; /* cloud canvas */
+  --color-surface: #ffffff;
+  --color-panel: #eff3fc;
+  --color-text: #26303f;
+  --color-ink: #1b2536;
+  --color-faint: #8791a0;
+  --color-text-muted: #54606f;
+  --color-border: #e1e7f0;
+  --color-hairline: #eaeef3;
+  --color-primary: #3e62d6;
+  --color-primary-dark: #2c49a8;
+  --color-primary-soft: #eaf0fe;
+  --color-accent: #4c6fe6;
+  --color-accent-ink: #2c49a8;
   --color-success: #16a34a;
   --color-error: #dc2626;
-  --radius-card: 0.5rem; /* softer inputs/buttons */
-  /* Drop the editorial Plex Mono for a neutral system monospace. */
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  --radius-card: 0.875rem;
+  --radius-lg: 1rem;
 
-  font-family: var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-instrument), system-ui, sans-serif;
   color: var(--color-text);
 }
 
-/* Neutralise the editorial serif/mono type inside the admin. */
+/* Sora headings inside the admin, slightly tighter than the public site. */
 .admin-scope h1,
 .admin-scope h2,
 .admin-scope h3,
@@ -197,15 +222,15 @@
 .admin-scope h5,
 .admin-scope h6,
 .admin-scope .font-heading {
-  font-family: var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-sora), var(--font-instrument), system-ui, sans-serif;
   font-weight: 600;
-  letter-spacing: -0.012em;
+  letter-spacing: -0.02em;
 }
 
 .admin-scope .eyebrow {
-  font-family: var(--font-inter), system-ui, sans-serif;
+  font-family: var(--font-instrument), system-ui, sans-serif;
   font-size: 0.6875rem;
   font-weight: 600;
-  letter-spacing: 0.06em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
 }

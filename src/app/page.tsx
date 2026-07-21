@@ -1,9 +1,8 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
-import type { ReactNode } from "react";
-import BranchCard from "@/components/ui/BranchCard";
 import ButtonLink from "@/components/ui/Button";
-import Card from "@/components/ui/Card";
+import BranchCard from "@/components/ui/BranchCard";
 import CTABand from "@/components/ui/CTABand";
 import NewsCard from "@/components/ui/NewsCard";
 import PlaceholderImage from "@/components/ui/PlaceholderImage";
@@ -33,7 +32,8 @@ const totalStudents = branches.reduce(
 );
 
 const totalFaculty = branches.reduce(
-  (sum, branch) => sum + 1 + getFacultyForBranch(branch.slug).staff.length,
+  (sum, branch) =>
+    sum + 1 + (getFacultyForBranch(branch.slug)?.staff.length ?? 0),
   0
 );
 
@@ -53,146 +53,129 @@ const galleryTeaser = branches.flatMap((branch, index) =>
   getGalleryItems({ branch: branch.slug }).slice(index * 2, index * 2 + 2)
 );
 
+/** Mosaic placement per teaser slot — two tall corners, one wide base tile. */
+const GALLERY_SPANS = [
+  "md:col-start-1 md:row-start-1 md:row-span-2",
+  "md:col-start-2 md:row-start-1",
+  "md:col-start-3 md:row-start-1 md:row-span-2",
+  "md:col-start-2 md:row-start-2",
+  "md:col-span-2 md:col-start-1 md:row-start-3",
+  "md:col-start-3 md:row-start-3",
+];
+
 const BRANCH_TONES: PlaceholderTone[] = ["primary", "forest", "dusk"];
 const NEWS_TONES: PlaceholderTone[] = ["primary", "forest", "dusk"];
 
-/* ——— §4.1.3 Why choose us — icon cards with inline SVG icons ——— */
+/* ——— §4.1.3 Why choose us — numbered editorial columns ——— */
 
-interface WhyCard {
-  title: string;
-  description: string;
-  icon: ReactNode;
-}
-
-const ICON_PROPS = {
-  viewBox: "0 0 24 24",
-  className: "h-6 w-6",
-  fill: "none",
-  stroke: "currentColor",
-  strokeWidth: 1.8,
-  strokeLinecap: "round",
-  strokeLinejoin: "round",
-  "aria-hidden": true,
-  focusable: false,
-} as const;
-
-const whyChooseUs: WhyCard[] = [
+const whyChooseUs = [
   {
     title: "Experienced Faculty",
     description:
       "Qualified, long-serving teachers who know every child by name, backed by regular training and mentorship programmes.",
-    icon: (
-      <svg {...ICON_PROPS}>
-        <path d="M12 4.5 2.5 9l9.5 4.5L21.5 9 12 4.5Z" />
-        <path d="M6.5 11.4v3.9c0 1.3 2.5 2.7 5.5 2.7s5.5-1.4 5.5-2.7v-3.9" />
-        <path d="M21.5 9v5" />
-      </svg>
-    ),
   },
   {
     title: "Safe Campus",
     description:
       "CCTV-monitored campuses, GPS-tracked transport and a staffed medical room at every branch, so parents can relax.",
-    icon: (
-      <svg {...ICON_PROPS}>
-        <path d="M12 3.5 5 6.1v5c0 4.2 2.9 7.4 7 8.9 4.1-1.5 7-4.7 7-8.9v-5L12 3.5Z" />
-        <path d="m9 11.6 2.2 2.2 3.8-4" />
-      </svg>
-    ),
   },
   {
     title: "Modern Labs",
     description:
       "Science, computer and robotics labs plus smart classrooms turn every lesson into something children can touch and build.",
-    icon: (
-      <svg {...ICON_PROPS}>
-        <path d="M9.5 3.5h5" />
-        <path d="M10.5 3.5v5.1L5.9 16.5a2.6 2.6 0 0 0 2.3 3.9h7.6a2.6 2.6 0 0 0 2.3-3.9L13.5 8.6V3.5" />
-        <path d="M7.5 14.5h9" />
-      </svg>
-    ),
   },
   {
     title: "Sports & Arts",
     description:
       "Fields, tracks, pools, music rooms and art studios give every child a stage — and the timetable makes room for all of it.",
-    icon: (
-      <svg {...ICON_PROPS}>
-        <path d="M8 4.5h8v4.8a4 4 0 0 1-8 0V4.5Z" />
-        <path d="M8 6H4.5v1.2A3.3 3.3 0 0 0 8 10.4" />
-        <path d="M16 6h3.5v1.2a3.3 3.3 0 0 1-3.5 3.2" />
-        <path d="M12 13.3v3.2" />
-        <path d="M9 20.5h6" />
-        <path d="m9.8 20.5.7-4h3l.7 4" />
-      </svg>
-    ),
   },
 ];
+
+/** Split section header: dash-eyebrow heading left, lede right (mockup). */
+function SplitHeader({
+  overline,
+  title,
+  lede,
+}: {
+  overline: string;
+  title: string;
+  lede: string;
+}) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-4">
+      <SectionHeading overline={overline} title={title} />
+      <p className="max-w-xs text-[0.96875rem] leading-relaxed text-text-muted">
+        {lede}
+      </p>
+    </div>
+  );
+}
 
 export default function HomePage() {
   return (
     <>
-      {/* ——— §4.1.1 Hero ——— */}
-      <section className="relative isolate overflow-hidden bg-primary-dark text-white">
-        <PlaceholderImage fill tone="dusk" />
-        <div
-          aria-hidden="true"
-          className="absolute inset-0"
-          style={{
-            backgroundImage:
-              "linear-gradient(100deg, var(--color-primary-dark) 8%, color-mix(in srgb, var(--color-primary-dark) 80%, transparent) 52%, color-mix(in srgb, var(--color-primary) 30%, transparent) 100%)",
-          }}
-        />
-        <div className="relative mx-auto flex w-full max-w-content flex-col items-start px-4 py-20 md:py-28 lg:py-32">
-          <p className="eyebrow flex items-center gap-2.5 text-accent">
-            <span aria-hidden="true" className="h-px w-8 bg-accent" />
-            Welcome to {site.name}
-          </p>
-          <h1 className="mt-6 max-w-4xl text-[2.5rem] leading-[1.03] md:text-[4rem]">
-            {site.tagline}
-          </h1>
-          <p className="mt-6 max-w-2xl text-lg leading-relaxed text-white/85">
-            Three campuses across Jaipur, one promise — a safe, joyful school
-            where every child is known, challenged and celebrated.
-          </p>
-          <div className="mt-9 flex flex-wrap gap-4">
-            <ButtonLink href="/branches">Explore Branches</ButtonLink>
-            <ButtonLink href="/admissions" variant="accent">
-              Apply for Admission
-            </ButtonLink>
+      {/* ——— §4.1.1 Hero — framed full-bleed image with overlay + fact strip ——— */}
+      <section className="border-b border-[#e6ebf2] bg-bg-alt">
+        <div className="mx-auto max-w-content px-4 pb-11 pt-8 md:pt-10">
+          <div className="relative overflow-hidden rounded-lg border border-[#e1e7f0] shadow-frame">
+            <div className="relative">
+              <PlaceholderImage fill tone="dusk" />
+              {/* Left-to-right dark wash so the copy stays readable */}
+              <div
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(16,24,44,0.84),rgba(16,24,44,0.5)_56%,rgba(16,24,44,0.12))]"
+              />
+              {/* Student cutout anchored to the right edge of the hero frame */}
+              <Image
+                src="/images/hero-student.webp"
+                alt="Smiling Newton Global School student holding her books"
+                width={1110}
+                height={1124}
+                priority
+                className="pointer-events-none absolute bottom-0 right-6 hidden h-[94%] w-auto object-contain object-bottom drop-shadow-[0_18px_36px_rgba(10,16,32,0.45)] lg:block xl:right-14"
+              />
+              <div className="relative flex min-h-[26rem] max-w-2xl flex-col justify-center px-6 py-10 md:min-h-[29.25rem] md:px-14">
+                <p className="eyebrow flex items-center gap-2.5 text-[#a9c0f5]">
+                  <span
+                    aria-hidden="true"
+                    className="h-3.5 w-3.5 rounded-[4px] bg-[#6e8ef2]"
+                  />
+                  {site.name} · Est. {site.established}
+                </p>
+                <h1 className="mt-4 text-[2.375rem] leading-[1.07] text-white md:text-[3.25rem]">
+                  {site.tagline}
+                </h1>
+                <p className="mt-4 max-w-md text-base leading-relaxed text-[#d5dcea] md:text-[1.0625rem]">
+                  Three campuses across Jaipur, one promise — a safe, joyful
+                  school where every child is known, challenged and celebrated.
+                </p>
+                <div className="mt-7 flex flex-wrap gap-3">
+                  <ButtonLink href="/branches">Explore Branches</ButtonLink>
+                  <Link
+                    href="/admissions"
+                    className="inline-flex items-center justify-center gap-2 rounded-btn border border-white/40 bg-white/10 px-6 py-3 text-[0.9375rem] font-semibold text-white transition duration-200 hover:bg-white/20"
+                  >
+                    Apply for Admission
+                  </Link>
+                </div>
+              </div>
+            </div>
           </div>
-          {/* Editorial mono meta row */}
-          <dl className="mt-12 flex flex-wrap items-center gap-x-8 gap-y-3 border-t border-white/15 pt-6 font-mono text-[0.6875rem] uppercase tracking-[0.18em] text-white/70">
-            <div>
-              <dt className="sr-only">Established</dt>
-              <dd>
-                <span className="text-accent">Est.</span> {site.established}
-              </dd>
-            </div>
-            <div>
-              <dt className="sr-only">Campuses</dt>
-              <dd>{branches.length} Campuses</dd>
-            </div>
-            <div>
-              <dt className="sr-only">Location</dt>
-              <dd>Jaipur, Rajasthan</dd>
-            </div>
-          </dl>
         </div>
       </section>
 
       {/* ——— §4.1.2 Branch selector strip (F1 entry point) ——— */}
-      <section className="bg-bg py-10 md:py-16">
+      <section className="py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <Reveal>
-            <SectionHeading
+            <SplitHeader
               overline="Our Campuses"
               title="Find your nearest campus"
-              subtitle="Every campus shares the Newton curriculum and values — pick the one closest to home."
+              lede="Every campus shares the Newton curriculum and values — pick the one closest to home."
             />
           </Reveal>
           <Reveal delay={100}>
-            <ul className="mt-10 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0">
+            <ul className="relative mt-9 flex snap-x snap-mandatory gap-6 overflow-x-auto pb-4 lg:grid lg:grid-cols-3 lg:overflow-visible lg:pb-0">
               {branches.map((branch, index) => (
                 <li
                   key={branch.slug}
@@ -209,33 +192,34 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ——— §4.1.3 Why choose us ——— */}
-      <section className="bg-bg-alt py-10 md:py-16">
+      {/* ——— §4.1.3 Why choose us — numbered editorial columns ——— */}
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <Reveal>
             <SectionHeading
+              align="center"
               overline="Why Newton"
               title="Why families choose us"
               subtitle="Four things you will notice on your very first campus visit."
             />
           </Reveal>
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+          <div className="mt-11 grid gap-x-6 gap-y-9 sm:grid-cols-2 lg:grid-cols-4">
             {whyChooseUs.map((item, index) => (
               <Reveal key={item.title} delay={index * 100} className="h-full">
-                <Card className="h-full p-6">
-                  <span
+                <div className="h-full border-t-2 border-[#e1e7f2] pt-4">
+                  <p
                     aria-hidden="true"
-                    className="flex h-12 w-12 items-center justify-center rounded-pill bg-primary/10 text-primary"
+                    className="font-heading text-[0.9375rem] font-semibold text-accent"
                   >
-                    {item.icon}
-                  </span>
-                  <h3 className="mt-4 font-heading text-lg font-semibold text-text">
+                    {String(index + 1).padStart(2, "0")}
+                  </p>
+                  <h3 className="mt-3 font-heading text-lg font-semibold text-ink">
                     {item.title}
                   </h3>
-                  <p className="mt-2 text-sm text-text-muted">
+                  <p className="mt-2.5 text-sm leading-relaxed text-text-muted">
                     {item.description}
                   </p>
-                </Card>
+                </div>
               </Reveal>
             ))}
           </div>
@@ -243,31 +227,32 @@ export default function HomePage() {
       </section>
 
       {/* ——— §4.1.4 About preview ——— */}
-      <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto grid max-w-content items-center gap-10 px-4 md:grid-cols-2 lg:gap-16">
+      <section className="border-t border-hairline py-12 md:py-14">
+        <div className="mx-auto grid max-w-content items-center gap-10 px-4 md:grid-cols-2 lg:gap-14">
           <Reveal>
-            <div className="overflow-hidden rounded-card shadow-card">
-              <PlaceholderImage
-                aspect="4/3"
-                tone="mist"
-                label={`Campus life since ${site.established}`}
-              />
+            <div className="relative">
+              <div className="overflow-hidden rounded-lg shadow-frame">
+                <PlaceholderImage aspect="4/3" tone="mist" />
+              </div>
+              <span className="absolute bottom-4 left-4 rounded-btn border border-hairline bg-surface px-3.5 py-2 text-xs font-medium text-text">
+                Campus life since {site.established}
+              </span>
             </div>
           </Reveal>
           <Reveal delay={120}>
             <SectionHeading
               align="left"
-              overline="About Us"
+              overline="Our Story"
               title={`One school family since ${site.established}`}
             />
-            <p className="mt-5 text-base text-text">
-              Newton Global School opened its gates in{" "}
-              {site.established} with a handful of classrooms and a simple
-              belief — that a great school should feel like a family. That
-              belief now guides {branches.length} campuses across Jaipur, each
-              rooted in its own neighbourhood yet part of one close-knit group.
+            <p className="mt-5 text-base leading-[1.7] text-[#4a5563]">
+              Newton Global School opened its gates in {site.established} with
+              a handful of classrooms and a simple belief — that a great school
+              should feel like a family. That belief now guides{" "}
+              {branches.length} campuses across Jaipur, each rooted in its own
+              neighbourhood yet part of one close-knit group.
             </p>
-            <p className="mt-4 text-base text-text">
+            <p className="mt-3.5 text-base leading-[1.7] text-[#4a5563]">
               Every campus follows the same curriculum, the same values and the
               same goal: confident, kind learners. Small classes, well-equipped
               labs and a full calendar of sport, art and community work keep
@@ -275,7 +260,7 @@ export default function HomePage() {
             </p>
             <Link
               href="/about"
-              className="mt-6 inline-block text-sm font-semibold text-primary hover:underline"
+              className="mt-6 inline-block text-[0.9375rem] font-semibold text-primary hover:text-primary-dark"
             >
               Read more about our story
               <span aria-hidden="true"> →</span>
@@ -285,21 +270,24 @@ export default function HomePage() {
       </section>
 
       {/* ——— §4.1.5 Stats band ——— */}
-      <section aria-label="Newton Global School at a glance">
+      <section
+        aria-label="Newton Global School at a glance"
+        className="border-t border-hairline"
+      >
         <StatsBand stats={stats} />
       </section>
 
       {/* ——— §4.1.6 Latest news & events ——— */}
-      <section className="bg-bg-alt py-10 md:py-16">
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <Reveal>
-            <SectionHeading
-              overline="Latest Updates"
+            <SplitHeader
+              overline="Newsroom"
               title="News from our campuses"
-              subtitle="A snapshot of what our students and teachers have been up to."
+              lede="A snapshot of what our students and teachers have been up to."
             />
           </Reveal>
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-9 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
             {latestNews.map((post, index) => (
               <Reveal key={post.slug} delay={index * 100} className="h-full">
                 <NewsCard
@@ -310,7 +298,7 @@ export default function HomePage() {
               </Reveal>
             ))}
           </div>
-          <div className="mt-10 text-center">
+          <div className="mt-9 text-center">
             <ButtonLink href="/news" variant="outline">
               View all news &amp; events
             </ButtonLink>
@@ -318,21 +306,18 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ——— §4.1.7 Testimonials ——— */}
-      <section className="bg-bg py-10 md:py-16">
+      {/* ——— §4.1.7 Testimonials — large centered quote ——— */}
+      <section className="border-t border-hairline py-14 md:py-16">
         <div className="mx-auto max-w-content px-4">
+          <h2 className="sr-only">What parents say about Newton</h2>
           <Reveal>
-            <SectionHeading
-              overline="Testimonials"
-              title="What parents say about Newton"
-            />
-            <TestimonialCarousel items={homeTestimonials} className="mt-10" />
+            <TestimonialCarousel items={homeTestimonials} />
           </Reveal>
         </div>
       </section>
 
-      {/* ——— §4.1.8 Gallery teaser ——— */}
-      <section className="bg-bg-alt py-10 md:py-16">
+      {/* ——— §4.1.8 Gallery teaser — mosaic with overlay captions ——— */}
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <Reveal>
             <SectionHeading
@@ -341,28 +326,40 @@ export default function HomePage() {
               subtitle="Sports days, stage lights, lab benches and everything in between."
             />
           </Reveal>
-          <div className="mt-10 grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-4">
+          <div className="mt-9 grid grid-cols-2 gap-3.5 md:grid-cols-3 md:grid-rows-[repeat(3,11.625rem)]">
             {galleryTeaser.map((item, index) => (
-              <Reveal key={item.id} delay={index * 80}>
-                <div className="overflow-hidden rounded-card shadow-card">
-                  <PlaceholderImage
-                    aspect="4/3"
-                    tone={item.tone}
-                    label={item.caption}
-                  />
+              <Reveal
+                key={item.id}
+                delay={index * 80}
+                className={GALLERY_SPANS[index % GALLERY_SPANS.length]}
+              >
+                <div className="group relative h-full min-h-[10rem] overflow-hidden rounded-lg transition-[transform,box-shadow] duration-300 hover:-translate-y-1 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                  <PlaceholderImage fill tone={item.tone} />
+                  <span className="absolute left-3 top-3 rounded-pill bg-white/90 px-2.5 py-1.5 text-[0.65625rem] font-semibold uppercase tracking-[0.05em] text-primary backdrop-blur-sm">
+                    {item.category}
+                  </span>
+                  <p className="absolute inset-x-0 bottom-0 bg-[linear-gradient(transparent,rgba(20,28,44,0.8))] px-4 pb-3.5 pt-9 text-[0.8125rem] font-medium text-white">
+                    {item.caption}
+                  </p>
                 </div>
               </Reveal>
             ))}
           </div>
-          <div className="mt-10 text-center">
-            <ButtonLink href="/gallery">View Full Gallery</ButtonLink>
+          <div className="mt-9 text-center">
+            <ButtonLink href="/gallery" variant="accent">
+              View Full Gallery
+            </ButtonLink>
           </div>
         </div>
       </section>
 
       {/* ——— §4.1.9 CTA band ——— */}
-      <section aria-label="Admissions call to action">
+      <section
+        aria-label="Admissions call to action"
+        className="border-t border-hairline"
+      >
         <CTABand
+          eyebrow="Enrollment Open"
           title={`Admissions open for ${site.admissionYear}`}
           subtitle="Seats in Nursery, KG and Grade 1 fill quickly. Begin with a simple online inquiry and our admissions team will guide you the rest of the way."
         />

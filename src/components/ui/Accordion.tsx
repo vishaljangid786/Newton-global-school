@@ -66,13 +66,18 @@ export default function Accordion({
   };
 
   return (
-    <div className={className}>
+    <div
+      className={`overflow-hidden rounded-card border border-hairline bg-surface shadow-card ${className}`}
+    >
       {items.map((item, index) => {
         const open = openId === item.id;
         const buttonId = `${baseId}-${item.id}-button`;
         const panelId = `${baseId}-${item.id}-panel`;
         return (
-          <div key={item.id} className="border-b border-border">
+          <div
+            key={item.id}
+            className="border-b border-hairline px-5 last:border-b-0"
+          >
             <HeadingTag className="m-0">
               <button
                 ref={(node) => {
@@ -91,7 +96,9 @@ export default function Accordion({
                 <span>{item.heading}</span>
                 <span
                   aria-hidden="true"
-                  className="shrink-0 font-heading text-xl leading-none text-primary"
+                  className={`flex h-7 w-7 shrink-0 items-center justify-center rounded-pill text-lg leading-none transition-colors ${
+                    open ? "bg-primary text-white" : "bg-primary-soft text-primary"
+                  }`}
                 >
                   {open ? "−" : "+"}
                 </span>

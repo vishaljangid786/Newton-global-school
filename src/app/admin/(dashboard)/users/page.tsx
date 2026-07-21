@@ -44,7 +44,41 @@ export default async function UsersPage() {
         {rows.length === 0 ? (
           <EmptyState>No users found.</EmptyState>
         ) : (
-          <AdminCard className="overflow-x-auto p-0">
+          <>
+            {/* Mobile: stacked cards (the table needs ~640px, so hide it here) */}
+            <ul className="space-y-3 sm:hidden">
+              {rows.map((u) => (
+                <li key={u.id}>
+                  <AdminCard className="p-4">
+                    <div className="flex flex-wrap items-start justify-between gap-2">
+                      <div className="min-w-0">
+                        <p className="font-medium text-text">{u.name}</p>
+                        <p className="truncate text-xs text-text-muted">
+                          {u.email}
+                        </p>
+                      </div>
+                      <StatusBadge
+                        tone={u.role === "super_admin" ? "published" : "info"}
+                      >
+                        {roleLabel(u.role)}
+                      </StatusBadge>
+                    </div>
+                    <p className="mt-2 text-sm text-text-muted">
+                      Campus:{" "}
+                      <span className="text-text">
+                        {u.branch_slug ? branchName(u.branch_slug) : "—"}
+                      </span>
+                    </p>
+                    <div className="mt-3 border-t border-hairline pt-3">
+                      <UserRowActions id={u.id} isSelf={u.id === me.id} />
+                    </div>
+                  </AdminCard>
+                </li>
+              ))}
+            </ul>
+
+            {/* Desktop: full table */}
+            <AdminCard className="relative hidden overflow-x-auto p-0 sm:block">
             <table className="w-full min-w-[640px] text-left text-sm">
               <thead className="border-b border-border text-xs uppercase tracking-wide text-text-muted">
                 <tr>
@@ -77,7 +111,8 @@ export default async function UsersPage() {
                 ))}
               </tbody>
             </table>
-          </AdminCard>
+            </AdminCard>
+          </>
         )}
       </section>
     </div>

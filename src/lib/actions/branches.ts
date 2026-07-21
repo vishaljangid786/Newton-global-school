@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { mutate, query } from "@/lib/db";
 import { authorizeAction } from "@/lib/dal";
+import { UploadError, fileFromForm, saveUploadedImage } from "@/lib/uploads";
 
 export interface BranchManagerState {
   error?: string;
@@ -88,6 +89,20 @@ function parse(formData: FormData): Parsed | { error: string } {
   };
 }
 
+/** Persist an optional principal photo upload; returns its URL or an error. */
+async function principalPhotoFromForm(
+  formData: FormData
+): Promise<{ url: string | null } | { error: string }> {
+  const file = fileFromForm(formData, "principal_photo");
+  if (!file) return { url: null };
+  try {
+    return { url: await saveUploadedImage(file, "principal") };
+  } catch (error) {
+    if (error instanceof UploadError) return { error: error.message };
+    throw error;
+  }
+}
+
 export async function createBranch(
   _prev: BranchManagerState | undefined,
   formData: FormData
@@ -105,12 +120,15 @@ export async function createBranch(
   );
   if (clash[0]) return { error: "A branch with that slug already exists." };
 
+  const photo = await principalPhotoFromForm(formData);
+  if ("error" in photo) return photo;
+
   await mutate(
     `INSERT INTO branches
        (slug, name, area, address, phone, email, established, grades,
-        principal_name, principal_message, students, campus_size, facilities,
-        hero_tone, status, created_by)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        principal_name, principal_message, principal_photo_url, students,
+        campus_size, facilities, hero_tone, status, created_by)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       slug,
       parsed.name,
@@ -122,6 +140,7 @@ export async function createBranch(
       parsed.grades,
       parsed.principalName,
       parsed.principalMessage || null,
+      photo.url,
       parsed.students,
       parsed.campusSize,
       parsed.facilitiesJson,
@@ -146,17 +165,25 @@ export async function updateBranch(
   const parsed = parse(formData);
   if ("error" in parsed) return parsed;
 
-  const existing = await query<{ slug: string }>(
-    "SELECT slug FROM branches WHERE slug = ? LIMIT 1",
+  const existing = await query<{ slug: string; principal_photo_url: string | null }>(
+    "SELECT slug, principal_photo_url FROM branches WHERE slug = ? LIMIT 1",
     [slug]
   );
   if (!existing[0]) return { error: "Branch not found." };
 
+  // New upload replaces the photo; "remove" clears it; otherwise keep as is.
+  const photo = await principalPhotoFromForm(formData);
+  if ("error" in photo) return photo;
+  const removePhoto = String(formData.get("principal_photo_remove") ?? "") === "1";
+  const photoUrl =
+    photo.url ?? (removePhoto ? null : existing[0].principal_photo_url);
+
   await mutate(
     `UPDATE branches SET
        name = ?, area = ?, address = ?, phone = ?, email = ?, established = ?,
-       grades = ?, principal_name = ?, principal_message = ?, students = ?,
-       campus_size = ?, facilities = ?, hero_tone = ?, status = ?
+       grades = ?, principal_name = ?, principal_message = ?,
+       principal_photo_url = ?, students = ?, campus_size = ?, facilities = ?,
+       hero_tone = ?, status = ?
      WHERE slug = ?`,
     [
       parsed.name,
@@ -168,6 +195,7 @@ export async function updateBranch(
       parsed.grades,
       parsed.principalName,
       parsed.principalMessage || null,
+      photoUrl,
       parsed.students,
       parsed.campusSize,
       parsed.facilitiesJson,
@@ -200,4 +228,5 @@ function revalidatePublic(slug: string): void {
   revalidatePath("/admin/branches");
   revalidatePath("/branches");
   revalidatePath(`/branches/${slug}`);
+  revalidatePath("/contact");
 }

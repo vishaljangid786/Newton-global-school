@@ -16,19 +16,19 @@ const DEMO_ACCOUNTS: DemoAccount[] = [
   {
     label: "Super Admin",
     scope: "All campuses",
-    email: "admin@sunrise-school.example",
-    password: "ChangeMe123!",
+    email: "admin@newton-school.example",
+    password: "Admin@12345",
   },
   {
     label: "Branch Admin",
     scope: "City Center",
-    email: "citycenter.admin@sunrise-school.example",
-    password: "ChangeMe123!",
+    email: "citycenter.admin@newton-school.example",
+    password: "Branch@12345",
   },
 ];
 
 const inputBase =
-  "w-full rounded-card border border-border bg-bg py-3 pl-11 pr-3.5 text-sm text-text transition-colors focus:border-primary";
+  "w-full rounded-card border border-border bg-bg py-3 pl-11 pr-3.5 text-base text-text transition-colors focus:border-primary sm:text-sm";
 
 function MailIcon() {
   return (

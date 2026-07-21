@@ -139,7 +139,7 @@ export default function AdmissionsPage() {
       />
 
       {/* §4.5.2 — process stepper */}
-      <section className="bg-bg py-10 md:py-16">
+      <section className="py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <Reveal>
             <SectionHeading
@@ -153,7 +153,7 @@ export default function AdmissionsPage() {
       </section>
 
       {/* §4.5.3 — eligibility & documents two-column checklist */}
-      <section className="bg-bg-alt py-10 md:py-16">
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <Reveal>
             <SectionHeading
@@ -162,7 +162,7 @@ export default function AdmissionsPage() {
               subtitle="Check the age criteria for the grade and keep these documents ready — originals are returned after verification."
             />
           </Reveal>
-          <div className="mx-auto mt-10 grid max-w-4xl gap-6 md:grid-cols-2">
+          <div className="mt-9 grid gap-6 md:grid-cols-2">
             <Reveal>
               <Card className="h-full p-6">
                 <h3 className="text-xl text-text">Age & Eligibility</h3>
@@ -194,7 +194,7 @@ export default function AdmissionsPage() {
       </section>
 
       {/* §4.5.4 — key dates table */}
-      <section className="bg-bg py-10 md:py-16">
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <Reveal>
             <SectionHeading
@@ -202,7 +202,7 @@ export default function AdmissionsPage() {
               title={`Key Dates for ${site.admissionYear}`}
               subtitle="The same schedule applies at every campus; rolling admissions continue while seats remain."
             />
-            <div className="mx-auto mt-10 max-w-4xl overflow-x-auto rounded-card border border-border">
+            <div className="relative mt-9 overflow-x-auto rounded-card border border-hairline bg-surface shadow-card">
               <table className="w-full min-w-[40rem] text-left text-sm">
                 <caption className="sr-only">
                   Key admission dates for the {site.admissionYear} session
@@ -252,7 +252,7 @@ export default function AdmissionsPage() {
                 </tbody>
               </table>
             </div>
-            <p className="mx-auto mt-4 max-w-4xl text-sm text-text-muted">
+            <p className="mt-4 text-sm text-text-muted">
               For grade-wise seat availability at a specific campus, visit the{" "}
               <Link
                 href="/branches"
@@ -267,7 +267,7 @@ export default function AdmissionsPage() {
       </section>
 
       {/* §4.5.5 — inquiry form (F2) */}
-      <section id="inquiry" className="bg-bg-alt py-10 md:py-16">
+      <section id="inquiry" className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <Reveal>
             <SectionHeading
@@ -275,7 +275,7 @@ export default function AdmissionsPage() {
               title="Admission Inquiry Form"
               subtitle="Tell us a little about your child and our admissions team will call you within two working days."
             />
-            <Card className="mx-auto mt-10 max-w-4xl p-6 md:p-8">
+            <Card className="mt-9 max-w-4xl p-6 md:p-8">
               <InquiryForm />
             </Card>
           </Reveal>
@@ -283,7 +283,7 @@ export default function AdmissionsPage() {
       </section>
 
       {/* §4.5.6 — FAQ accordion */}
-      <section className="bg-bg py-10 md:py-16">
+      <section className="border-t border-hairline py-12 md:py-14">
         <div className="mx-auto max-w-content px-4">
           <Reveal>
             <SectionHeading
@@ -297,37 +297,40 @@ export default function AdmissionsPage() {
                 heading: faq.q,
                 content: <p>{faq.a}</p>,
               }))}
-              className="mx-auto mt-8 max-w-3xl"
+              className="mt-8 max-w-3xl"
             />
           </Reveal>
         </div>
       </section>
 
-      {/* §4.5.7 — contact strip */}
-      <section className="bg-primary py-10 text-white md:py-14">
-        <div className="mx-auto flex max-w-content flex-col items-start gap-6 px-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h2 className="text-2xl md:text-[2rem] md:leading-tight">
-              Prefer to talk?
-            </h2>
-            <p className="mt-2 max-w-xl text-sm text-white/80 md:text-base">
-              Our admissions helpdesk is available {site.headOffice.officeHours}
-              . We&apos;re happy to answer questions in Hindi or English.
-            </p>
-          </div>
-          <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-            <a
-              href={telHref}
-              className="inline-flex items-center justify-center gap-2 rounded-card bg-white px-6 py-3 text-sm font-semibold text-primary transition-colors hover:bg-white/90"
-            >
-              Call {site.headOffice.phone}
-            </a>
-            <Link
-              href="/contact"
-              className="text-sm font-medium text-white underline decoration-white/50 underline-offset-4 transition-colors hover:decoration-white"
-            >
-              Or write to us
-            </Link>
+      {/* §4.5.7 — contact strip (dark counterpoint card) */}
+      <section className="border-t border-hairline">
+        <div className="mx-auto max-w-content px-4 py-10 md:py-14">
+          <div className="flex flex-col items-start gap-6 rounded-xl bg-dark px-6 py-10 text-white md:flex-row md:items-center md:justify-between md:px-12">
+            <div>
+              <h2 className="text-2xl text-white md:text-[1.75rem] md:leading-tight">
+                Prefer to talk?
+              </h2>
+              <p className="mt-2 max-w-xl text-sm text-[#b4bdcf] md:text-base">
+                Our admissions helpdesk is available{" "}
+                {site.headOffice.officeHours}. We&apos;re happy to answer
+                questions in Hindi or English.
+              </p>
+            </div>
+            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
+              <a
+                href={telHref}
+                className="inline-flex items-center justify-center gap-2 rounded-btn bg-white px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-white/90"
+              >
+                Call {site.headOffice.phone}
+              </a>
+              <Link
+                href="/contact"
+                className="text-sm font-medium text-[#8fa6f2] transition-colors hover:text-white"
+              >
+                Or write to us
+              </Link>
+            </div>
           </div>
         </div>
       </section>

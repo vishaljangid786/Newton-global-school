@@ -96,7 +96,7 @@ export default async function AdminLoginPage() {
       </aside>
 
       {/* ——— Right: sign-in form ——— */}
-      <main className="flex items-center justify-center bg-bg px-5 py-12 sm:px-8">
+      <main className="flex min-w-0 items-center justify-center bg-bg px-5 py-12 sm:px-8">
         <div className="w-full max-w-md">
           {/* Mobile logo */}
           <div className="mb-8 flex items-center gap-3 lg:hidden">

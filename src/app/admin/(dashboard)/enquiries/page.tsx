@@ -113,8 +113,66 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
       {rows.length === 0 ? (
         <EmptyState>No enquiries match this filter.</EmptyState>
       ) : (
-        <div className="overflow-hidden rounded-lg border border-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_1px_3px_rgba(15,23,42,0.06)]">
-          <div className="overflow-x-auto">
+        <>
+          {/* Mobile: stacked cards (the table needs ~820px, so hide it here) */}
+          <ul className="space-y-3 md:hidden">
+            {rows.map((e) => (
+              <li
+                key={e.id}
+                className="rounded-lg border border-border bg-white p-4 shadow-[0_1px_2px_rgba(15,23,42,0.04),0_1px_3px_rgba(15,23,42,0.06)]"
+              >
+                <div className="flex flex-wrap items-start justify-between gap-2">
+                  <div className="min-w-0">
+                    <p className="font-semibold text-text">{e.student_name}</p>
+                    <p className="text-xs text-text-muted">{e.parent_name}</p>
+                  </div>
+                  <StatusBadge tone={e.status}>{e.status}</StatusBadge>
+                </div>
+                {e.message ? (
+                  <p className="mt-2 line-clamp-3 text-xs italic text-text-muted">
+                    “{e.message}”
+                  </p>
+                ) : null}
+                <dl className="mt-3 space-y-1 text-sm">
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="text-text-muted">Campus:</dt>
+                    <dd className="font-medium text-text">
+                      {getBranchBySlug(e.branch_slug)?.name ?? e.branch_slug}
+                      <span className="font-normal text-text-muted">
+                        {" "}
+                        · {e.grade}
+                      </span>
+                    </dd>
+                  </div>
+                  <div className="flex flex-wrap gap-x-2">
+                    <dt className="text-text-muted">Received:</dt>
+                    <dd className="text-text">{formatDate(e.created_at)}</dd>
+                  </div>
+                </dl>
+                <div className="mt-3 flex flex-wrap items-center gap-2 border-t border-hairline pt-3">
+                  <a
+                    href={`tel:${e.phone}`}
+                    className="font-medium text-primary hover:underline"
+                  >
+                    {e.phone}
+                  </a>
+                  <a
+                    href={`mailto:${e.email}`}
+                    className="min-w-0 max-w-full truncate text-xs text-text-muted hover:underline"
+                  >
+                    {e.email}
+                  </a>
+                  <div className="ml-auto">
+                    <EnquiryActions id={e.id} status={e.status} />
+                  </div>
+                </div>
+              </li>
+            ))}
+          </ul>
+
+          {/* Desktop: full table */}
+          <div className="hidden overflow-hidden rounded-lg border border-border bg-white shadow-[0_1px_2px_rgba(15,23,42,0.04),0_1px_3px_rgba(15,23,42,0.06)] md:block">
+          <div className="relative overflow-x-auto">
             <table className="w-full min-w-[820px] text-left text-sm">
               <thead>
                 <tr className="border-b border-border bg-bg-alt text-[0.6875rem] uppercase tracking-wider text-text-muted">
@@ -177,7 +235,8 @@ export default async function EnquiriesPage({ searchParams }: PageProps) {
               </tbody>
             </table>
           </div>
-        </div>
+          </div>
+        </>
       )}
     </div>
   );

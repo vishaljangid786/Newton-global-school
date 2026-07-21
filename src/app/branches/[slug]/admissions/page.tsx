@@ -208,13 +208,47 @@ const KEY_DATES: Record<BranchSlug, KeyDateRow[]> = {
   ],
 };
 
+/** Generic rows for custom (admin-created) campuses without page-local data. */
+const DEFAULT_SEAT_ROWS: SeatRow[] = [
+  {
+    group: "Pre-Primary",
+    grades: "Nursery · LKG · UKG",
+    seats: "Enquire",
+    notes: "Play-based interaction only; contact the campus office for seats.",
+  },
+  {
+    group: "Primary & above",
+    grades: "Grade 1 onwards",
+    seats: "Enquire",
+    notes: "Admissions against available vacancies in each grade.",
+  },
+];
+
+const DEFAULT_KEY_DATES: KeyDateRow[] = [
+  {
+    milestone: "Registrations open",
+    date: formatDate("2025-12-01"),
+    details: "Online and at the campus front office",
+  },
+  {
+    milestone: "Campus tours",
+    date: "Saturdays, 9:30 – 11:30 AM",
+    details: "Book a slot with the admissions desk",
+  },
+  {
+    milestone: "First admission window closes",
+    date: formatDate("2026-08-31"),
+    details: "Sibling and staff priority applies within this window",
+  },
+];
+
 export default async function BranchAdmissionsPage({ params }: BranchPageProps) {
   const { slug } = await params;
   const branch = await getBranchBySlugAsync(slug);
   if (!branch) notFound();
 
-  const seatRows = SEAT_ROWS[branch.slug];
-  const keyDates = KEY_DATES[branch.slug];
+  const seatRows = SEAT_ROWS[branch.slug] ?? DEFAULT_SEAT_ROWS;
+  const keyDates = KEY_DATES[branch.slug] ?? DEFAULT_KEY_DATES;
 
   return (
     <>
@@ -239,7 +273,7 @@ export default async function BranchAdmissionsPage({ params }: BranchPageProps) 
               title="Grades Open This Session"
               subtitle={`Indicative seats for ${site.admissionYear} at ${branch.name} — updated monthly during the admission cycle.`}
             />
-            <div className="mx-auto mt-10 max-w-4xl overflow-x-auto rounded-card border border-border">
+            <div className="relative mx-auto mt-10 max-w-4xl overflow-x-auto rounded-card border border-border">
               <table className="w-full min-w-[40rem] text-left text-sm">
                 <caption className="sr-only">
                   Grades open and seat availability at {branch.name} for{" "}
@@ -316,7 +350,7 @@ export default async function BranchAdmissionsPage({ params }: BranchPageProps) 
               title={`Key Dates at ${branch.name}`}
               subtitle="Campus-specific tour, interaction and assessment schedules for this admission cycle."
             />
-            <div className="mx-auto mt-10 max-w-4xl overflow-x-auto rounded-card border border-border bg-bg">
+            <div className="relative mx-auto mt-10 max-w-4xl overflow-x-auto rounded-card border border-hairline bg-surface">
               <table className="w-full min-w-[40rem] text-left text-sm">
                 <caption className="sr-only">
                   Key admission dates at {branch.name}

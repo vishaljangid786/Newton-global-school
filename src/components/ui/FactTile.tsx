@@ -20,17 +20,17 @@ export default function FactTile({
 }: FactTileProps) {
   return (
     <div
-      className={`rounded-card border border-border bg-bg p-6 text-center ${className}`}
+      className={`rounded-card border border-hairline bg-surface p-4 text-center shadow-card sm:p-6 ${className}`}
     >
       {icon ? (
         <span
           aria-hidden="true"
-          className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-pill bg-primary/10 text-primary [&>svg]:h-6 [&>svg]:w-6"
+          className="mx-auto mb-3 flex h-12 w-12 items-center justify-center rounded-pill bg-primary-soft text-primary [&>svg]:h-6 [&>svg]:w-6"
         >
           {icon}
         </span>
       ) : null}
-      <p className="font-heading text-2xl font-bold text-primary md:text-3xl">
+      <p className="font-heading text-xl font-semibold text-primary sm:text-2xl md:text-3xl">
         {value}
       </p>
       <p className="mt-1 text-sm text-text-muted">{label}</p>

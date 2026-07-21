@@ -6,8 +6,11 @@ import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
 import { getBranchBySlugAsync } from "@/lib/branches-store";
-import { getGalleryItems } from "@/data/gallery";
+import { getMergedGalleryItems } from "@/lib/gallery-store";
 import { site } from "@/data/site";
+
+// Admin uploads should appear immediately — always render fresh from the DB.
+export const dynamic = "force-dynamic";
 
 interface BranchPageProps {
   params: Promise<{ slug: string }>;
@@ -34,7 +37,7 @@ export default async function BranchGalleryPage({ params }: BranchPageProps) {
   const branch = await getBranchBySlugAsync(slug);
   if (!branch) notFound();
 
-  const items = getGalleryItems({ branch: branch.slug });
+  const items = await getMergedGalleryItems({ branch: branch.slug });
 
   return (
     <>

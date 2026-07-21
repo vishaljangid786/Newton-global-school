@@ -4,7 +4,7 @@ interface CTABandProps {
   /** e.g. "Admissions open for 2026-27". */
   title: string;
   subtitle?: string;
-  /** Mono eyebrow above the title. */
+  /** Eyebrow above the title. */
   eyebrow?: string;
   ctaLabel?: string;
   ctaHref?: string;
@@ -12,9 +12,9 @@ interface CTABandProps {
 }
 
 /**
- * Full-bleed navy band with a mono eyebrow, serif heading and accent CTA —
- * a deliberate dark counterpoint to the surrounding paper sections. Renders
- * an h2, so use one per section context.
+ * Inset rounded CTA card on deep navy with a single radial glow in the
+ * corner — the deliberate dark counterpoint to the light sections. Centered
+ * content, gradient CTA. Renders an h2, so use one per section context.
  */
 export default function CTABand({
   title,
@@ -25,44 +25,33 @@ export default function CTABand({
   className = "",
 }: CTABandProps) {
   return (
-    <div
-      className={`relative overflow-hidden bg-primary-dark text-white ${className}`}
-    >
-      <div
-        aria-hidden="true"
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "linear-gradient(110deg, var(--color-primary-dark) 0%, var(--color-primary) 60%, color-mix(in srgb, var(--color-accent) 30%, var(--color-primary)) 100%)",
-        }}
-      />
-      {/* Faint vertical pinstripes */}
-      <div
-        aria-hidden="true"
-        className="absolute inset-0"
-        style={{
-          backgroundImage:
-            "repeating-linear-gradient(90deg, transparent 0 52px, rgba(255,255,255,0.05) 52px 53px)",
-        }}
-      />
-      <div className="relative mx-auto flex max-w-content flex-col items-start gap-8 px-4 py-14 md:flex-row md:items-end md:justify-between md:py-20">
-        <div className="max-w-2xl">
-          <p className="eyebrow flex items-center gap-2.5 text-accent">
-            <span aria-hidden="true" className="h-px w-6 bg-accent" />
+    <div className={`mx-auto max-w-content px-4 py-10 md:py-14 ${className}`}>
+      <div className="relative overflow-hidden rounded-xl bg-dark px-6 py-12 text-center text-white md:px-12 md:py-14">
+        {/* Corner glow */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-16 -top-16 h-60 w-60 rounded-pill bg-[radial-gradient(circle,rgba(110,142,242,0.28),transparent_70%)]"
+        />
+        <div className="relative">
+          <p className="eyebrow inline-flex items-center gap-2 text-[#a9bbf2]">
+            <span
+              aria-hidden="true"
+              className="h-1.5 w-1.5 rounded-pill bg-[#6e8ef2]"
+            />
             {eyebrow}
           </p>
-          <h2 className="mt-4 text-[1.9rem] leading-[1.08] text-white md:text-[2.6rem]">
+          <h2 className="mx-auto mt-4 max-w-2xl text-[1.9rem] leading-[1.1] text-white md:text-[2.375rem]">
             {title}
           </h2>
           {subtitle ? (
-            <p className="mt-4 max-w-xl leading-relaxed text-white/75">
+            <p className="mx-auto mt-4 max-w-xl leading-relaxed text-[#b4bdcf]">
               {subtitle}
             </p>
           ) : null}
+          <ButtonLink href={ctaHref} variant="accent" className="mt-7">
+            {ctaLabel}
+          </ButtonLink>
         </div>
-        <ButtonLink href={ctaHref} variant="accent" className="shrink-0">
-          {ctaLabel}
-        </ButtonLink>
       </div>
     </div>
   );

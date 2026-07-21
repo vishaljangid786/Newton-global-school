@@ -14,7 +14,7 @@ export default function NotFound() {
       <div className="mx-auto max-w-xl text-center">
         <p
           aria-hidden="true"
-          className="font-heading text-[6rem] font-bold leading-none text-primary md:text-[8rem]"
+          className="font-heading text-[6rem] font-semibold leading-none text-primary md:text-[8rem]"
         >
           404
         </p>

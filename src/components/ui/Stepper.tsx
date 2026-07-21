@@ -39,7 +39,7 @@ export default function Stepper({ steps, className = "" }: StepperProps) {
             ) : null}
             <span
               aria-hidden="true"
-              className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-pill bg-primary font-heading text-base font-semibold text-white"
+              className="relative z-10 flex h-10 w-10 shrink-0 items-center justify-center rounded-pill bg-[image:var(--gradient-brand)] font-heading text-base font-semibold text-white"
             >
               {index + 1}
             </span>

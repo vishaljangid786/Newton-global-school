@@ -35,7 +35,6 @@ export default async function BranchBlogPage({ params }: PageProps) {
       <PageHero
         title={`${branch.name} Blog`}
         subtitle="Campus stories and updates, plus group-wide news from across Newton."
-        badge="Blog"
         breadcrumbs={[
           { label: "Branches", href: "/branches" },
           { label: branch.name, href: `/branches/${branch.slug}` },

@@ -137,7 +137,7 @@ export default async function BranchAcademicsPage({
             title="How Our Classes Are Organised"
             subtitle={`${branch.name} currently offers ${branch.grades}.`}
           />
-          <div className="mt-8 overflow-x-auto rounded-card border border-border">
+          <div className="relative mt-8 overflow-x-auto rounded-card border border-border">
             <table className="w-full min-w-[640px] text-left text-sm">
               <caption className="sr-only">
                 Grades, sections and typical class sizes at {branch.name}

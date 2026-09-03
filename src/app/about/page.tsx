@@ -140,94 +140,124 @@ const CTA = {
 
 /**
  * CC0 sample photography — public domain, no attribution required.
- * Source list in public/images/home/CREDITS.md. Chosen to match the image
+ * Source list in public/images/school/CREDITS.md. Chosen to match the image
  * placement guide in the document's third tab (banner exterior, story +
  * reception, campus wide shot, facilities collage, governance office).
  */
 const IMG = {
   heroBanner: {
-    src: "/images/home/campus-family-visit.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Parents with four Newton Global School pupils in uniform outside the campus",
+    src: "/images/school/school-bus.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "A Newton Global School bus outside the main building",
   },
   storyGate: {
-    src: "/images/home/about-main-gate.webp",
-    w: 853,
-    h: 640,
-    alt: "Young pupils in school uniform outside the school",
+    src: "/images/school/founders-wall.webp",
+
+    w: 1140,
+
+    h: 1600,
+
+    alt: "The reception shrine and the founders' photographs",
   },
   storyCorridor: {
-    src: "/images/home/about-corridor.webp",
-    w: 760,
-    h: 570,
-    alt: "Pupils with backpacks walking down a school corridor",
+    src: "/images/school/corridor.webp",
+
+    w: 1200,
+
+    h: 1600,
+
+    alt: "A corridor lined with classrooms inside the school",
   },
   institution: {
-    src: "/images/home/location-campus.webp",
-    w: 960,
-    h: 540,
-    alt: "Young pupils in school uniform outside the school",
+    src: "/images/school/campus-grounds.webp",
+
+    w: 1600,
+
+    h: 900,
+
+    alt: "The school building across its green grounds",
   },
   managementOffice: {
-    src: "/images/home/about-office.webp",
-    w: 900,
-    h: 562,
-    alt: "Bright, open office and meeting area",
+    src: "/images/school/reception.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The school reception desk and waiting area",
   },
   whyLibrary: {
-    src: "/images/home/facility-library.webp",
-    w: 760,
-    h: 570,
-    alt: "Classroom reading corner lined with books",
+    src: "/images/school/library-students.webp",
+    w: 1200,
+    h: 1600,
+    alt: "Pupils reading at the tables in the school library",
   },
   whyComputerLab: {
-    src: "/images/home/smart-class-session.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Children watching a lesson on the smart-class screen",
+    src: "/images/school/computer-lab-students.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Pupils working at computers in the school lab",
   },
   whyActivityRoom: {
-    src: "/images/home/preprimary-outdoor-play.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Young pupils sitting together on the school's turf play area",
+    src: "/images/school/kindergarten-room.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The pre-primary activity room with its play equipment",
   },
   campusPlayground: {
-    src: "/images/home/assembly-activity.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Pupils in two rows taking part in a school hall activity",
+    src: "/images/school/playground.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The school playground with its swings and climbing frame",
   },
   campusSports: {
-    src: "/images/home/facility-sports.webp",
-    w: 760,
-    h: 570,
-    alt: "Football resting on a grass sports field with goalposts",
+    src: "/images/school/sports-store.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The sports room where games equipment is kept",
   },
   campusScience: {
-    src: "/images/home/science-lab-experiment.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Pupils in uniform running a water experiment in the science lab",
+    src: "/images/school/science-lab-students.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Pupils at the benches in the science laboratory",
   },
   campusTransport: {
-    src: "/images/home/facility-bus.webp",
-    w: 760,
-    h: 570,
-    alt: "Aisle and seats inside a school bus",
+    src: "/images/school/students-boarding-bus.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Pupils lining up to board the school bus",
   },
   governance: {
-    src: "/images/home/about-governance.webp",
-    w: 900,
-    h: 562,
-    alt: "Meeting room with a long table beside tall windows",
+    src: "/images/school/reception.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The school reception desk and waiting area",
   },
   ctaCampus: {
-    src: "/images/home/hero-campus.webp",
-    w: 960,
-    h: 540,
-    alt: "Classroom of school children with their hands raised",
+    src: "/images/school/campus-side-buses.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "Newton Global School buses parked beside the campus building",
   },
 } as const satisfies Record<string, Img>;
 
@@ -307,7 +337,7 @@ export default function AboutPage() {
       </section>
 
       {/* ——— §3 Vision & Mission — text-led navy band (no heavy image) ——— */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg" />
         <Cover img={IMG.storyCorridor} sizes="100vw" decorative className="opacity-[0.14]" />
         <div
@@ -361,6 +391,15 @@ export default function AboutPage() {
               </div>
             </Reveal>
           </div>
+          <Reveal className="mt-10 text-center">
+            <Link
+              href="/vision-mission"
+              className="inline-flex items-center gap-2 rounded-pill border-2 border-[#d6a53f] px-6 py-3 text-[0.9375rem] font-bold text-[#d6a53f] transition duration-200 hover:bg-[#d6a53f] hover:text-[#001344]"
+            >
+              Read our Vision &amp; Mission in full
+              <span aria-hidden="true">→</span>
+            </Link>
+          </Reveal>
         </div>
       </section>
 
@@ -587,7 +626,7 @@ export default function AboutPage() {
       </section>
 
       {/* ——— §10 Call-To-Action Section ——— */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg-alt" />
         <Cover img={IMG.ctaCampus} sizes="100vw" decorative className="opacity-[0.28]" />
         <div

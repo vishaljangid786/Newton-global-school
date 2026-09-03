@@ -10,9 +10,16 @@ import type { BranchSlug, GalleryCategory, GalleryItem } from "@/data/types";
  */
 
 export const GALLERY_CATEGORIES: GalleryCategory[] = [
-  "Sports",
-  "Annual Day",
+  "Campus",
   "Classrooms",
+  "Library",
+  "Labs",
+  "Sports",
+  "Pre-Primary",
+  "Transport",
+  "Assembly",
+  "Our Team",
+  "Annual Day",
   "Trips",
 ];
 

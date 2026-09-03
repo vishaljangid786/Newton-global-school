@@ -235,7 +235,7 @@ export default function StagePage({
       </section>
 
       {/* ——— §4 Why This Stage Matters — navy band ——— */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg-alt" />
         <Cover img={images.whyStage} sizes="100vw" decorative className="opacity-[0.18]" />
         <div
@@ -417,7 +417,7 @@ export default function StagePage({
       </section>
 
       {/* ——— §8 Admission CTA Section ——— */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg-alt" />
         <Cover img={images.hero} sizes="100vw" decorative className="opacity-[0.26]" />
         <div

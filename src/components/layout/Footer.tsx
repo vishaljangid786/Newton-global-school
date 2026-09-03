@@ -6,6 +6,8 @@ import { site } from "@/data/site";
 const SCHOOL_LINKS = [
   { label: "About", href: "/about" },
   { label: "Academics", href: "/academics" },
+  { label: "Vision & Mission", href: "/vision-mission" },
+  { label: "Facilities", href: "/facilities" },
   { label: "Gallery", href: "/gallery" },
   { label: "News & Events", href: "/news" },
   { label: "Careers", href: "/careers" },

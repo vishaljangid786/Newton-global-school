@@ -33,39 +33,54 @@ const { hero, overview, chart, faq } = eligibility;
 
 /**
  * CC0 sample photography — public domain, no attribution required.
- * Source list in public/images/home/CREDITS.md. None of these show the real
+ * Source list in public/images/school/CREDITS.md. None of these show the real
  * school; the alt text describes the photograph itself.
  */
 const IMG = {
   heroBanner: {
-    src: "/images/home/location-campus.webp",
-    w: 960,
-    h: 540,
-    alt: "Young pupils in school uniform outside the school",
+    src: "/images/school/campus-front.webp",
+
+    w: 1600,
+
+    h: 900,
+
+    alt: "The Newton Global School building seen from the driveway",
   },
   overviewChild: {
-    src: "/images/home/why-writing.webp",
-    w: 760,
-    h: 570,
-    alt: "Pupil concentrating on her writing in class",
+    src: "/images/school/pupils-smart-class.webp",
+
+    w: 1448,
+
+    h: 1086,
+
+    alt: "Newton Global School pupils during a smart-class session",
   },
   overviewInset: {
-    src: "/images/home/preprimary-outdoor-play.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Young pupils sitting together on the school's turf play area",
+    src: "/images/school/kindergarten-room.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The pre-primary activity room with its play equipment",
   },
   faqLibrary: {
-    src: "/images/home/faq-library.webp",
-    w: 853,
-    h: 640,
-    alt: "Classroom reading corner lined with books",
+    src: "/images/school/library.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The school library with its reading tables and shelves",
   },
   ctaCampus: {
-    src: "/images/home/campus-family-visit.webp",
+    src: "/images/school/parents-with-pupils.webp",
+
     w: 1448,
+
     h: 1086,
-    alt: "Parents with four Newton Global School pupils in uniform outside the campus",
+
+    alt: "Parents with four Newton Global School pupils in uniform",
   },
 } as const satisfies Record<string, Img>;
 
@@ -307,7 +322,7 @@ export default function EligibilityCriteriaPage() {
           The Age Criteria tab supplies no separate closing heading, so the
           band reuses the document's own line rather than inventing copy, and
           the button carries hero.cta verbatim. */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg" />
         <Cover img={IMG.ctaCampus} sizes="100vw" decorative className="opacity-[0.28]" />
         <div

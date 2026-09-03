@@ -225,213 +225,189 @@ const FAQS = [
 ];
 /**
  * CC0 sample photography — public domain, no attribution required.
- * Source list in public/images/home/CREDITS.md. Swap the files for the
+ * Source list in public/images/school/CREDITS.md. Swap the files for the
  * school's own photos later; the keys and crops stay the same.
  */
 const IMG = {
   aboutInsetBooks: {
-    src: "/images/home/about-inset-books.webp",
-    w: 540,
-    h: 540,
-    alt: "Girl in school uniform writing at her desk",
+    src: "/images/school/classroom-teaching.webp",
+    w: 1600,
+    h: 1200,
+    alt: "A teacher leading a lesson in a full classroom",
   },
   aboutMainGate: {
-    src: "/images/home/about-main-gate.webp",
-    w: 853,
-    h: 640,
-    alt: "Young pupils in school uniform outside the school",
-  },
-  achieveGraduate: {
-    src: "/images/home/achieve-graduate.webp",
-    w: 760,
-    h: 570,
-    alt: "Smiling graduate in a cap and gown",
+    src: "/images/school/campus-front.webp",
+
+    w: 1600,
+
+    h: 900,
+
+    alt: "The Newton Global School building seen from the driveway",
   },
   achievementsBg: {
-    src: "/images/home/achievements-bg.webp",
-    w: 960,
-    h: 540,
-    alt: "School children gathered for a classroom performance",
+    src: "/images/school/assembly-hall.webp",
+    w: 1600,
+    h: 900,
+    alt: "Pupils gathered in the school assembly hall",
   },
   ctaCampus: {
-    src: "/images/home/campus-family-visit.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Parents with four Newton Global School pupils in uniform outside the campus",
+    src: "/images/school/campus-side-buses.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "Newton Global School buses parked beside the campus building",
   },
   facilityBus: {
-    src: "/images/home/facility-bus.webp",
-    w: 760,
-    h: 570,
-    alt: "Aisle and seats inside a school bus",
-  },
-  facilityComputerLab: {
-    src: "/images/home/smart-class-session.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Children watching a lesson on the smart-class screen",
+    src: "/images/school/students-boarding-bus.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Pupils lining up to board the school bus",
   },
   facilityGreen: {
-    src: "/images/home/facility-green.webp",
-    w: 760,
-    h: 570,
-    alt: "Children tending plants in the school garden",
-  },
-  facilityLibrary: {
-    src: "/images/home/facility-library.webp",
-    w: 760,
-    h: 570,
-    alt: "Classroom reading corner lined with books",
+    src: "/images/school/campus-grounds.webp",
+
+    w: 1600,
+
+    h: 900,
+
+    alt: "The school building across its green grounds",
   },
   facilityMedical: {
-    src: "/images/home/facility-medical.webp",
-    w: 760,
-    h: 570,
-    alt: "Stethoscope beside a laptop on a white desk",
+    src: "/images/school/drinking-water-ro.webp",
+    w: 1200,
+    h: 1600,
+    alt: "The RO drinking water station on campus",
   },
   facilityScience: {
-    src: "/images/home/science-lab-experiment.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Pupils in uniform running a water experiment in the science lab",
-  },
-  facilitySports: {
-    src: "/images/home/facility-sports.webp",
-    w: 760,
-    h: 570,
-    alt: "Football resting on a grass sports field with goalposts",
+    src: "/images/school/science-experiment.webp",
+    w: 1200,
+    h: 1600,
+    alt: "Pupils carrying out an experiment in the science lab",
   },
   faqLibrary: {
-    src: "/images/home/faq-library.webp",
-    w: 853,
-    h: 640,
-    alt: "Classroom reading corner lined with books",
+    src: "/images/school/library.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The school library with its reading tables and shelves",
   },
   galleryDrawing: {
-    src: "/images/home/gallery-drawing.webp",
-    w: 900,
-    h: 600,
-    alt: "Children planting seedlings in the school garden",
+    src: "/images/school/kindergarten-room.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The pre-primary activity room with its play equipment",
   },
   galleryMusic: {
-    src: "/images/home/gallery-music.webp",
-    w: 900,
-    h: 598,
-    alt: "Students performing on stage",
+    src: "/images/school/assembly-address.webp",
+    w: 1200,
+    h: 1600,
+    alt: "A member of staff addressing pupils in the assembly hall",
   },
   galleryPaint: {
-    src: "/images/home/gallery-paint.webp",
-    w: 900,
-    h: 618,
-    alt: "Teacher working with pupils around a classroom table",
+    src: "/images/school/activity-room.webp",
+
+    w: 1200,
+
+    h: 1600,
+
+    alt: "The pre-primary room set up for play-based learning",
   },
   galleryPlayground: {
-    src: "/images/home/assembly-activity.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Pupils in two rows taking part in a school hall activity",
+    src: "/images/school/playground.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The school playground with its swings and climbing frame",
   },
   galleryRunning: {
-    src: "/images/home/gallery-running.webp",
-    w: 900,
-    h: 600,
-    alt: "Pupils with backpacks walking down a school corridor",
+    src: "/images/school/library-reading-group.webp",
+    w: 1200,
+    h: 1600,
+    alt: "A group of pupils reading together in the library",
   },
   gallerySwing: {
-    src: "/images/home/gallery-swing.webp",
-    w: 900,
-    h: 600,
-    alt: "Children playing together on a classroom mat",
+    src: "/images/school/science-microscope.webp",
+    w: 1200,
+    h: 1600,
+    alt: "A pupil examining a slide under the microscope",
   },
   heroCampus: {
-    src: "/images/home/hero-campus.webp",
-    w: 960,
-    h: 540,
-    alt: "Classroom of school children with their hands raised",
+    src: "/images/school/campus-front.webp",
+
+    w: 1600,
+
+    h: 900,
+
+    alt: "The Newton Global School building seen from the driveway",
   },
   locationCampus: {
-    src: "/images/home/location-campus.webp",
-    w: 960,
-    h: 540,
-    alt: "Young pupils in school uniform outside the school",
+    src: "/images/school/campus-grounds.webp",
+
+    w: 1600,
+
+    h: 900,
+
+    alt: "The school building across its green grounds",
   },
   newsAbcChalkboard: {
-    src: "/images/home/news-abc-chalkboard.webp",
-    w: 760,
-    h: 428,
-    alt: "Letters chalked on a blackboard above a stack of books",
+    src: "/images/school/classroom-teaching.webp",
+    w: 1600,
+    h: 1200,
+    alt: "A teacher leading a lesson in a full classroom",
   },
   newsBackToSchool: {
-    src: "/images/home/news-back-to-school.webp",
-    w: 760,
-    h: 428,
-    alt: "Light box sign reading Back To School",
+    src: "/images/school/assembly-hall.webp",
+    w: 1600,
+    h: 900,
+    alt: "Pupils gathered in the school assembly hall",
   },
   newsNeverStopLearning: {
-    src: "/images/home/news-never-stop-learning.webp",
-    w: 760,
-    h: 428,
-    alt: "Letter tiles spelling Never Stop Learning",
+    src: "/images/school/library-students.webp",
+    w: 1200,
+    h: 1600,
+    alt: "Pupils reading at the tables in the school library",
   },
   newsSupplies: {
-    src: "/images/home/news-supplies.webp",
-    w: 760,
-    h: 428,
-    alt: "Notebook and coloured pencils on a bright background",
-  },
-  parent1: {
-    src: "/images/home/parent-1.webp",
-    w: 320,
-    h: 320,
-    alt: "Parent holding their child close, smiling",
-  },
-  parent2: {
-    src: "/images/home/parent-2.webp",
-    w: 320,
-    h: 320,
-    alt: "Parent with two children, all smiling",
+    src: "/images/school/computer-lab-students.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Pupils working at computers in the school lab",
   },
   programPreprimary: {
-    src: "/images/home/preprimary-outdoor-play.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Young pupils sitting together on the school's turf play area",
+    src: "/images/school/kindergarten-room.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The pre-primary activity room with its play equipment",
   },
   programPrimary: {
-    src: "/images/home/program-primary.webp",
-    w: 760,
-    h: 570,
-    alt: "Smiling pupil in uniform waving from his desk",
+    src: "/images/school/classroom-students.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Pupils at their desks during a classroom lesson",
   },
   programSecondary: {
-    src: "/images/home/secondary-student-portrait.webp",
-    w: 1448,
-    h: 1086,
-    alt: "Newton Global School pupil in uniform standing in the assembly line",
+    src: "/images/school/science-lab-students.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Pupils at the benches in the science laboratory",
   },
   programSenior: {
-    src: "/images/home/program-senior.webp",
-    w: 760,
-    h: 570,
-    alt: "Senior students working on laptops in a lecture hall",
-  },
-  whyLibrary: {
-    src: "/images/home/why-library.webp",
-    w: 760,
-    h: 570,
-    alt: "Primary classroom with a reading corner",
-  },
-  whySports: {
-    src: "/images/home/why-sports.webp",
-    w: 760,
-    h: 570,
-    alt: "Athlete set in the starting blocks on a running track",
-  },
-  whyWriting: {
-    src: "/images/home/why-writing.webp",
-    w: 760,
-    h: 570,
-    alt: "Pupil concentrating on her writing in class",
+    src: "/images/school/computer-lab-students.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Pupils working at computers in the school lab",
   },
 } as const;
 
@@ -489,9 +465,6 @@ const GALLERY_TILES: Array<{ img: Img; span: string; wide?: boolean }> = [
   { img: IMG.galleryPaint, span: "md:col-start-3 md:row-start-3" },
 ];
 
-/** §8 — portrait beside each parent quote. */
-const PARENT_IMAGES = [IMG.parent1, IMG.parent2];
-
 /** §9 — "(3-4 dynamic notice/event cards here)": upcoming events + notices. */
 const upcomingEvents = getUpcomingEvents().slice(0, 2);
 const newsFeed = [
@@ -538,7 +511,7 @@ export default function HomePage() {
         body={HERO.body}
         cta={HERO.cta}
         cutout={{
-          src: "/images/home/hero-student-thumbsup.png",
+          src: "/images/school/hero-student-thumbsup.png",
           w: 640,
           h: 640,
           alt: "Newton Global School pupil in uniform giving a thumbs up",
@@ -770,7 +743,7 @@ export default function HomePage() {
           The figures were 2.4rem in glass boxes in the corner of a full-height
           band, which wasted the one place the page is allowed to shout. They
           now run the width at display size, stacked over the copy. */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] py-20 sm:py-24">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] py-20 sm:py-24">
         <Cover
           img={IMG.achievementsBg}
           sizes="100vw"
@@ -895,8 +868,11 @@ export default function HomePage() {
                     {rich(item.quote, "font-bold text-[#87661f]")}
                   </blockquote>
                   <figcaption className="mt-7 flex items-center gap-3.5 text-sm font-bold text-[#87661f]">
-                    <span className="relative h-12 w-12 shrink-0 overflow-hidden rounded-pill ring-2 ring-[#a8802f]/35">
-                      <Cover img={PARENT_IMAGES[index]} sizes="48px" />
+                    <span
+                      aria-hidden="true"
+                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-pill bg-[#faf4e8] ring-2 ring-[#a8802f]/35"
+                    >
+                      <Icon name="quote" className="h-5 w-5 text-[#87661f]" />
                     </span>
                     {item.attribution}
                   </figcaption>
@@ -964,7 +940,7 @@ export default function HomePage() {
       </section>
 
       {/* ——— §10 Admission CTA Section — navy band over a campus photo ——— */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg" />
         <Cover
           img={IMG.ctaCampus}
@@ -998,7 +974,7 @@ export default function HomePage() {
       </section>
 
       {/* ——— §11 Location/Map Section ——— */}
-      <section className={`border-b border-hairline bg-bg-alt ${SECTION}`}>
+      <section id="location" className={`border-b border-hairline bg-bg-alt ${SECTION}`}>
         <div
           className={`${CONTAINER} grid items-center gap-10 lg:grid-cols-12 lg:gap-14`}
         >

@@ -106,7 +106,19 @@ export interface NewsPost {
   body: string[];
 }
 
-export type GalleryCategory = "Sports" | "Annual Day" | "Classrooms" | "Trips";
+export type GalleryCategory =
+  | "Campus"
+  | "Classrooms"
+  | "Library"
+  | "Labs"
+  | "Sports"
+  | "Pre-Primary"
+  | "Transport"
+  | "Assembly"
+  | "Our Team"
+  /* Kept so photographs already uploaded through the admin still validate. */
+  | "Annual Day"
+  | "Trips";
 
 /** Visual variant hint for PlaceholderImage gradients. */
 export type PlaceholderTone =

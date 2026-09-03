@@ -78,6 +78,11 @@
 
 /* Brand gradient — logo tile, Apply buttons, gallery CTA. */
 :root {
+  /* The sticky header's real height: logo box + its vertical padding. Every
+     full-height section subtracts this, so the bar and the sections can never
+     drift apart when the logo size changes. */
+  --header-h: 4.25rem;
+
   --gradient-brand: linear-gradient(135deg, #d6a53f, #a8802f);
 }
 
@@ -269,5 +274,17 @@
 @media (prefers-reduced-motion: reduce) {
   .menu-in {
     animation: none;
+  }
+}
+
+@media (min-width: 30rem) {
+  :root {
+    --header-h: 4.5rem;
+  }
+}
+
+@media (min-width: 48rem) {
+  :root {
+    --header-h: 5rem;
   }
 }

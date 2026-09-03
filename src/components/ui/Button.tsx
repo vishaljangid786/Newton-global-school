@@ -2,6 +2,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import {
   BTN_BASE,
+  BTN_SIZE,
   BTN_TONE,
   type BtnTone,
 } from "@/components/site/school-kit";
@@ -23,8 +24,8 @@ const VARIANT_TONE: Record<ButtonVariant, BtnTone> = {
 };
 
 const SIZE_CLASSES: Record<ButtonSize, string> = {
-  md: "px-6 py-3",
-  sm: "px-5 py-2.5",
+  md: BTN_SIZE.lg,
+  sm: BTN_SIZE.md,
 };
 
 /** Class string for button-styled elements (native <button>, form submits). */

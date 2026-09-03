@@ -37,10 +37,10 @@ export const metadata: Metadata = {
 
 const IMG = {
   hero: {
-    src: "/images/home/program-primary.webp",
-    w: 760,
-    h: 570,
-    alt: "Smiling pupil in uniform waving from his desk",
+    src: "/images/school/classroom-students.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Pupils at their desks during a classroom lesson",
   },
 } as const satisfies Record<string, Img>;
 
@@ -59,10 +59,13 @@ const STAGES: StageCard[] = [
     label: "Nursery",
     icon: "music",
     img: {
-      src: "/images/home/preprimary-outdoor-play.webp",
-      w: 1448,
-      h: 1086,
-      alt: "Young pupils sitting together on the school's turf play area",
+      src: "/images/school/kindergarten-room.webp",
+
+      w: 1600,
+
+      h: 1200,
+
+      alt: "The pre-primary activity room with its play equipment",
     },
   },
   {
@@ -71,10 +74,13 @@ const STAGES: StageCard[] = [
     label: "Primary",
     icon: "book",
     img: {
-      src: "/images/home/program-primary.webp",
-      w: 760,
-      h: 570,
-      alt: "Smiling pupil in uniform waving from his desk",
+      src: "/images/school/pupils-smart-class.webp",
+
+      w: 1448,
+
+      h: 1086,
+
+      alt: "Newton Global School pupils during a smart-class session",
     },
   },
   {
@@ -83,10 +89,13 @@ const STAGES: StageCard[] = [
     label: "Secondary",
     icon: "flask",
     img: {
-      src: "/images/home/secondary-student-portrait.webp",
-      w: 1448,
-      h: 1086,
-      alt: "Newton Global School pupil in uniform standing in the assembly line",
+      src: "/images/school/computer-lab.webp",
+
+      w: 1600,
+
+      h: 1404,
+
+      alt: "The computer laboratory with rows of workstations",
     },
   },
   {
@@ -95,10 +104,13 @@ const STAGES: StageCard[] = [
     label: "Senior Secondary",
     icon: "chart",
     img: {
-      src: "/images/home/program-senior.webp",
-      w: 760,
-      h: 570,
-      alt: "Senior students working on laptops in a lecture hall",
+      src: "/images/school/computer-lab.webp",
+
+      w: 1600,
+
+      h: 1404,
+
+      alt: "The computer laboratory with rows of workstations",
     },
   },
 ];
@@ -180,14 +192,17 @@ export default function AcademicsPage() {
       </section>
 
       {/* ——— Admission band, using the Home tab's admission copy ——— */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg" />
         <Cover
           img={{
-            src: "/images/home/campus-family-visit.webp",
+            src: "/images/school/parents-with-pupils.webp",
+
             w: 1448,
+
             h: 1086,
-            alt: "Parents with four Newton Global School pupils in uniform outside the campus",
+
+            alt: "Parents with four Newton Global School pupils in uniform",
           }}
           sizes="100vw"
           className="opacity-[0.28]"

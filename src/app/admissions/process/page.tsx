@@ -38,63 +38,90 @@ const { hero, overview, steps, timeline, documents, curriculumNote, faq, links }
 
 /**
  * CC0 sample photography — public domain, no attribution required. Source
- * list in public/images/home/CREDITS.md. These are placeholders: the alt text
+ * list in public/images/school/CREDITS.md. These are placeholders: the alt text
  * describes the stock photo, not the real Sangteda campus.
  */
 const IMG = {
   hero: {
-    src: "/images/home/hero-campus.webp",
-    w: 960,
-    h: 540,
-    alt: "Classroom of school children with their hands raised",
+    src: "/images/school/campus-front.webp",
+
+    w: 1600,
+
+    h: 900,
+
+    alt: "The Newton Global School building seen from the driveway",
   },
   overviewGate: {
-    src: "/images/home/about-main-gate.webp",
-    w: 853,
-    h: 640,
-    alt: "Young pupils in school uniform outside the school",
+    src: "/images/school/reception.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The school reception desk and waiting area",
   },
   overviewOffice: {
-    src: "/images/home/about-office.webp",
-    w: 900,
-    h: 562,
-    alt: "Bright, open office and meeting area",
+    src: "/images/school/reception.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The school reception desk and waiting area",
   },
   stepsCorridor: {
-    src: "/images/home/about-corridor.webp",
-    w: 760,
-    h: 570,
-    alt: "Pupils with backpacks walking down a school corridor",
+    src: "/images/school/corridor.webp",
+
+    w: 1200,
+
+    h: 1600,
+
+    alt: "A corridor lined with classrooms inside the school",
   },
   timelineCampus: {
-    src: "/images/home/location-campus.webp",
-    w: 960,
-    h: 540,
-    alt: "Young pupils in school uniform outside the school",
+    src: "/images/school/campus-grounds.webp",
+
+    w: 1600,
+
+    h: 900,
+
+    alt: "The school building across its green grounds",
   },
   documentsDesk: {
-    src: "/images/home/news-supplies.webp",
-    w: 760,
-    h: 428,
-    alt: "Notebook and coloured pencils on a bright background",
+    src: "/images/school/reception.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The school reception desk and waiting area",
   },
   curriculumBoard: {
-    src: "/images/home/news-abc-chalkboard.webp",
-    w: 760,
-    h: 428,
-    alt: "Letters chalked on a blackboard above a stack of books",
+    src: "/images/school/teacher-blackboard.webp",
+
+    w: 1200,
+
+    h: 1600,
+
+    alt: "A teacher writing the day's lesson on the blackboard",
   },
   faqLibrary: {
-    src: "/images/home/faq-library.webp",
-    w: 853,
-    h: 640,
-    alt: "Classroom reading corner lined with books",
+    src: "/images/school/library.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "The school library with its reading tables and shelves",
   },
   ctaCampus: {
-    src: "/images/home/campus-family-visit.webp",
+    src: "/images/school/parents-with-pupils.webp",
+
     w: 1448,
+
     h: 1086,
-    alt: "Parents with four Newton Global School pupils in uniform outside the campus",
+
+    alt: "Parents with four Newton Global School pupils in uniform",
   },
 } as const satisfies Record<string, Img>;
 
@@ -323,7 +350,7 @@ export default function AdmissionProcessPage() {
       </section>
 
       {/* ——— When to Apply — navy band, one panel per paragraph ——— */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg-alt" />
         <Cover img={IMG.timelineCampus} sizes="100vw" decorative className="opacity-[0.18]" />
         <div
@@ -499,7 +526,7 @@ export default function AdmissionProcessPage() {
 
       {/* ——— Closing CTA band — the hero's promise and its button, repeated
           at the foot of the page so the next step is always in reach ——— */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg-alt" />
         <Cover img={IMG.ctaCampus} sizes="100vw" decorative className="opacity-[0.26]" />
         <div

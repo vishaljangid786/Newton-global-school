@@ -1,54 +1,61 @@
 import type { Metadata } from "next";
-import PageHero from "@/components/ui/PageHero";
-import SectionHeading from "@/components/ui/SectionHeading";
-import GalleryGrid from "@/components/ui/GalleryGrid";
+import MosaicGallery from "@/components/site/MosaicGallery";
+import {
+  CONTAINER,
+  type Img,
+  PageHero,
+  SECTION,
+  SectionTitle,
+} from "@/components/site/school-kit";
 import Reveal from "@/components/ui/Reveal";
 import { getMergedGalleryItems } from "@/lib/gallery-store";
-import { site } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Gallery",
-  description: `Browse photos of sports, Annual Day, classrooms and school trips across all three ${site.name} campuses in Jaipur.`,
+  description:
+    "The campus, classrooms, library, labs, playground and buses of Newton Global School, Sangteda, Kotputli — in photographs.",
 };
 
-// Admin uploads should appear immediately — always render fresh from the DB.
+/* Admin uploads should appear immediately — always render fresh from the DB. */
 export const dynamic = "force-dynamic";
 
-/**
- * Global photo gallery — design.md §4.7 (F5).
- * 1. Page hero with breadcrumbs
- * 2–3. Category filter chips + campus dropdown, thumbnail grid → lightbox
- *      (all handled by the shared GalleryGrid client component)
- * The optional video section (§4.7.4) is omitted: no external embeds allowed.
- */
+const IMG = {
+  heroBanner: {
+    src: "/images/school/campus-front.webp",
+    w: 1600,
+    h: 900,
+    alt: "The Newton Global School building seen from the driveway",
+  },
+} as const satisfies Record<string, Img>;
+
 export default async function GalleryPage() {
   const items = await getMergedGalleryItems();
+  /* The mosaic needs a real file to lay out; tone-only placeholders have none. */
+  const withPhotos = items.filter((item) => Boolean(item.imageUrl));
 
   return (
     <>
       <PageHero
-        title="Gallery"
-        subtitle={`Everyday learning, big stage moments and adventures beyond the classroom — life at ${site.name}, in pictures.`}
-        breadcrumbs={[{ label: "Gallery" }]}
+        image={IMG.heroBanner}
+        priority
+        crumbs={[{ label: "About Us", href: "/about" }, { label: "Gallery" }]}
+        h1={`Gallery`}
+        sub={`Life at Newton Global School, Sangteda, Kotputli`}
+        body={`Every photograph here was taken on our own campus. Filter by what you want to see, then open any picture full screen.`}
       />
 
-      <section className="py-12 md:py-14">
-        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
+      <section className={`bg-bg ${SECTION}`}>
+        <div className={CONTAINER}>
           <Reveal>
-            <div>
-              <SectionHeading
-                overline="Photo Gallery"
-                title="Moments From Our Campuses"
-              />
-              <p className="mt-5 max-w-3xl text-[0.9375rem] leading-[1.8] text-text-muted">
-                Filter by category or campus, then click any photo to open it
-                in the full-screen viewer.
-              </p>
-            </div>
+            <SectionTitle
+              eyebrow="Photo Gallery"
+              title={`${withPhotos.length} Moments From Our Campus`}
+              align="center"
+            />
           </Reveal>
-          <div className="mt-9">
-            <GalleryGrid items={items} showBranchFilter />
-          </div>
+          <Reveal delay={110} className="mt-10 lg:mt-12">
+            <MosaicGallery items={withPhotos} />
+          </Reveal>
         </div>
       </section>
     </>

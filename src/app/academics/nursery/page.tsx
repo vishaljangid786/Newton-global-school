@@ -19,53 +19,62 @@ const chrome: StageChrome = {
   },
   images: {
     hero: {
-      src: "/images/home/gallery-swing.webp",
-      w: 900,
-      h: 600,
-      alt: "Children playing together on a classroom mat",
+      src: "/images/school/kindergarten-room.webp",
+
+      w: 1600,
+
+      h: 1200,
+
+      alt: "The pre-primary activity room with its play equipment",
     },
     overview: {
-      src: "/images/home/preprimary-outdoor-play.webp",
-      w: 1448,
-      h: 1086,
-      alt: "Young pupils sitting together on the school's turf play area",
+      src: "/images/school/activity-room.webp",
+
+      w: 1200,
+
+      h: 1600,
+
+      alt: "The pre-primary room set up for play-based learning",
     },
     whyStage: {
-      src: "/images/home/assembly-activity.webp",
-      w: 1448,
-      h: 1086,
-      alt: "Pupils in two rows taking part in a school hall activity",
+      src: "/images/school/assembly-hall.webp",
+      w: 1600,
+      h: 900,
+      alt: "Pupils gathered in the school assembly hall",
     },
     teaching: {
-      src: "/images/home/gallery-drawing.webp",
-      w: 900,
-      h: 600,
-      alt: "Children planting seedlings in the school garden",
+      src: "/images/school/kindergarten-room.webp",
+
+      w: 1600,
+
+      h: 1200,
+
+      alt: "The pre-primary activity room with its play equipment",
     },
     facilities: [
       {
-        src: "/images/home/gallery-drawing.webp",
-        w: 900,
-        h: 600,
-        alt: "Children planting seedlings in the school garden",
+        src: "/images/school/activity-room.webp",
+        w: 1200,
+        h: 1600,
+        alt: "The pre-primary room set up for play-based learning",
       },
       {
-        src: "/images/home/assembly-activity.webp",
-        w: 1448,
-        h: 1086,
-        alt: "Pupils in two rows taking part in a school hall activity",
+        src: "/images/school/kindergarten-room.webp",
+        w: 1600,
+        h: 1200,
+        alt: "The pre-primary activity room with its play equipment",
       },
       {
-        src: "/images/home/facility-bus.webp",
-        w: 760,
-        h: 570,
-        alt: "Aisle and seats inside a school bus",
+        src: "/images/school/playground.webp",
+        w: 1600,
+        h: 1200,
+        alt: "The school playground with its swings and climbing frame",
       },
       {
-        src: "/images/home/facility-green.webp",
-        w: 760,
-        h: 570,
-        alt: "Children tending plants in the school garden",
+        src: "/images/school/students-boarding-bus.webp",
+        w: 1600,
+        h: 1200,
+        alt: "Pupils lining up to board the school bus",
       },
     ],
   },

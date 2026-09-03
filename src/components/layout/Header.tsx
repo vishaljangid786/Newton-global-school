@@ -10,7 +10,7 @@ import {
 } from "react";
 import { getBranchBySlug, isBranchSlug } from "@/data/branches";
 import { useBranches } from "@/components/hooks/useBranches";
-import { BTN_BASE, BTN_TONE } from "@/components/site/school-kit";
+import { BTN_BASE, BTN_SIZE, BTN_TONE } from "@/components/site/school-kit";
 import { site } from "@/data/site";
 import type { BranchSlug } from "@/data/types";
 
@@ -22,54 +22,61 @@ interface NavItem {
 }
 
 /**
- * Full nav (design.md §3.1 order) — used by the mobile drawer, where space
- * is vertical. "Branches" is a single combined tab linking to the /branches
- * page — campuses are no longer listed separately.
+ * The document's "Header Menu" line, verbatim:
+ *
+ *   Home | About Us | Academics (dropdown: Nursery, Primary, Secondary,
+ *   Senior Secondary) | Admission | Facilities | Gallery | News & Events |
+ *   Contact Us
+ *
+ * Labels, order and grouping follow it exactly, so this array is the single
+ * source of truth for both the desktop bar and the mobile drawer. Two notes:
+ * Facilities now has a tab of its own in the document, so that entry points
+ * at /facilities rather than the home page section. Blog is here because the
+ * document's last tab is a full article and the site needs a way in to it.
+ * News & Events is held back until there is real news to show — its /news
+ * route still works, and so does Branches, which the document never mentions.
  */
 const NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/" },
-  { label: "About", href: "/about" },
-  { label: "Branches", href: "/branches" },
+  { label: "About Us", href: "/about" },
   { label: "Academics", href: "/academics" },
-  { label: "Admissions", href: "/admissions" },
-  { label: "News & Events", href: "/news" },
-  { label: "Blog", href: "/blog" },
+  { label: "Admission", href: "/admissions" },
+  { label: "Facilities", href: "/facilities" },
   { label: "Gallery", href: "/gallery" },
-  { label: "Contact", href: "/contact" },
+  { label: "Blog", href: "/blog" },
+  { label: "Contact Us", href: "/contact" },
 ];
 
 /**
- * Sub-pages built from the document's class and admission tabs. "Academics"
- * gets these as a desktop dropdown (mirroring "Branches"); the drawer nests
- * both groups under their parent.
+ * Dropdowns. The document specifies the Academics one (Nursery, Primary,
+ * Secondary, Senior Secondary); "Advance Program" is its own tab in the
+ * document and sits here because that is where a reader looks for it.
+ *
+ * The About group mirrors the layout the school asked for, with "About Us"
+ * as the first row. Every entry points at a page whose copy is in the
+ * document, except School Calendar and Mandatory Disclosure: the document has
+ * no copy for either, so those two pages carry only what is actually known.
  */
 const SUBNAV: Record<string, NavItem[]> = {
+  "/about": [
+    { label: "About Us", href: "/about" },
+    { label: "Facility", href: "/facilities" },
+    { label: "Our mission and vision", href: "/vision-mission" },
+    { label: "School Calendar", href: "/school-calendar" },
+    { label: "Location", href: "/#location" },
+    { label: "Mandatory Disclosure", href: "/mandatory-disclosure" },
+  ],
   "/academics": [
     { label: "Nursery", href: "/academics/nursery" },
     { label: "Primary", href: "/academics/primary" },
     { label: "Secondary", href: "/academics/secondary" },
     { label: "Senior Secondary", href: "/academics/senior-secondary" },
-  ],
-  "/admissions": [
-    { label: "Admission Process", href: "/admissions/process" },
-    { label: "Fee Structure", href: "/admissions/fees" },
-    { label: "Eligibility Criteria", href: "/admissions/eligibility" },
+    { label: "Advance Program", href: "/advance-program" },
   ],
 };
 
-/**
- * Trimmed desktop nav: "Home" lives on the logo, "Admissions" on the CTA
- * button, and "News & Events" shortens to "News" — keeps the glass bar airy.
- */
-const DESKTOP_NAV_ITEMS: NavItem[] = [
-  { label: "About", href: "/about" },
-  { label: "Branches", href: "/branches" },
-  { label: "Academics", href: "/academics" },
-  { label: "News", href: "/news" },
-  { label: "Blog", href: "/blog" },
-  { label: "Gallery", href: "/gallery" },
-  { label: "Contact", href: "/contact" },
-];
+/** Desktop shows the document's menu in full; the drawer repeats it. */
+const DESKTOP_NAV_ITEMS: NavItem[] = NAV_ITEMS;
 
 function isActive(pathname: string, href: string): boolean {
   if (href === "/") return pathname === "/";
@@ -239,37 +246,42 @@ export default function Header() {
   const renderDesktopLink = (item: NavItem) => {
     const active = isActive(pathname, item.href);
 
-    /* "Branches" gets a dynamic submenu listing every published campus. */
-    if (item.href === "/branches") {
+    /*
+     * Any item with a SUBNAV group becomes a dropdown. It opens on hover (and
+     * on focus, so the keyboard behaves the same), and the click handler stays
+     * for touch, where there is no hover to speak of. The panel is glued to
+     * the trigger with no gap so the pointer cannot fall through the crack on
+     * its way down.
+     */
+    const group = SUBNAV[item.href];
+    if (group) {
+      const open = openMenu === item.href;
       return (
-        <li key={item.href} className="relative">
+        <li
+          key={item.href}
+          className="relative"
+          onMouseEnter={() => setOpenMenu(item.href)}
+          onMouseLeave={() => setOpenMenu(null)}
+        >
           <button
             type="button"
-            aria-expanded={openMenu === item.href}
+            aria-expanded={open}
             aria-haspopup="menu"
             onClick={() =>
-              setOpenMenu((open) => (open === item.href ? null : item.href))
+              setOpenMenu((current) => (current === item.href ? null : item.href))
             }
+            onFocus={() => setOpenMenu(item.href)}
             className={`${desktopLinkBase} ${
               active ? desktopLinkActive : desktopLinkIdle
             }`}
           >
             {item.label}
             <NavRule active={active} />
-            <span
-              className={`ml-0.5 rounded-pill px-1.5 py-0.5 text-[0.65625rem] font-semibold leading-none ${
-                active
-                  ? "bg-primary-soft text-primary"
-                  : "bg-bg-alt text-faint"
-              }`}
-            >
-              {campuses.length}
-            </span>
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
               focusable="false"
-              className={`h-3.5 w-3.5 transition-transform duration-300 ease-out ${openMenu === item.href ? "rotate-180" : ""}`}
+              className={`h-3.5 w-3.5 transition-transform duration-300 ease-out ${open ? "rotate-180" : ""}`}
             >
               <path
                 d="m6 9 6 6 6-6"
@@ -282,104 +294,27 @@ export default function Header() {
             </svg>
           </button>
 
-          {openMenu === item.href ? (
-            <div className="menu-in absolute left-1/2 top-full z-50 mt-2 w-72 -translate-x-1/2 overflow-hidden rounded-card border border-hairline bg-surface shadow-card-hover">
-              <ul className="max-h-[19.5rem] overflow-y-auto overscroll-contain p-1.5">
-                {campuses.map((campus) => (
-                  <li key={campus.slug}>
-                    <Link
-                      href={`/branches/${campus.slug}`}
-                      className="flex items-start gap-2.5 rounded-btn px-3 py-2.5 transition-colors hover:bg-bg-alt"
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-pill bg-accent"
-                      />
-                      <span className="min-w-0">
-                        <span className="block truncate text-sm font-medium text-ink">
-                          {campus.name}
-                        </span>
-                        <span className="block truncate text-xs text-faint">
-                          {campus.area}
-                        </span>
-                      </span>
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/branches"
-                className="block border-t border-hairline px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary-soft"
-              >
-                View all branches
-                <span aria-hidden="true"> →</span>
-              </Link>
-            </div>
-          ) : null}
-        </li>
-      );
-    }
-
-    /* "Academics" lists the four class-stage pages from the document. */
-    if (item.href === "/academics") {
-      const stages = SUBNAV["/academics"];
-      return (
-        <li key={item.href} className="relative">
-          <button
-            type="button"
-            aria-expanded={openMenu === item.href}
-            aria-haspopup="menu"
-            onClick={() =>
-              setOpenMenu((open) => (open === item.href ? null : item.href))
-            }
-            className={`${desktopLinkBase} ${
-              active ? desktopLinkActive : desktopLinkIdle
-            }`}
-          >
-            {item.label}
-            <NavRule active={active} />
-            <svg
-              viewBox="0 0 24 24"
-              aria-hidden="true"
-              focusable="false"
-              className={`h-3.5 w-3.5 transition-transform duration-300 ease-out ${openMenu === item.href ? "rotate-180" : ""}`}
-            >
-              <path
-                d="m6 9 6 6 6-6"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              />
-            </svg>
-          </button>
-
-          {openMenu === item.href ? (
-            <div className="menu-in absolute left-1/2 top-full z-50 mt-2 w-64 -translate-x-1/2 overflow-hidden rounded-card border border-hairline bg-surface shadow-card-hover">
-              <ul className="p-1.5">
-                {stages.map((stage) => (
-                  <li key={stage.href}>
-                    <Link
-                      href={stage.href}
-                      className="flex items-center gap-2.5 rounded-btn px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-bg-alt"
-                    >
-                      <span
-                        aria-hidden="true"
-                        className="h-1.5 w-1.5 shrink-0 rounded-pill bg-[#a8802f]"
-                      />
-                      {stage.label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-              <Link
-                href="/academics"
-                className="block border-t border-hairline px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary-soft"
-              >
-                View all academics
-                <span aria-hidden="true"> →</span>
-              </Link>
+          {open ? (
+            <div className="absolute left-1/2 top-full z-50 -translate-x-1/2 pt-2">
+              <div className="menu-in w-64 overflow-hidden rounded-card border border-hairline bg-surface shadow-card-hover">
+                <ul className="p-1.5">
+                  {group.map((sub) => (
+                    <li key={sub.href}>
+                      <Link
+                        href={sub.href}
+                        onClick={() => setOpenMenu(null)}
+                        className="flex items-center gap-2.5 rounded-btn px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-bg-alt"
+                      >
+                        <span
+                          aria-hidden="true"
+                          className="h-1.5 w-1.5 shrink-0 rounded-pill bg-[#a8802f]"
+                        />
+                        {sub.label}
+                      </Link>
+                    </li>
+                  ))}
+                </ul>
+              </div>
             </div>
           ) : null}
         </li>
@@ -496,7 +431,7 @@ export default function Header() {
             <img
               src="/newton-logo.png"
               alt={`${site.name} logo`}
-              className="h-8 w-auto md:h-10"
+              className="h-11 w-auto sm:h-12 md:h-14"
             />
           </Link>
 
@@ -514,7 +449,7 @@ export default function Header() {
                  already sets inline-flex, and a bare `hidden` loses to it in
                  the cascade, which would leak this button onto mobile where
                  the drawer carries its own. */
-              className={`max-md:hidden ${BTN_BASE} ${BTN_TONE.teal}`}
+              className={`max-md:hidden ${BTN_BASE} ${BTN_SIZE.sm} ${BTN_TONE.teal}`}
             >
               Apply Now
             </Link>

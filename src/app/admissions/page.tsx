@@ -38,16 +38,22 @@ export const metadata: Metadata = {
 
 const IMG = {
   hero: {
-    src: "/images/home/about-main-gate.webp",
-    w: 853,
-    h: 640,
-    alt: "Young pupils in school uniform outside the school",
+    src: "/images/school/campus-driveway.webp",
+
+    w: 1600,
+
+    h: 900,
+
+    alt: "The paved driveway leading up to the school building",
   },
   cta: {
-    src: "/images/home/hero-campus.webp",
-    w: 960,
-    h: 540,
-    alt: "Classroom of school children with their hands raised",
+    src: "/images/school/campus-side-buses.webp",
+
+    w: 1600,
+
+    h: 1200,
+
+    alt: "Newton Global School buses parked beside the campus building",
   },
 } as const satisfies Record<string, Img>;
 
@@ -161,7 +167,7 @@ export default function AdmissionsPage() {
       </section>
 
       {/* ——— Closing band ——— */}
-      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg-alt" />
         <Cover img={IMG.cta} sizes="100vw" decorative className="opacity-[0.28]" />
         <div

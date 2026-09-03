@@ -24,10 +24,13 @@ interface PageHeroProps {
  * the same navy-over-photo treatment, gold rule and type scale.
  */
 const DEFAULT_HERO: Img = {
-  src: "/images/home/hero-campus.webp",
-  w: 960,
-  h: 540,
-  alt: "Classroom of school children with their hands raised",
+  src: "/images/school/campus-front.webp",
+
+  w: 1600,
+
+  h: 900,
+
+  alt: "The Newton Global School building seen from the driveway",
 };
 
 export default function PageHero({

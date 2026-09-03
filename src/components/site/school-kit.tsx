@@ -327,7 +327,7 @@ export const CONTAINER =
  * past the fold instead of clipping.
  */
 export const SECTION =
-  "flex min-h-[calc(100svh-4rem)] flex-col justify-center py-12 sm:py-14 lg:py-16 xl:py-20";
+  "flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center py-12 sm:py-14 lg:py-16 xl:py-20";
 /** Soft, generously rounded card — the school-warm counterpart to a panel. */
 export const CARD =
   "rounded-[1.25rem] border border-hairline bg-surface shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0";
@@ -541,7 +541,7 @@ export function PageHero({
   };
 }) {
   return (
-    <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-surface pb-8 pt-4 sm:pb-10 sm:pt-6 lg:pb-14 lg:pt-8">
+    <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-surface pb-8 pt-4 sm:pb-10 sm:pt-6 lg:pb-14 lg:pt-8">
       <div className={`relative ${CONTAINER}`}>
         <div>
           <div className="relative grid items-center gap-8 md:grid-cols-12 md:gap-6">
@@ -692,11 +692,23 @@ export function DoodleWash({ className = "" }: { className?: string }) {
 export type BtnTone = "gold" | "teal" | "outline" | "ghost";
 
 export const BTN_BASE =
-  "group/btn relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-pill px-5 py-2.5 " +
-  "text-[clamp(0.78rem,0.72rem+0.14vw,0.875rem)] font-bold tracking-tight " +
+  "group/btn relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-pill " +
+  "font-bold tracking-tight " +
   "transition-[translate,box-shadow,color,border-color] duration-200 ease-out " +
   "hover:-translate-y-px active:translate-y-0 " +
   "motion-reduce:transition-none motion-reduce:hover:translate-y-0";
+
+/**
+ * Padding and type scale, deliberately separate from BTN_BASE. Two sets of
+ * padding utilities in one class string are decided by the order Tailwind
+ * happens to emit them, not by the order they are written — so the size is
+ * picked here instead of being layered on top of a default.
+ */
+export const BTN_SIZE = {
+  sm: "px-4 py-2 text-[clamp(0.75rem,0.71rem+0.1vw,0.8125rem)]",
+  md: "px-5 py-2.5 text-[clamp(0.78rem,0.72rem+0.14vw,0.875rem)]",
+  lg: "px-6 py-3 text-[clamp(0.78rem,0.72rem+0.14vw,0.875rem)]",
+} as const;
 
 /** face = resting colour, wipe = the shade that fills in on hover. */
 const TONE: Record<BtnTone, { face: string; wipe: string }> = {
@@ -748,7 +760,7 @@ export function Btn({
   className?: string;
 }) {
   return (
-    <Link href={href} className={`${BTN_BASE} ${BTN_TONE[tone]} ${className}`}>
+    <Link href={href} className={`${BTN_BASE} ${BTN_SIZE.md} ${BTN_TONE[tone]} ${className}`}>
       <Wipe tone={tone} />
       {children}
     </Link>

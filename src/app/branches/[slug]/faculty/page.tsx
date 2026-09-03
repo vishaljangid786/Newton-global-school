@@ -65,7 +65,7 @@ export default async function BranchFacultyPage({ params }: BranchPageProps) {
 
       {/* 1. Principal feature card — §5.4 */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Leadership"
             title="Led from the Front"
@@ -80,7 +80,7 @@ export default async function BranchFacultyPage({ params }: BranchPageProps) {
       {/* 2. Staff grid — §5.4 (photo 1:1, name, designation, qualification) */}
       {staff.length > 0 ? (
         <section className="border-t border-hairline py-12 md:py-14">
-          <div className="mx-auto max-w-content px-4">
+          <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
             <SectionHeading
               overline="Our Teachers"
               title="Meet the Team"
@@ -103,7 +103,7 @@ export default async function BranchFacultyPage({ params }: BranchPageProps) {
 
       {/* 3. Careers strip */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4 text-center">
+        <div className="mx-auto text-center px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Join Us"
             title="Would You Like to Teach Here?"

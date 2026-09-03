@@ -24,7 +24,7 @@ export default function Card({
     <div
       className={`relative overflow-hidden rounded-card border border-hairline bg-surface shadow-card ${
         hoverLift
-          ? "transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+          ? "transition-[translate,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-primary/25 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0"
           : ""
       } ${className}`}
     >

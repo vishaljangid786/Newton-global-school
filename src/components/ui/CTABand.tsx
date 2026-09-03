@@ -25,7 +25,7 @@ export default function CTABand({
   className = "",
 }: CTABandProps) {
   return (
-    <div className={`mx-auto max-w-content px-4 py-10 md:py-14 ${className}`}>
+    <div className={`mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20 py-10 md:py-14 ${className}`}>
       <div className="relative overflow-hidden rounded-xl bg-dark px-6 py-12 text-center text-white md:px-12 md:py-14">
         {/* Corner glow */}
         <div

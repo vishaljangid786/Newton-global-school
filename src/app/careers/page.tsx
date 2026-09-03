@@ -104,7 +104,7 @@ export default function CareersPage() {
 
       {/* §4.8.2 — why work here: 3 benefit cards */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Why work here"
@@ -130,7 +130,7 @@ export default function CareersPage() {
 
       {/* §4.8.3 — open positions accordion */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Open positions"
@@ -195,7 +195,7 @@ export default function CareersPage() {
 
       {/* §4.8.4 — application form */}
       <section id="apply" className="scroll-mt-24 bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Apply now"

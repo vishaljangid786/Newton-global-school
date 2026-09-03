@@ -8,6 +8,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Senior football final on the main field",
     category: "Sports",
     branch: "city-center",
+    imageUrl: "/images/home/facility-sports.webp",
     tone: "forest",
   },
   {
@@ -15,6 +16,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Annual athletics meet — 100m sprint finish",
     category: "Sports",
     branch: "city-center",
+    imageUrl: "/images/home/why-sports.webp",
     tone: "primary",
   },
   {
@@ -22,6 +24,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Colours of India grand finale on stage",
     category: "Annual Day",
     branch: "city-center",
+    imageUrl: "/images/home/gallery-music.webp",
     tone: "dusk",
   },
   {
@@ -29,6 +32,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Prize distribution with the chief guest",
     category: "Annual Day",
     branch: "city-center",
+    imageUrl: "/images/home/achievements-bg.webp",
     tone: "accent",
   },
   {
@@ -36,6 +40,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Robotics lab build challenge in progress",
     category: "Classrooms",
     branch: "city-center",
+    imageUrl: "/images/home/program-primary.webp",
     tone: "mist",
   },
   {
@@ -43,6 +48,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Chemistry practicals, Grade 11",
     category: "Classrooms",
     branch: "city-center",
+    imageUrl: "/images/home/program-secondary.webp",
     tone: "stone",
   },
   {
@@ -50,6 +56,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Heritage walk through Amber Fort",
     category: "Trips",
     branch: "city-center",
+    imageUrl: "/images/home/gallery-drawing.webp",
     tone: "accent",
   },
   {
@@ -57,6 +64,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Grade 12 astronomy night camp",
     category: "Trips",
     branch: "city-center",
+    imageUrl: "/images/home/facility-green.webp",
     tone: "dusk",
   },
 
@@ -66,6 +74,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Morning warm-up on the 400m track",
     category: "Sports",
     branch: "green-valley",
+    imageUrl: "/images/home/gallery-running.webp",
     tone: "primary",
   },
   {
@@ -73,6 +82,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Junior cricket coaching camp",
     category: "Sports",
     branch: "green-valley",
+    imageUrl: "/images/home/gallery-playground.webp",
     tone: "forest",
   },
   {
@@ -80,6 +90,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Folk dance ensemble at Annual Day",
     category: "Annual Day",
     branch: "green-valley",
+    imageUrl: "/images/home/gallery-paint.webp",
     tone: "accent",
   },
   {
@@ -87,6 +98,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "The junior choir takes a bow",
     category: "Annual Day",
     branch: "green-valley",
+    imageUrl: "/images/home/achieve-graduate.webp",
     tone: "dusk",
   },
   {
@@ -94,6 +106,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Harvest morning in the kitchen garden",
     category: "Classrooms",
     branch: "green-valley",
+    imageUrl: "/images/home/why-writing.webp",
     tone: "forest",
   },
   {
@@ -101,6 +114,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Science Discovery Lab — circuits week",
     category: "Classrooms",
     branch: "green-valley",
+    imageUrl: "/images/home/facility-library.webp",
     tone: "mist",
   },
   {
@@ -108,6 +122,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Birdwatching trip to Keoladeo National Park",
     category: "Trips",
     branch: "green-valley",
+    imageUrl: "/images/home/about-corridor.webp",
     tone: "stone",
   },
   {
@@ -115,6 +130,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Village farm visit, Grade 3",
     category: "Trips",
     branch: "green-valley",
+    imageUrl: "/images/home/about-main-gate.webp",
     tone: "accent",
   },
 
@@ -124,6 +140,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Learn-to-swim session at the junior pool",
     category: "Sports",
     branch: "riverside",
+    imageUrl: "/images/home/facility-sports.webp",
     tone: "primary",
   },
   {
@@ -131,6 +148,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Sports day sack race, Grade 2",
     category: "Sports",
     branch: "riverside",
+    imageUrl: "/images/home/why-sports.webp",
     tone: "accent",
   },
   {
@@ -138,6 +156,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Kindergarten rhythm and rhyme performance",
     category: "Annual Day",
     branch: "riverside",
+    imageUrl: "/images/home/gallery-music.webp",
     tone: "dusk",
   },
   {
@@ -145,6 +164,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Backstage smiles before the curtain call",
     category: "Annual Day",
     branch: "riverside",
+    imageUrl: "/images/home/achievements-bg.webp",
     tone: "stone",
   },
   {
@@ -152,6 +172,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Story circle in the reading nook",
     category: "Classrooms",
     branch: "riverside",
+    imageUrl: "/images/home/program-preprimary.webp",
     tone: "mist",
   },
   {
@@ -159,6 +180,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Pottery studio — first wheels",
     category: "Classrooms",
     branch: "riverside",
+    imageUrl: "/images/home/facility-computer-lab.webp",
     tone: "accent",
   },
   {
@@ -166,6 +188,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Sensory garden nature trail",
     category: "Trips",
     branch: "riverside",
+    imageUrl: "/images/home/gallery-drawing.webp",
     tone: "forest",
   },
   {
@@ -173,6 +196,7 @@ export const galleryItems: GalleryItem[] = [
     caption: "Fire station visit, Grade 1",
     category: "Trips",
     branch: "riverside",
+    imageUrl: "/images/home/facility-green.webp",
     tone: "primary",
   },
 ];

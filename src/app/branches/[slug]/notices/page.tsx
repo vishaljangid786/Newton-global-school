@@ -102,7 +102,7 @@ export default async function BranchNoticesPage({ params }: BranchPageProps) {
 
       {/* §5.8 — tabbed Notices | Events */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Stay updated"
@@ -120,7 +120,7 @@ export default async function BranchNoticesPage({ params }: BranchPageProps) {
 
       {/* Cross-link to group-wide news */}
       <section className="bg-bg-alt py-10 md:py-14">
-        <div className="mx-auto max-w-content px-4 text-center">
+        <div className="mx-auto text-center px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <h2 className="text-2xl text-text md:text-[2rem] md:leading-tight">
             Looking for stories and photos?
           </h2>

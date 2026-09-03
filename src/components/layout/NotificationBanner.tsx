@@ -83,7 +83,7 @@ export default function NotificationBanner() {
 
   return (
     <div className="border-b border-hairline bg-bg">
-      <div className="mx-auto max-w-content px-4 py-2">
+      <div className="mx-auto max-w-content py-2 px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
         <ul className="space-y-2">
           {visible.map((n) => (
             <li

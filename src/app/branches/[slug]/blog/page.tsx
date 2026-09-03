@@ -42,7 +42,7 @@ export default async function BranchBlogPage({ params }: PageProps) {
         ]}
       />
       <section className="bg-bg py-12 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           {posts.length === 0 ? (
             <p className="rounded-lg border border-dashed border-border bg-bg-alt px-6 py-12 text-center text-sm text-text-muted">
               No posts for this campus yet. Please check back soon.

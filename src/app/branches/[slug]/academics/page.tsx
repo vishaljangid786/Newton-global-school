@@ -130,7 +130,7 @@ export default async function BranchAcademicsPage({
 
       {/* 1. Grades & sections table — §5.3 */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             align="left"
             overline="Grades & Sections"
@@ -207,7 +207,7 @@ export default async function BranchAcademicsPage({
 
       {/* 2. Curriculum notes — §5.3 */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <div className="grid items-start gap-8 lg:grid-cols-[3fr_2fr] lg:gap-12">
             <div>
               <SectionHeading
@@ -267,7 +267,7 @@ export default async function BranchAcademicsPage({
 
       {/* 3. Results & toppers — §5.3 */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Results"
             title={top >= 10 ? "Results & Toppers" : "Learning Outcomes"}
@@ -325,7 +325,7 @@ export default async function BranchAcademicsPage({
 
       {/* 4. Downloads — §5.3 (PDFs pending per §10) */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Downloads"
             title="Calendar & Syllabus"

@@ -52,7 +52,7 @@ export default async function BranchGalleryPage({ params }: BranchPageProps) {
       />
 
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Photo gallery"

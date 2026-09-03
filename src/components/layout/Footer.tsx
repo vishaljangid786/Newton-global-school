@@ -3,11 +3,24 @@ import SocialIcon from "@/components/ui/SocialIcon";
 import FooterBranches from "@/components/layout/FooterBranches";
 import { site } from "@/data/site";
 
-const QUICK_LINKS = [
+const SCHOOL_LINKS = [
   { label: "About", href: "/about" },
-  { label: "Admissions", href: "/admissions" },
-  { label: "Careers", href: "/careers" },
+  { label: "Academics", href: "/academics" },
   { label: "Gallery", href: "/gallery" },
+  { label: "News & Events", href: "/news" },
+  { label: "Careers", href: "/careers" },
+];
+
+const ADMISSION_LINKS = [
+  { label: "Admissions", href: "/admissions" },
+  { label: "Admission Process", href: "/admissions/process" },
+  { label: "Fee Structure", href: "/admissions/fees" },
+  { label: "Eligibility Criteria", href: "/admissions/eligibility" },
+  { label: "Contact", href: "/contact" },
+];
+
+/** Legal links sit in the bottom strip, not in a content column. */
+const LEGAL_LINKS = [
   { label: "Privacy Policy", href: "/privacy" },
   { label: "Terms of Use", href: "/terms" },
 ];
@@ -17,19 +30,19 @@ const columnHeading =
 const footerLink =
   "text-sm text-[#9ca6b8] transition-colors hover:text-[#8fa6f2]";
 
-/** Site footer — design.md §3.2: 4 columns on deep navy, light text. */
+/** Site footer — five balanced columns on deep navy, legal links in the strip. */
 export default function Footer() {
   return (
     <footer className="bg-footer text-[#9ca6b8]">
-      <div className="mx-auto grid max-w-content gap-10 px-4 py-12 sm:grid-cols-2 lg:grid-cols-4">
+      <div className="mx-auto max-w-content grid gap-10 py-12 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
         {/* 1 — About + socials */}
         <div>
-          <span className="inline-flex rounded-card bg-white p-2.5">
+          <span className="inline-flex">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src="/newton-logo.png"
               alt={`${site.name} logo`}
-              className="h-16 w-auto"
+              className="h-16 w-auto bg-white p-2 rounded"
             />
           </span>
           <p className="mt-4 max-w-xs text-sm leading-relaxed">
@@ -53,11 +66,11 @@ export default function Footer() {
           </ul>
         </div>
 
-        {/* 2 — Quick links */}
-        <nav aria-label="Footer quick links">
-          <h2 className={columnHeading}>Quick Links</h2>
+        {/* 2 — School */}
+        <nav aria-label="Footer school links">
+          <h2 className={columnHeading}>School</h2>
           <ul className="flex flex-col gap-2.5">
-            {QUICK_LINKS.map((link) => (
+            {SCHOOL_LINKS.map((link) => (
               <li key={link.href}>
                 <Link href={link.href} className={footerLink}>
                   {link.label}
@@ -67,7 +80,21 @@ export default function Footer() {
           </ul>
         </nav>
 
-        {/* 3 — Branches */}
+        {/* 3 — Admissions */}
+        <nav aria-label="Footer admission links">
+          <h2 className={columnHeading}>Admissions</h2>
+          <ul className="flex flex-col gap-2.5">
+            {ADMISSION_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className={footerLink}>
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        {/* 4 — Branches */}
         <nav aria-label="Footer branches">
           <h2 className={columnHeading}>Our Branches</h2>
           <ul className="flex flex-col gap-2.5">
@@ -75,7 +102,7 @@ export default function Footer() {
           </ul>
         </nav>
 
-        {/* 4 — Head office contact */}
+        {/* 5 — Head office contact */}
         <div>
           <h2 className={columnHeading}>Head Office</h2>
           <address className="flex flex-col gap-2.5 text-sm not-italic">
@@ -95,9 +122,20 @@ export default function Footer() {
 
       {/* Bottom strip */}
       <div className="border-t border-white/10">
-        <p className="mx-auto max-w-content px-4 py-4 text-center text-xs text-[#6b7488]">
-          © {new Date().getFullYear()} {site.name}. All rights reserved.
-        </p>
+        <div className="mx-auto flex max-w-content flex-wrap items-center justify-center gap-x-5 gap-y-2 py-4 text-xs text-[#6b7488] sm:justify-between px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
+          <p>
+            © {new Date().getFullYear()} {site.name}. All rights reserved.
+          </p>
+          <ul className="flex flex-wrap items-center gap-x-5 gap-y-2">
+            {LEGAL_LINKS.map((link) => (
+              <li key={link.href}>
+                <Link href={link.href} className="transition-colors hover:text-white">
+                  {link.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </div>
       </div>
     </footer>
   );

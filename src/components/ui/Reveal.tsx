@@ -49,7 +49,7 @@ export default function Reveal({
     <div
       ref={ref}
       style={delay ? { transitionDelay: `${delay}ms` } : undefined}
-      className={`transition-[opacity,transform] duration-700 ease-out motion-reduce:transition-none ${
+      className={`transition-[opacity,translate] duration-700 ease-out motion-reduce:transition-none ${
         visible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
       } ${className}`}
     >

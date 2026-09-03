@@ -67,7 +67,7 @@ export default async function BlogPostPage({ params }: PageProps) {
         breadcrumbs={[{ label: "Blog", href: "/blog" }, { label: post.title }]}
       />
       <article className="bg-bg py-12 md:py-16">
-        <div className="mx-auto max-w-3xl px-4">
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <p className="text-sm font-medium text-text-muted">
             {published ? `${published} · ` : ""}by {post.author_name}
           </p>

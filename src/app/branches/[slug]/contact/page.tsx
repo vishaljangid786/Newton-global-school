@@ -123,7 +123,7 @@ export default async function BranchContactPage({ params }: BranchPageProps) {
 
       {/* §5.9 — two-column: contact details card + contact form */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Get in touch"
@@ -177,7 +177,7 @@ export default async function BranchContactPage({ params }: BranchPageProps) {
 
       {/* §5.9 — full-width map embed */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Plan your visit"

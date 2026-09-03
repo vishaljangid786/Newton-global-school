@@ -57,7 +57,7 @@ export default async function NewsDetailPage({ params }: NewsDetailProps) {
 
       {/* §4.6 detail: date, branch badge, hero image, rich text, back link */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <article className="mx-auto max-w-3xl">
             <div className="flex flex-wrap items-center gap-3 text-sm text-text-muted">
               <time dateTime={post.date}>{formatDate(post.date)}</time>

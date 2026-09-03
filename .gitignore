@@ -42,3 +42,6 @@ next-env.d.ts
 
 # admin-uploaded images (user content, not source)
 /public/uploads
+
+# scratch build dir used to verify without disturbing a running dev server
+.next-verify

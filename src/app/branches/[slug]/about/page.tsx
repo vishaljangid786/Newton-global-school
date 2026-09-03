@@ -106,7 +106,7 @@ export default async function BranchAboutPage({ params }: BranchPageProps) {
 
       {/* 1. Campus story — §5.2 */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <div className="grid items-center gap-8 md:grid-cols-2 md:gap-12">
             <div>
               <SectionHeading
@@ -152,7 +152,7 @@ export default async function BranchAboutPage({ params }: BranchPageProps) {
 
       {/* 2. Infrastructure photos, 2-up — §5.2 */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Infrastructure"
             title="Built for Busy School Days"
@@ -190,7 +190,7 @@ export default async function BranchAboutPage({ params }: BranchPageProps) {
 
       {/* 3. Facilities icon grid — §5.2 */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Facilities"
             title="Everything a Growing Child Needs"
@@ -219,7 +219,7 @@ export default async function BranchAboutPage({ params }: BranchPageProps) {
 
       {/* 4. Achievements — §5.2 */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Achievements"
             title="Milestones We Are Proud Of"

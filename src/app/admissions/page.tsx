@@ -1,338 +1,188 @@
 import type { Metadata } from "next";
 import Link from "next/link";
-import Accordion from "@/components/ui/Accordion";
-import Card from "@/components/ui/Card";
+import {
+  CARD,
+  CONTAINER,
+  DoodleWash,
+  Cover,
+  Wave,
+  GoldLink,
+  Icon,
+  type IconName,
+  type Img,
+  PageHero,
+  rich,
+  SECTION,
+  SectionTitle,
+  STRONG,
+  TINTS,
+} from "@/components/site/school-kit";
 import InquiryForm from "@/components/forms/InquiryForm";
-import PageHero from "@/components/ui/PageHero";
 import Reveal from "@/components/ui/Reveal";
-import SectionHeading from "@/components/ui/SectionHeading";
-import Stepper, { type Step } from "@/components/ui/Stepper";
-import { faqs } from "@/data/faqs";
-import { site } from "@/data/site";
-import { formatDate } from "@/lib/format";
+import { admissionProcess } from "@/data/pages/admission-process";
+import { eligibility } from "@/data/pages/eligibility";
+import { feeStructure } from "@/data/pages/fee-structure";
+import { hubs } from "@/data/pages/hubs";
 
 export const metadata: Metadata = {
   title: "Admissions",
-  description:
-    "Admission process, eligibility, documents, key dates and FAQs for Newton Global School, Jaipur — send an inquiry for the 2026-27 session.",
+  description: hubs.admissionsBody.replace(/\*\*/g, ""),
 };
 
-/** §4.5.2 — the five-step admission process. */
-const PROCESS_STEPS: Step[] = [
+/*
+ * Hub for the three admission pages, plus the inquiry form. Every string is
+ * document copy: the masthead is the Home tab's Admission CTA section and each
+ * card carries that page's own H1 and sub-heading. The form's own labels come
+ * from the InquiryForm component, which is unchanged.
+ */
+
+const IMG = {
+  hero: {
+    src: "/images/home/about-main-gate.webp",
+    w: 853,
+    h: 640,
+    alt: "Young pupils in school uniform outside the school",
+  },
+  cta: {
+    src: "/images/home/hero-campus.webp",
+    w: 960,
+    h: 540,
+    alt: "Classroom of school children with their hands raised",
+  },
+} as const satisfies Record<string, Img>;
+
+const SECTIONS: Array<{
+  href: string;
+  h1: string;
+  sub: string;
+  label: string;
+  icon: IconName;
+}> = [
   {
-    title: "Inquire",
-    description:
-      "Share your details through the inquiry form below or at any campus front office.",
+    href: "/admissions/process",
+    h1: admissionProcess.hero.h1,
+    sub: admissionProcess.hero.sub,
+    label: "Admission Process",
+    icon: "check",
   },
   {
-    title: "Visit",
-    description:
-      "Tour the campus with our admissions team and see classrooms in action.",
+    href: "/admissions/fees",
+    h1: feeStructure.hero.h1,
+    sub: feeStructure.hero.sub,
+    label: "Fee Structure",
+    icon: "chart",
   },
   {
-    title: "Register",
-    description:
-      "Submit the registration form with documents to book an interaction slot.",
-  },
-  {
-    title: "Assessment",
-    description:
-      "A play-based interaction up to Grade 1; a short written assessment from Grade 2.",
-  },
-  {
-    title: "Confirm",
-    description:
-      "Accept the offer and pay the fee within 7 days to secure the seat.",
+    href: "/admissions/eligibility",
+    h1: eligibility.hero.h1,
+    sub: eligibility.hero.sub,
+    label: "Eligibility Criteria",
+    icon: "calendar",
   },
 ];
-
-/** §4.5.3 — eligibility criteria (ages as on 31 March 2026, per FAQ norms). */
-const ELIGIBILITY = [
-  "Nursery: 3 years or older as on 31 March 2026",
-  "LKG / UKG: 4 years or older as on 31 March 2026",
-  "Grade 1: 5 years or older as on 31 March 2026",
-  "Grades 2-12: pass in the previous grade plus a short age-appropriate assessment",
-  "Mid-session transfers: welcome subject to seat availability in the grade",
-];
-
-/** §4.5.3 — documents checklist. */
-const DOCUMENTS = [
-  "Birth certificate of the child",
-  "Four passport-size photographs",
-  "Aadhaar of the child and both parents",
-  "Address proof (utility bill, rent agreement or passport)",
-  "Previous school report card (Grade 1 and above)",
-  "Transfer certificate (Grade 2 and above)",
-];
-
-/** §4.5.4 — key dates for the 2026-27 admission cycle. */
-const KEY_DATES = [
-  {
-    milestone: "Inquiries & registrations open",
-    date: formatDate("2025-12-01"),
-    details: "Online inquiry form and all campus front offices",
-  },
-  {
-    milestone: "Campus visit & interaction",
-    date: "Within 10 working days of registration",
-    details: "Play-based up to Grade 1; short assessment from Grade 2",
-  },
-  {
-    milestone: "Admission decision",
-    date: "Within 10 working days of the interaction",
-    details: "Communicated by phone and email",
-  },
-  {
-    milestone: "Seat confirmation & fee payment",
-    date: "Within 7 days of the offer",
-    details: "Payable online or at the school office",
-  },
-  {
-    milestone: "Session 2026-27 begins",
-    date: formatDate("2026-04-06"),
-    details: "Orientation week for newly admitted families",
-  },
-  {
-    milestone: "First admission window closes",
-    date: formatDate("2026-08-31"),
-    details: "Sibling and staff priority applies within this window",
-  },
-  {
-    milestone: "Mid-session admissions close",
-    date: formatDate("2026-11-30"),
-    details: "Subject to seat availability in the grade",
-  },
-];
-
-/** Small decorative check mark for the checklists. */
-function CheckIcon() {
-  return (
-    <svg
-      aria-hidden="true"
-      focusable="false"
-      viewBox="0 0 20 20"
-      fill="none"
-      className="mt-1 h-4 w-4 shrink-0 text-success"
-    >
-      <path
-        d="M4 10.5l4 4 8-9"
-        stroke="currentColor"
-        strokeWidth="2.5"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-    </svg>
-  );
-}
 
 export default function AdmissionsPage() {
-  const telHref = `tel:${site.headOffice.phone.replace(/[^+\d]/g, "")}`;
-
   return (
     <>
-      {/* §4.5.1 — page hero with Admissions Open badge */}
       <PageHero
-        title="Admissions"
-        badge={`Admissions Open ${site.admissionYear}`}
-        subtitle="A simple, transparent five-step process — the same at all three of our Jaipur campuses."
-        breadcrumbs={[{ label: "Admissions" }]}
+        image={IMG.hero}
+        priority
+        crumbs={[{ label: "Admissions" }]}
+        h1={hubs.admissionsH1}
+        body={hubs.admissionsBody}
+        cta={hubs.admissionsCta}
+        ctaHref="#inquiry"
       />
 
-      {/* §4.5.2 — process stepper */}
-      <section className="py-12 md:py-14">
-        <div className="mx-auto max-w-content px-4">
+      {/* ——— The three admission pages ——— */}
+      <section className={SECTION}>
+        <div className={CONTAINER}>
           <Reveal>
-            <SectionHeading
-              overline="How it works"
-              title="The Admission Process"
-              subtitle="From your first inquiry to a confirmed seat in five clear steps."
-            />
-            <Stepper steps={PROCESS_STEPS} className="mt-10" />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* §4.5.3 — eligibility & documents two-column checklist */}
-      <section className="border-t border-hairline py-12 md:py-14">
-        <div className="mx-auto max-w-content px-4">
-          <Reveal>
-            <SectionHeading
-              overline="Before you apply"
-              title="Eligibility & Documents"
-              subtitle="Check the age criteria for the grade and keep these documents ready — originals are returned after verification."
+            <SectionTitle
+              eyebrow="Admissions"
+              title={hubs.admissionsH1}
+              align="center"
             />
           </Reveal>
-          <div className="mt-9 grid gap-6 md:grid-cols-2">
-            <Reveal>
-              <Card className="h-full p-6">
-                <h3 className="text-xl text-text">Age & Eligibility</h3>
-                <ul className="mt-4 space-y-3">
-                  {ELIGIBILITY.map((item) => (
-                    <li key={item} className="flex gap-3 text-sm text-text">
-                      <CheckIcon />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            </Reveal>
-            <Reveal delay={100}>
-              <Card className="h-full p-6">
-                <h3 className="text-xl text-text">Required Documents</h3>
-                <ul className="mt-4 space-y-3">
-                  {DOCUMENTS.map((item) => (
-                    <li key={item} className="flex gap-3 text-sm text-text">
-                      <CheckIcon />
-                      <span>{item}</span>
-                    </li>
-                  ))}
-                </ul>
-              </Card>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* §4.5.4 — key dates table */}
-      <section className="border-t border-hairline py-12 md:py-14">
-        <div className="mx-auto max-w-content px-4">
-          <Reveal>
-            <SectionHeading
-              overline="Plan ahead"
-              title={`Key Dates for ${site.admissionYear}`}
-              subtitle="The same schedule applies at every campus; rolling admissions continue while seats remain."
-            />
-            <div className="relative mt-9 overflow-x-auto rounded-card border border-hairline bg-surface shadow-card">
-              <table className="w-full min-w-[40rem] text-left text-sm">
-                <caption className="sr-only">
-                  Key admission dates for the {site.admissionYear} session
-                </caption>
-                <thead>
-                  <tr className="border-b border-border bg-bg-alt">
-                    <th
-                      scope="col"
-                      className="px-4 py-3 font-heading font-semibold text-text"
+          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-6">
+            {SECTIONS.map((item, index) => {
+              const tint = TINTS[index % TINTS.length];
+              return (
+                <li key={item.href}>
+                  <Reveal delay={index * 90} className="h-full">
+                    <Link
+                      href={item.href}
+                      className={`group flex h-full flex-col p-6 sm:p-7 ${CARD} hover:border-[#a8802f]/45`}
                     >
-                      Milestone
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-4 py-3 font-heading font-semibold text-text"
-                    >
-                      Date
-                    </th>
-                    <th
-                      scope="col"
-                      className="px-4 py-3 font-heading font-semibold text-text"
-                    >
-                      Details
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {KEY_DATES.map((row) => (
-                    <tr
-                      key={row.milestone}
-                      className="border-b border-border last:border-b-0"
-                    >
-                      <th
-                        scope="row"
-                        className="px-4 py-3 font-medium text-text"
+                      <span
+                        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.125rem] ${tint.well}`}
                       >
-                        {row.milestone}
-                      </th>
-                      <td className="whitespace-nowrap px-4 py-3 text-text">
-                        {row.date}
-                      </td>
-                      <td className="px-4 py-3 text-text-muted">
-                        {row.details}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-            <p className="mt-4 text-sm text-text-muted">
-              For grade-wise seat availability at a specific campus, visit the{" "}
-              <Link
-                href="/branches"
-                className="font-medium text-primary underline-offset-2 hover:underline"
-              >
-                campus pages
-              </Link>
-              .
-            </p>
-          </Reveal>
+                        <Icon name={item.icon} className="h-6 w-6" />
+                      </span>
+                      <h2 className="mt-5 font-heading text-[1.0625rem] font-semibold leading-snug text-ink transition-colors group-hover:text-[#87661f]">
+                        {rich(item.h1, STRONG.body)}
+                      </h2>
+                      <p className="mt-2.5 flex-1 text-[0.875rem] leading-[1.75] text-text-muted">
+                        {rich(item.sub)}
+                      </p>
+                      <span
+                        aria-hidden="true"
+                        className="mt-4 text-sm font-bold text-[#87661f]"
+                      >
+                        {item.label} →
+                      </span>
+                    </Link>
+                  </Reveal>
+                </li>
+              );
+            })}
+          </ul>
         </div>
       </section>
 
-      {/* §4.5.5 — inquiry form (F2) */}
-      <section id="inquiry" className="border-t border-hairline py-12 md:py-14">
-        <div className="mx-auto max-w-content px-4">
+      {/* ——— Inquiry form (unchanged feature, restyled shell) ——— */}
+      <section id="inquiry"
+        className={`relative overflow-hidden scroll-mt-24 border-y border-hairline bg-bg-alt ${SECTION}`}>
+        <DoodleWash className="text-[#000c2e] opacity-[0.045]" />
+        <div className={CONTAINER}>
           <Reveal>
-            <SectionHeading
-              overline="Start here"
-              title="Admission Inquiry Form"
-              subtitle="Tell us a little about your child and our admissions team will call you within two working days."
+            <SectionTitle
+              eyebrow="Enquiry"
+              title={hubs.admissionsCta}
+              align="center"
             />
-            <Card className="mt-9 max-w-4xl p-6 md:p-8">
+          </Reveal>
+          <Reveal delay={110}>
+            <div className="mx-auto mt-10 max-w-4xl rounded-[1.25rem] border border-hairline bg-surface p-5 shadow-card sm:p-7 lg:mt-12 lg:p-8">
               <InquiryForm />
-            </Card>
+            </div>
           </Reveal>
         </div>
       </section>
 
-      {/* §4.5.6 — FAQ accordion */}
-      <section className="border-t border-hairline py-12 md:py-14">
-        <div className="mx-auto max-w-content px-4">
-          <Reveal>
-            <SectionHeading
-              overline="Good to know"
-              title="Frequently Asked Questions"
-              subtitle="Answers to the questions parents ask us most during admissions."
-            />
-            <Accordion
-              items={faqs.map((faq) => ({
-                id: faq.q,
-                heading: faq.q,
-                content: <p>{faq.a}</p>,
-              }))}
-              className="mt-8 max-w-3xl"
-            />
-          </Reveal>
-        </div>
-      </section>
-
-      {/* §4.5.7 — contact strip (dark counterpoint card) */}
-      <section className="border-t border-hairline">
-        <div className="mx-auto max-w-content px-4 py-10 md:py-14">
-          <div className="flex flex-col items-start gap-6 rounded-xl bg-dark px-6 py-10 text-white md:flex-row md:items-center md:justify-between md:px-12">
-            <div>
-              <h2 className="text-2xl text-white md:text-[1.75rem] md:leading-tight">
-                Prefer to talk?
-              </h2>
-              <p className="mt-2 max-w-xl text-sm text-[#b4bdcf] md:text-base">
-                Our admissions helpdesk is available{" "}
-                {site.headOffice.officeHours}. We&apos;re happy to answer
-                questions in Hindi or English.
-              </p>
-            </div>
-            <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center">
-              <a
-                href={telHref}
-                className="inline-flex items-center justify-center gap-2 rounded-btn bg-white px-6 py-3 text-sm font-semibold text-ink transition-colors hover:bg-white/90"
-              >
-                Call {site.headOffice.phone}
-              </a>
-              <Link
-                href="/contact"
-                className="text-sm font-medium text-[#8fa6f2] transition-colors hover:text-white"
-              >
-                Or write to us
-              </Link>
-            </div>
-          </div>
-        </div>
+      {/* ——— Closing band ——— */}
+      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+        <Wave className="z-20 text-bg-alt" />
+        <Cover img={IMG.cta} sizes="100vw" decorative className="opacity-[0.28]" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
+        />
+        <Reveal className={`relative ${CONTAINER}`}>
+          <span
+            aria-hidden="true"
+            className="mx-auto block h-[3px] w-14 rounded-pill bg-[#d6a53f]"
+          />
+          <h2 className="mx-auto mt-6 max-w-3xl text-[1.5rem] leading-[1.2] text-white sm:text-[1.8rem] md:text-[2.1rem]">
+            {rich(hubs.admissionsH1, STRONG.headingDark)}
+          </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-[0.9375rem] leading-[1.8] text-[#c2cfe4] md:text-base">
+            {rich(hubs.admissionsBody, STRONG.dark)}
+          </p>
+          <GoldLink href="/contact" className="mt-8 w-full sm:w-auto">
+            {hubs.admissionsCta}
+          </GoldLink>
+        </Reveal>
       </section>
     </>
   );

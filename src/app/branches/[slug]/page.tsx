@@ -212,7 +212,7 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
 
       {/* 1. Hero — §5.1.1: framed image card, matching the home hero */}
       <section className="border-b border-[#e6ebf2] bg-bg-alt">
-        <div className="mx-auto max-w-content px-4 pb-10 pt-8 md:pt-10">
+        <div className="mx-auto pb-10 pt-8 md:pt-10 px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <div className="relative overflow-hidden rounded-lg border border-[#e1e7f0] shadow-frame">
             <div className="relative">
               <PlaceholderImage fill tone={heroTone} />
@@ -253,7 +253,7 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
 
       {/* 2. Quick facts — §5.1.2 */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <h2 className="sr-only">Quick facts about {branch.name}</h2>
           <div className="grid grid-cols-2 gap-4 lg:grid-cols-4">
             <FactTile
@@ -282,7 +282,7 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
 
       {/* 3. Principal's message — §5.1.3 */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <div className="grid items-start gap-8 md:grid-cols-[2fr_5fr] md:gap-12">
             <div className="mx-auto w-full max-w-64 md:max-w-none">
               {branch.principal.photoUrl ? (
@@ -323,7 +323,7 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
 
       {/* 4. Highlights — §5.1.4 */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Campus Highlights"
             title={`Why Families Choose ${branch.name}`}
@@ -364,7 +364,7 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
       {/* 5. Testimonials — student, parent and teacher voices (DB-backed) */}
       {hasTestimonials ? (
         <section className="border-t border-hairline py-10 md:py-16">
-          <div className="mx-auto max-w-content px-4">
+          <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
             <SectionHeading
               overline="Testimonials"
               title="What our school family says"
@@ -381,7 +381,7 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
 
       {/* 6. Latest branch notices — §5.1.5 */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <div className="flex flex-wrap items-end justify-between gap-4">
             <SectionHeading
               align="left"
@@ -417,7 +417,7 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
 
       {/* 6. Mini gallery — §5.1.6 */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Campus Life"
             title="A Glimpse of Our Days"
@@ -463,7 +463,7 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
 
       {/* 7. Map + address strip — §5.1.7 */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             align="left"
             overline="Find Us"

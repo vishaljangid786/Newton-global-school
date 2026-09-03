@@ -1,308 +1,619 @@
 import type { Metadata } from "next";
-import Card from "@/components/ui/Card";
-import CTABand from "@/components/ui/CTABand";
-import PageHero from "@/components/ui/PageHero";
-import PlaceholderImage from "@/components/ui/PlaceholderImage";
+import Link from "next/link";
+import {
+  CARD,
+  CONTAINER,
+  DoodleWash,
+  Cover,
+  Wave,
+  GoldLink,
+  Icon,
+  type IconName,
+  type Img,
+  PageHero,
+  Photo,
+  rich,
+  SECTION,
+  SectionTitle,
+  STRONG,
+  TINTS,
+} from "@/components/site/school-kit";
 import Reveal from "@/components/ui/Reveal";
-import SectionHeading from "@/components/ui/SectionHeading";
-import { branches } from "@/data/branches";
-import { site } from "@/data/site";
-import type { BranchSlug, PlaceholderTone } from "@/data/types";
-import { initials } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "About Us",
-  description:
-    "The story, mission, values and leadership of Newton Global School — a Jaipur school group nurturing learners across three campuses since 1998.",
+  description: "A Trusted Name in Education at Sangteda, Kotputli, Rajasthan",
 };
 
-/** Core values (design.md §4.2.4) — icon chips, decorative inline SVGs. */
-const CORE_VALUES: { name: string; iconPath: string }[] = [
+/* ———————————————————————————————————————————————————————————————
+ * Page copy — transcribed verbatim from "Newton Global School.docx"
+ * (About Us Page tab). `**…**` marks the phrases the document bolds; every
+ * other character — hyphens, punctuation, casing — is exactly as written in
+ * the source. Do not reword.
+ *
+ * The document's two parenthetical author notes ("Yahan aap RBSE affiliation
+ * number/status confirm hone ke baad add kar sakte hain" and "Real quote aur
+ * photo baad me add kar sakte hain") are instructions to the site owner, not
+ * page copy, so they are not rendered.
+ * ——————————————————————————————————————————————————————————————— */
+
+/* §1 Banner Section */
+const HERO = {
+  h1: `About **Newton Global School** - **Best School in Kotputli**`,
+  sub: `A Trusted Name in Education at Sangteda, Kotputli, Rajasthan`,
+};
+
+/* §2 Our Story Section */
+const STORY = {
+  h2: `Our Story`,
+  body: [
+    `Newton Global School stands proudly in Sangteda, on **Babera Road**, near **NH8 Kotputli**, in the Kotputli-Behror district of Rajasthan. What began as a vision to provide quality education to the children of this region has grown into one of the recognized **schools in Kotputli**, known for its dedication to academic excellence and student well-being.`,
+    `Managed by a registered Society, Newton Global School was built with a clear purpose to give every child in Sangteda and the surrounding areas access to a **Senior Secondary School in Kotputli** that combines strong academics with genuine care. From our very first day, our focus has remained the same: helping children learn, grow, and become confident individuals ready to take on the world.`,
+  ],
+};
+
+/* §3 Vision & Mission Section */
+const VISION_MISSION = {
+  h2: `Our Vision & Mission`,
+  visionLabel: `Vision:`,
+  vision: `To be known as the **best school in Kotputli**, where every child receives an education that builds not just knowledge, but character, confidence, and curiosity.`,
+  missionLabel: `Mission:`,
+  mission: [
+    `To offer quality education that follows the state curriculum with dedication and clarity`,
+    `To provide a safe, disciplined, and supportive environment for every student`,
+    `To nurture creativity, critical thinking, and confidence from Nursery through **Senior Secondary**`,
+    `To build strong values alongside strong academics, preparing students for both exams and life`,
+  ],
+};
+
+/* §4 About the School (Institutional Details) Section */
+const INSTITUTION = {
+  h2: `About Our Institution`,
+  body: [
+    `Newton Global School is a **private school managed by a registered Society**, offering education up to the **Senior Secondary** level. Located in Sangteda, Kotputli (Kotputli-Behror district), the school serves families across Sangteda, Kotputli, and nearby rural areas, making it a convenient choice for parents looking for the **best school near Sangteda**.`,
+    `We are committed to academic excellence within the state education framework, with our curriculum and teaching designed to help students perform well in board examinations while also developing life skills.`,
+  ],
+};
+
+/* §5 Message from the Principal/Management Section */
+const MESSAGE = {
+  h2: `A Message from Our Management`,
+  quote: `"At Newton Global School, we believe education is not just about textbooks, it's about shaping young minds to think, question, and grow. Our goal is to make Newton Global School a place every parent in Sangteda and Kotputli can trust, and every child can call home. We are committed to building an institution where learning is joyful, discipline is valued, and every student's potential is recognized."`,
+};
+
+/* §6 Our Core Values Section */
+const CORE_VALUES_H2 = `Our Core Values`;
+const CORE_VALUES: Array<{ icon: IconName; text: string }> = [
   {
-    name: "Integrity",
-    iconPath:
-      "M12 3l7 3v5.5c0 4.4-3 8.1-7 9.5-4-1.4-7-5.1-7-9.5V6l7-3z M9.5 12l2 2 3.5-4",
+    icon: "shield",
+    text: `**Discipline** - Building responsibility and respect from an early age`,
   },
   {
-    name: "Curiosity",
-    iconPath:
-      "M12 3a6 6 0 0 0-3.7 10.7c.7.6 1.2 1.4 1.2 2.3h5c0-.9.5-1.7 1.2-2.3A6 6 0 0 0 12 3z M10 19h4 M10.5 21.5h3",
+    icon: "chart",
+    text: `**Excellence** - Encouraging students to give their best in academics and beyond`,
   },
   {
-    name: "Respect",
-    iconPath:
-      "M9 10.5a3 3 0 1 0 0-6 3 3 0 0 0 0 6z M3.5 19.5c0-3 2.5-5 5.5-5s5.5 2 5.5 5 M15.1 4.9a2.5 2.5 0 1 1 1.4 4.6 M16 14.7c2.6.4 4.5 2.2 4.5 4.8",
+    icon: "faculty",
+    text: `**Care** - Creating a warm, supportive environment for every child`,
   },
   {
-    name: "Excellence",
-    iconPath:
-      "M12 3.5l2.6 5.3 5.9.9-4.2 4.1 1 5.8-5.3-2.8-5.3 2.8 1-5.8L3.5 9.7l5.9-.9L12 3.5z",
+    icon: "target",
+    text: `**Integrity** - Teaching honesty and strong moral values`,
   },
   {
-    name: "Compassion",
-    iconPath:
-      "M12 20.5S3.5 15.5 3.5 9.5a4.5 4.5 0 0 1 8.5-2 4.5 4.5 0 0 1 8.5 2c0 6-8.5 11-8.5 11z",
-  },
-  {
-    name: "Responsibility",
-    iconPath:
-      "M5.5 18.5C5.5 10 11 5 20 4.5c-.5 9-5.5 14.5-14.5 14z M5.5 18.5C8 13.5 11.5 10 16.5 7.5",
+    icon: "leaf",
+    text: `**Growth** - Helping every student discover and reach their true potential`,
   },
 ];
 
-/** Two-line bios for the leadership cards; names/campuses come from data. */
-const LEADER_BIOS: Record<BranchSlug, string> = {
-  "city-center":
-    "Guides our founding campus and its senior school with a calm focus on strong academics, pastoral care and board-year mentoring.",
-  "green-valley":
-    "Champions outdoor, experience-led learning and small class groups, from the kitchen garden to the athletics track.",
-  riverside:
-    "Leads our youngest campus with a joyful early-years programme where every child reads, swims, paints and codes.",
+/* §7 Why Choose Us Section */
+const WHY_H2 = `What Makes Us the **Best School in Sangteda**`;
+const WHY = [
+  `Convenient location on **Babera Road**, easily accessible via **NH8 Kotputli**`,
+  `Dedicated and caring teaching staff`,
+  `Well-planned infrastructure supporting complete student development`,
+  `Focus on both academic performance and overall personality development`,
+  `A safe, disciplined, and nurturing campus environment`,
+  `Complete schooling from nursery to **Senior Secondary** under one roof`,
+];
+
+/* §8 Our Campus & Facilities Overview Section */
+const CAMPUS = {
+  h2: `Our Campus`,
+  body: `Spread across a well-designed campus in Sangteda, Newton Global School offers modern classrooms, a well-stocked library, computer and science laboratories, sports facilities, and a safe transport system connecting Kotputli and surrounding areas. Our campus is built to support both academic learning and the overall growth of every student.`,
+  /* The document specifies this section's link as: (Link: "View All Facilities →") */
+  link: `View All Facilities →`,
 };
 
-const LEADER_TONES: PlaceholderTone[] = ["dusk", "forest", "primary"];
+/* §9 Management & Governance Section */
+const MANAGEMENT = {
+  h2: `Our Management`,
+  body: `Newton Global School is administered by a registered Society, which oversees the school's academic direction, infrastructure development, and long-term vision. This structure ensures that decisions are made with the best interests of students and the community at heart.`,
+};
 
-/** Accreditation "logo" row rendered as styled text chips (no external images). */
-const ACCREDITATIONS = [
-  "CBSE Affiliated",
-  "ISO 9001 Certified",
-  "British Council ISA",
-  "FIT India School",
-  "Eco-Schools Green Flag",
+/* §10 Call-To-Action Section */
+const CTA = {
+  h2: `Be Part of the Newton Global School Family`,
+  body: `Looking for the right school for your child in Sangteda or Kotputli? We welcome you to visit our campus, meet our teachers, and see firsthand what makes Newton Global School a place families trust.`,
+  cta: `Book a Campus Visit / Apply for Admission`,
+};
+
+/**
+ * CC0 sample photography — public domain, no attribution required.
+ * Source list in public/images/home/CREDITS.md. Chosen to match the image
+ * placement guide in the document's third tab (banner exterior, story +
+ * reception, campus wide shot, facilities collage, governance office).
+ */
+const IMG = {
+  heroBanner: {
+    src: "/images/home/campus-family-visit.webp",
+    w: 1448,
+    h: 1086,
+    alt: "Parents with four Newton Global School pupils in uniform outside the campus",
+  },
+  storyGate: {
+    src: "/images/home/about-main-gate.webp",
+    w: 853,
+    h: 640,
+    alt: "Young pupils in school uniform outside the school",
+  },
+  storyCorridor: {
+    src: "/images/home/about-corridor.webp",
+    w: 760,
+    h: 570,
+    alt: "Pupils with backpacks walking down a school corridor",
+  },
+  institution: {
+    src: "/images/home/location-campus.webp",
+    w: 960,
+    h: 540,
+    alt: "Young pupils in school uniform outside the school",
+  },
+  managementOffice: {
+    src: "/images/home/about-office.webp",
+    w: 900,
+    h: 562,
+    alt: "Bright, open office and meeting area",
+  },
+  whyLibrary: {
+    src: "/images/home/facility-library.webp",
+    w: 760,
+    h: 570,
+    alt: "Classroom reading corner lined with books",
+  },
+  whyComputerLab: {
+    src: "/images/home/smart-class-session.webp",
+    w: 1448,
+    h: 1086,
+    alt: "Children watching a lesson on the smart-class screen",
+  },
+  whyActivityRoom: {
+    src: "/images/home/preprimary-outdoor-play.webp",
+    w: 1448,
+    h: 1086,
+    alt: "Young pupils sitting together on the school's turf play area",
+  },
+  campusPlayground: {
+    src: "/images/home/assembly-activity.webp",
+    w: 1448,
+    h: 1086,
+    alt: "Pupils in two rows taking part in a school hall activity",
+  },
+  campusSports: {
+    src: "/images/home/facility-sports.webp",
+    w: 760,
+    h: 570,
+    alt: "Football resting on a grass sports field with goalposts",
+  },
+  campusScience: {
+    src: "/images/home/science-lab-experiment.webp",
+    w: 1448,
+    h: 1086,
+    alt: "Pupils in uniform running a water experiment in the science lab",
+  },
+  campusTransport: {
+    src: "/images/home/facility-bus.webp",
+    w: 760,
+    h: 570,
+    alt: "Aisle and seats inside a school bus",
+  },
+  governance: {
+    src: "/images/home/about-governance.webp",
+    w: 900,
+    h: 562,
+    alt: "Meeting room with a long table beside tall windows",
+  },
+  ctaCampus: {
+    src: "/images/home/hero-campus.webp",
+    w: 960,
+    h: 540,
+    alt: "Classroom of school children with their hands raised",
+  },
+} as const satisfies Record<string, Img>;
+
+
+/** §7 — the small facilities collage the image guide calls for. */
+const WHY_COLLAGE: Img[] = [
+  IMG.whyLibrary,
+  IMG.whyComputerLab,
+  IMG.whyActivityRoom,
+];
+
+/** §8 — the four-up campus grid. */
+const CAMPUS_GRID: Img[] = [
+  IMG.campusPlayground,
+  IMG.campusSports,
+  IMG.campusScience,
+  IMG.campusTransport,
 ];
 
 export default function AboutPage() {
-  const sortedByAge = [...branches].sort((a, b) => a.established - b.established);
-  const [founding, second, third] = sortedByAge;
-  const totalStudents = branches
-    .reduce((total, branch) => total + branch.quickFacts.students, 0)
-    .toLocaleString("en-IN");
-
   return (
     <>
+      {/* ——— §1 Banner Section — campus exterior under a navy wash ——— */}
       <PageHero
-        title="About Us"
-        subtitle={`One school family, three campuses across Jaipur — ${site.tagline.toLowerCase()}.`}
-        breadcrumbs={[{ label: "About Us" }]}
+        image={IMG.heroBanner}
+        priority
+        crumbs={[{ label: "About Us" }]}
+        h1={HERO.h1}
+        sub={HERO.sub}
       />
 
-      {/* §4.2.2 — Our story */}
-      <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
-          <Reveal className="grid items-center gap-10 lg:grid-cols-2">
-            <div className="overflow-hidden rounded-card shadow-card">
-              <PlaceholderImage
-                aspect="4/3"
-                tone="dusk"
-                label={`${founding.name}, ${founding.established}`}
+      {/* ——— §2 Our Story — gateway photo with a corridor inset ——— */}
+      <section className={`relative overflow-hidden bg-bg ${SECTION}`}>
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-24 top-16 h-64 w-64 rounded-pill bg-[#faf4e8] opacity-70 blur-2xl"
+        />
+        <div
+          className={`relative ${CONTAINER} grid items-center gap-12 md:grid-cols-2 lg:gap-14 xl:gap-16`}
+        >
+          <Reveal>
+            <div className="relative">
+              <span
+                aria-hidden="true"
+                className="absolute -left-3 -top-3 hidden h-full w-full rounded-[1.75rem] border-2 border-[#a8802f]/45 sm:block"
               />
+              <div className="relative overflow-hidden rounded-[1.75rem] shadow-frame">
+                <Photo
+                  img={IMG.storyGate}
+                  sizes="(max-width: 768px) 92vw, (max-width: 1200px) 46vw, 540px"
+                  className="h-auto w-full"
+                />
+              </div>
+              <div className="absolute -bottom-8 -right-2 hidden w-36 overflow-hidden rounded-[1.25rem] border-4 border-bg shadow-frame sm:block lg:w-44">
+                <Photo
+                  img={IMG.storyCorridor}
+                  sizes="(max-width: 1024px) 144px, 176px"
+                  className="h-auto w-full"
+                />
+              </div>
             </div>
-            <div>
-              <SectionHeading
-                align="left"
-                overline="Our Story"
-                title="From a handful of classrooms to a family of campuses"
+          </Reveal>
+          <Reveal delay={120}>
+            <SectionTitle eyebrow="Our Story" title={STORY.h2} />
+            {STORY.body.map((paragraph, index) => (
+              <p
+                key={paragraph.slice(0, 32)}
+                className={`text-[0.9375rem] leading-[1.85] text-text-muted md:text-base ${
+                  index === 0 ? "mt-5" : "mt-4"
+                }`}
+              >
+                {rich(paragraph)}
+              </p>
+            ))}
+          </Reveal>
+        </div>
+      </section>
+
+      {/* ——— §3 Vision & Mission — text-led navy band (no heavy image) ——— */}
+      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+        <Wave className="z-20 text-bg" />
+        <Cover img={IMG.storyCorridor} sizes="100vw" decorative className="opacity-[0.14]" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,rgba(0,19,68,0.96),rgba(0,19,68,0.8))]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-20 bottom-0 h-72 w-72 rounded-pill bg-[radial-gradient(circle,rgba(214,165,63,0.18),transparent_70%)]"
+        />
+        <div className={`relative ${CONTAINER}`}>
+          <Reveal>
+            <SectionTitle
+              eyebrow="Vision & Mission"
+              title={VISION_MISSION.h2}
+              align="center"
+              tone="dark"
+            />
+          </Reveal>
+          <div className="mt-10 grid gap-6 lg:mt-12 lg:grid-cols-12 lg:gap-8">
+            <Reveal className="lg:col-span-5">
+              <div className="h-full rounded-[1.25rem] border border-[#d6a53f]/30 bg-white/[0.07] p-5 backdrop-blur-sm sm:p-7 lg:p-8">
+                <h3 className="font-heading text-[0.9375rem] font-bold leading-snug text-[#d6a53f]">
+                  {VISION_MISSION.visionLabel}
+                </h3>
+                <p className="mt-4 text-[0.9375rem] leading-[1.85] text-[#c2cfe4] md:text-base">
+                  {rich(VISION_MISSION.vision, STRONG.dark)}
+                </p>
+              </div>
+            </Reveal>
+            <Reveal delay={120} className="lg:col-span-7">
+              <div className="h-full rounded-[1.25rem] border border-white/12 bg-white/[0.05] p-5 backdrop-blur-sm sm:p-7 lg:p-8">
+                <h3 className="font-heading text-[0.9375rem] font-bold leading-snug text-[#d6a53f]">
+                  {VISION_MISSION.missionLabel}
+                </h3>
+                <ul className="mt-4 space-y-3.5">
+                  {VISION_MISSION.mission.map((point) => (
+                    <li key={point.slice(0, 24)} className="flex gap-3">
+                      <span
+                        aria-hidden="true"
+                        className="mt-1 flex h-5 w-5 shrink-0 items-center justify-center rounded-pill bg-[#d6a53f] text-[#001344]"
+                      >
+                        <Icon name="check" className="h-3 w-3" />
+                      </span>
+                      <span className="text-[0.9375rem] leading-[1.75] text-[#c2cfe4]">
+                        {rich(point, STRONG.dark)}
+                      </span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            </Reveal>
+          </div>
+        </div>
+      </section>
+
+      {/* ——— §4 About Our Institution — campus wide shot ——— */}
+      <section className={SECTION}>
+        <div
+          className={`${CONTAINER} grid items-center gap-12 md:grid-cols-2 lg:gap-14 xl:gap-16`}
+        >
+          <Reveal>
+            <SectionTitle eyebrow="Our Institution" title={INSTITUTION.h2} />
+            {INSTITUTION.body.map((paragraph, index) => (
+              <p
+                key={paragraph.slice(0, 32)}
+                className={`text-[0.9375rem] leading-[1.85] text-text-muted md:text-base ${
+                  index === 0 ? "mt-5" : "mt-4"
+                }`}
+              >
+                {rich(paragraph)}
+              </p>
+            ))}
+          </Reveal>
+          <Reveal delay={120}>
+            <div className="relative">
+              <span
+                aria-hidden="true"
+                className="absolute -bottom-3 -right-3 hidden h-full w-full rounded-[1.75rem] border-2 border-[#a8802f]/45 sm:block"
               />
-              <div className="mt-5 space-y-4 text-base text-text">
-                <p>
-                  {site.name} began in {site.established} with a handful of
-                  classrooms at what is now our {founding.name} in{" "}
-                  {founding.area}. The early years were simple: committed
-                  teachers, involved parents and a firm belief that a good
-                  school is built on relationships before results.
-                </p>
-                <p>
-                  As families asked us to bring the same approach to their own
-                  neighbourhoods, {second.name} opened in {second.established}{" "}
-                  with room to learn outdoors, followed by {third.name} in{" "}
-                  {third.established} for our youngest learners. Today our
-                  three campuses are home to {totalStudents} students and one
-                  shared way of doing school.
-                </p>
-                <p>
-                  Through all that growth, our promise to parents has stayed
-                  the same: each campus small enough to know every child by
-                  name, and a group strong enough to open every door.
-                </p>
+              <div className="relative overflow-hidden rounded-[1.75rem] shadow-frame">
+                <Photo
+                  img={IMG.institution}
+                  sizes="(max-width: 768px) 92vw, (max-width: 1200px) 46vw, 540px"
+                  className="h-auto w-full"
+                />
               </div>
             </div>
           </Reveal>
         </div>
       </section>
 
-      {/* §4.2.3 — Mission & Vision */}
-      <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
-          <SectionHeading
-            overline={"Mission & Vision"}
-            title="What we are here to do"
-          />
-          <div className="mt-10 grid gap-6 md:grid-cols-2">
-            <Reveal>
-              <Card className="h-full p-6 md:p-8">
-                <span
-                  aria-hidden="true"
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-6 w-6"
-                    focusable="false"
-                  >
-                    <path d="M12 21a9 9 0 1 0 0-18 9 9 0 0 0 0 18z M12 16.5a4.5 4.5 0 1 0 0-9 4.5 4.5 0 0 0 0 9z M12 13.2a1.2 1.2 0 1 0 0-2.4 1.2 1.2 0 0 0 0 2.4z" />
-                  </svg>
-                </span>
-                <h3 className="mt-4 text-xl">Our Mission</h3>
-                <p className="mt-3 text-base text-text">
-                  To provide a safe, warm and academically rigorous education
-                  in which every child — at every campus — discovers their
-                  strengths, builds strong character and learns the habits of
-                  independent thought.
-                </p>
-              </Card>
-            </Reveal>
-            <Reveal delay={100}>
-              <Card className="h-full p-6 md:p-8">
-                <span
-                  aria-hidden="true"
-                  className="flex h-11 w-11 items-center justify-center rounded-full bg-primary/10 text-primary"
-                >
-                  <svg
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.7"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    className="h-6 w-6"
-                    focusable="false"
-                  >
-                    <path d="M2.5 12S6 5.5 12 5.5 21.5 12 21.5 12 18 18.5 12 18.5 2.5 12 2.5 12z M12 15a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-                  </svg>
-                </span>
-                <h3 className="mt-4 text-xl">Our Vision</h3>
-                <p className="mt-3 text-base text-text">
-                  To be the school group Jaipur families trust most: a
-                  community of campuses where childhood is protected, curiosity
-                  is contagious and every graduate leaves ready to shape a
-                  kinder, brighter world.
-                </p>
-              </Card>
-            </Reveal>
-          </div>
-        </div>
-      </section>
-
-      {/* §4.2.4 — Core values */}
-      <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
-          <SectionHeading
-            overline="Core Values"
-            title="Six habits we practise every day"
-            subtitle="They hang on classroom walls at every campus — and we hold ourselves to them first."
-          />
-          <Reveal>
-            <ul className="mt-10 flex flex-wrap justify-center gap-3">
-              {CORE_VALUES.map((value) => (
-                <li
-                  key={value.name}
-                  className="flex items-center gap-2.5 rounded-pill border border-border bg-bg-alt px-5 py-2.5"
-                >
-                  <span aria-hidden="true" className="text-primary">
-                    <svg
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="1.7"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-5 w-5"
-                      focusable="false"
-                    >
-                      <path d={value.iconPath} />
-                    </svg>
-                  </span>
-                  <span className="font-heading text-sm font-semibold text-text">
-                    {value.name}
-                  </span>
-                </li>
-              ))}
-            </ul>
+      {/* ——— §5 A Message from Our Management ——— */}
+      <section className={`border-y border-[#a8802f]/20 bg-[#faf4e8] ${SECTION}`}>
+        <div
+          className={`${CONTAINER} grid items-center gap-10 lg:grid-cols-12 lg:gap-14`}
+        >
+          <Reveal className="lg:col-span-5">
+            <div className="overflow-hidden rounded-[1.5rem] shadow-frame">
+              <Photo
+                img={IMG.managementOffice}
+                sizes="(max-width: 1024px) 92vw, 440px"
+                className="h-auto w-full"
+              />
+            </div>
+          </Reveal>
+          <Reveal delay={120} className="lg:col-span-7">
+            <SectionTitle eyebrow="Management" title={MESSAGE.h2} />
+            <figure className="mt-7 rounded-[1.25rem] border border-[#a8802f]/25 bg-surface p-5 shadow-card sm:p-6 lg:p-8">
+              <span
+                aria-hidden="true"
+                className="flex h-12 w-12 items-center justify-center rounded-[1rem] bg-[#faf4e8] text-[#87661f]"
+              >
+                <Icon name="quote" className="h-5 w-5" />
+              </span>
+              <blockquote className="mt-5 text-[0.9375rem] leading-[1.9] text-text md:text-base">
+                {MESSAGE.quote}
+              </blockquote>
+            </figure>
           </Reveal>
         </div>
       </section>
 
-      {/* §4.2.5 — Management / leadership */}
-      <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
-          <SectionHeading
-            overline="Leadership"
-            title="The people who lead our campuses"
-            subtitle="Every campus is led by a principal with full academic and pastoral responsibility, supported by the group management team."
-          />
-          <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {branches.map((branch, index) => (
-              <Reveal key={branch.slug} delay={index * 100}>
-                <Card className="h-full p-6 text-center">
-                  <div className="mx-auto w-28 overflow-hidden rounded-full">
-                    <PlaceholderImage
-                      aspect="1/1"
-                      tone={LEADER_TONES[index % LEADER_TONES.length]}
-                      label={initials(branch.principal.name)}
-                    />
-                  </div>
-                  <h3 className="mt-4 text-lg">{branch.principal.name}</h3>
-                  <p className="mt-1 text-sm font-medium text-primary">
-                    Principal · {branch.name}
-                  </p>
-                  <p className="mt-3 text-sm text-text-muted">
-                    {LEADER_BIOS[branch.slug]}
-                  </p>
-                </Card>
-              </Reveal>
-            ))}
+      {/* ——— §6 Our Core Values — icon tiles, no photography ——— */}
+      <section className={SECTION}>
+        <div className={CONTAINER}>
+          <Reveal>
+            <SectionTitle
+              eyebrow="Core Values"
+              title={CORE_VALUES_H2}
+              align="center"
+            />
+          </Reveal>
+          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:mt-12 lg:grid-cols-6 lg:gap-6">
+            {CORE_VALUES.map((value, index) => {
+              const tint = TINTS[index % TINTS.length];
+              return (
+                <li
+                  key={value.icon}
+                  className={`lg:col-span-2 ${index === 3 ? "lg:col-start-2" : ""}`}
+                >
+                  <Reveal delay={(index % 3) * 90} className="h-full">
+                    <article
+                      className={`flex h-full flex-col p-5 sm:p-6 lg:p-7 ${CARD} ${tint.edge} ${tint.bar}`}
+                    >
+                      <span
+                        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.125rem] ${tint.well}`}
+                      >
+                        <Icon name={value.icon} className="h-6 w-6" />
+                      </span>
+                      <p className="mt-5 break-words text-[0.9375rem] leading-[1.8] text-text-muted">
+                        {rich(value.text, STRONG.runIn)}
+                      </p>
+                    </article>
+                  </Reveal>
+                </li>
+              );
+            })}
+          </ul>
+        </div>
+      </section>
+
+      {/* ——— §7 What Makes Us the Best School in Sangteda ——— */}
+      <section className={`relative overflow-hidden border-y border-hairline bg-bg-alt ${SECTION}`}>
+        <DoodleWash className="text-[#000c2e] opacity-[0.045]" />
+        <div
+          className={`${CONTAINER} grid gap-10 lg:grid-cols-12 lg:items-center lg:gap-14`}
+        >
+          <Reveal className="lg:col-span-5">
+            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+              <div className="col-span-2 overflow-hidden rounded-[1.25rem] shadow-frame">
+                <Photo
+                  img={WHY_COLLAGE[0]}
+                  sizes="(max-width: 1024px) 92vw, 460px"
+                  className="h-auto w-full"
+                />
+              </div>
+              {WHY_COLLAGE.slice(1).map((img) => (
+                <div
+                  key={img.src}
+                  className="overflow-hidden rounded-[1.25rem] shadow-card"
+                >
+                  <Photo
+                    img={img}
+                    sizes="(max-width: 1024px) 45vw, 225px"
+                    className="h-auto w-full"
+                  />
+                </div>
+              ))}
+            </div>
+          </Reveal>
+          <div className="lg:col-span-7">
+            <Reveal>
+              <SectionTitle eyebrow="Why Choose Us" title={WHY_H2} />
+            </Reveal>
+            <ul className="mt-8 divide-y divide-hairline border-y border-hairline">
+              {WHY.map((point, index) => (
+                <li key={point.slice(0, 24)}>
+                  <Reveal delay={index * 60}>
+                    <div className="flex items-start gap-4 py-4">
+                      <span
+                        aria-hidden="true"
+                        className="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-pill bg-[#faf4e8] text-[#87661f]"
+                      >
+                        <Icon name="check" className="h-3.5 w-3.5" />
+                      </span>
+                      <p className="text-[0.9375rem] leading-[1.8] text-text-muted">
+                        {rich(point)}
+                      </p>
+                    </div>
+                  </Reveal>
+                </li>
+              ))}
+            </ul>
           </div>
         </div>
       </section>
 
-      {/* §4.2.6 — Accreditations & affiliations */}
-      <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
-          <SectionHeading
-            overline="Recognition"
-            title={"Accreditations & affiliations"}
-          />
+      {/* ——— §8 Our Campus — facility grid + the document's own link ——— */}
+      <section className={SECTION}>
+        <div className={CONTAINER}>
           <Reveal>
-            <ul className="mt-10 flex flex-wrap items-stretch justify-center gap-4">
-              {ACCREDITATIONS.map((item) => (
-                <li
-                  key={item}
-                  className="flex items-center rounded-btn border border-hairline bg-surface px-6 py-4 shadow-card"
+            <SectionTitle eyebrow="Our Campus" title={CAMPUS.h2} align="center" />
+            <p className="mx-auto mt-4 max-w-3xl text-center text-[0.9375rem] leading-[1.85] text-text-muted md:text-base">
+              {CAMPUS.body}
+            </p>
+          </Reveal>
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            {CAMPUS_GRID.map((img, index) => (
+              <Reveal key={img.src} delay={index * 80}>
+                <div
+                  className={`relative aspect-[4/3] overflow-hidden rounded-[1.25rem] shadow-card sm:aspect-[16/11] ${
+                    index % 2 ? "lg:translate-y-4" : ""
+                  }`}
                 >
-                  <span className="font-heading text-sm font-semibold uppercase tracking-[0.06em] text-text-muted">
-                    {item}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-6 text-center text-sm text-text-muted">
-              Affiliation and accreditation certificates are available for
-              review at the school office.
+                  <Cover
+                    img={img}
+                    sizes="(max-width: 1024px) 46vw, 275px"
+                    className="transition-transform duration-500 hover:scale-105 motion-reduce:transition-none motion-reduce:hover:scale-100"
+                  />
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <div className="mt-12 text-center lg:mt-16">
+            <Link
+              href="/#facilities"
+              className="inline-flex w-full items-center justify-center gap-2 rounded-pill border-2 border-[#a8802f] px-6 py-3 text-[0.9375rem] font-bold text-[#87661f] transition duration-200 hover:bg-[#faf4e8] sm:w-auto"
+            >
+              {CAMPUS.link}
+            </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* ——— §9 Our Management — governance office ——— */}
+      <section className={`border-y border-hairline bg-bg-alt ${SECTION}`}>
+        <div
+          className={`${CONTAINER} grid items-center gap-12 md:grid-cols-2 lg:gap-14 xl:gap-16`}
+        >
+          <Reveal>
+            <div className="overflow-hidden rounded-[1.75rem] shadow-frame">
+              <Photo
+                img={IMG.governance}
+                sizes="(max-width: 768px) 92vw, (max-width: 1200px) 46vw, 540px"
+                className="h-auto w-full"
+              />
+            </div>
+          </Reveal>
+          <Reveal delay={120}>
+            <SectionTitle eyebrow="Governance" title={MANAGEMENT.h2} />
+            <p className="mt-5 text-[0.9375rem] leading-[1.85] text-text-muted md:text-base">
+              {MANAGEMENT.body}
             </p>
           </Reveal>
         </div>
       </section>
 
-      {/* §4.2.7 — CTA band → Admissions */}
-      <CTABand
-        title={`Admissions open for ${site.admissionYear}`}
-        subtitle={`Join a school community that has been shaping bright futures since ${site.established}.`}
-      />
+      {/* ——— §10 Call-To-Action Section ——— */}
+      <section className="relative flex min-h-[calc(100svh-4rem)] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
+        <Wave className="z-20 text-bg-alt" />
+        <Cover img={IMG.ctaCampus} sizes="100vw" decorative className="opacity-[0.28]" />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
+        />
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-pill bg-[radial-gradient(circle,rgba(214,165,63,0.24),transparent_70%)]"
+        />
+        <Reveal className={`relative ${CONTAINER}`}>
+          <span
+            aria-hidden="true"
+            className="mx-auto block h-[3px] w-16 rounded-pill bg-[#d6a53f]"
+          />
+          <h2 className="mx-auto mt-6 max-w-3xl text-[1.5rem] leading-[1.2] text-white sm:text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] xl:text-[2.4rem]">
+            {rich(CTA.h2, STRONG.headingDark)}
+          </h2>
+          <p className="mx-auto mt-5 max-w-2xl text-[0.9375rem] leading-[1.85] text-[#c2cfe4] md:text-base">
+            {rich(CTA.body, STRONG.dark)}
+          </p>
+          <GoldLink href="/admissions" className="mt-8 w-full sm:w-auto">
+            {CTA.cta}
+          </GoldLink>
+        </Reveal>
+      </section>
     </>
   );
 }

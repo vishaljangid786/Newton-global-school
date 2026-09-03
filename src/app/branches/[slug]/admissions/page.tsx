@@ -266,7 +266,7 @@ export default async function BranchAdmissionsPage({ params }: BranchPageProps) 
 
       {/* §5.5.1 — seats / grades open table */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Seat availability"
@@ -343,7 +343,7 @@ export default async function BranchAdmissionsPage({ params }: BranchPageProps) 
 
       {/* §5.5.2 — branch-specific key dates */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Plan your visit"
@@ -401,7 +401,7 @@ export default async function BranchAdmissionsPage({ params }: BranchPageProps) 
 
       {/* §5.5.3 — fee structure note (PDF pending) */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Fees"
@@ -464,7 +464,7 @@ export default async function BranchAdmissionsPage({ params }: BranchPageProps) 
 
       {/* §5.5.4 — inquiry form, campus preselected */}
       <section id="inquiry" className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Start here"
@@ -480,7 +480,7 @@ export default async function BranchAdmissionsPage({ params }: BranchPageProps) 
 
       {/* §5.5.5 — FAQ accordion */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <Reveal>
             <SectionHeading
               overline="Good to know"

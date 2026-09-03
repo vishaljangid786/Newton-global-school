@@ -22,7 +22,7 @@ export default async function DashboardLayout({
     <div className="admin-scope min-h-screen bg-bg-alt lg:flex">
       <AdminSidebar user={user} />
       <div className="flex-1">
-        <div className="mx-auto w-full max-w-6xl px-5 py-8 sm:px-8 lg:px-10 lg:py-10">
+        <div className="mx-auto w-full max-w-6xl py-8 lg:py-10 px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           {children}
         </div>
       </div>

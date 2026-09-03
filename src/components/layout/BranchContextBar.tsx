@@ -32,7 +32,7 @@ export default function BranchContextBar({ branch }: { branch: Branch }) {
 
   return (
     <div className="border-b border-primary/10 bg-bg-alt">
-      <div className="mx-auto flex max-w-content flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2">
+      <div className="mx-auto max-w-content flex flex-wrap items-center justify-between gap-x-4 gap-y-2 py-2 px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
         <p className="text-sm text-text-muted">
           You are viewing:{" "}
           <span className="font-semibold text-primary">{branch.name}</span>

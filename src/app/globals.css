@@ -9,63 +9,76 @@
  */
 
 @theme {
-  /* Brand palette — royal blue */
-  --color-primary: #3e62d6;
-  --color-primary-dark: #2c49a8;
-  --color-primary-soft: #eaf0fe; /* tinted washes — chips, icon wells */
-  --color-accent: #4c6fe6; /* gradient start; dots, plus-marks, glows */
-  --color-accent-ink: #2c49a8; /* accent, darkened for text on white (≥4.5:1) */
+  /*
+   * Newton Global School — two colours, both taken from the crest.
+   *
+   * Sampling the logo gives navy #001040, a mid blue #104080 and gold #a08030.
+   * Everything below is those two hues and neutrals; no third accent, and no
+   * per-stage colour wheel. Text pairings are tuned so each clears WCAG AA.
+   */
 
-  /* Cloud neutrals */
-  --color-bg: #f8fafc; /* page base */
-  --color-bg-alt: #f4f7fb; /* hero band, tinted wells */
-  --color-surface: #ffffff; /* cards, panels, inputs */
-  --color-panel: #eff3fc; /* tinted stats panel */
-  --color-text: #26303f;
-  --color-ink: #1b2536; /* headings, strong text */
-  --color-text-muted: #54606f;
-  --color-faint: #8791a0; /* meta lines, uppercase micro-labels */
-  --color-border: #e1e7f0;
-  --color-hairline: #eaeef3; /* section rules, card borders */
+  /* Blue — the crest navy and its working mid-tone */
+  --color-navy: #001344; /* bands, footer */
+  --color-navy-deep: #000c2e;
+  --color-primary: #154a8a; /* links, primary actions — 8.8:1 on white */
+  --color-primary-dark: #0e3466;
+  --color-soft: #e7edf7; /* blue wash — chips, icon wells */
 
-  /* Dark counterpoints */
-  --color-dark: #1e2a44; /* CTA card */
-  --color-footer: #161f33;
+  /* Gold — the crest gold, plus a lift for dark grounds and an ink for light */
+  --color-accent: #a8802f;
+  --color-accent-bright: #d6a53f; /* 7.9:1 on the navy */
+  --color-accent-ink: #87661f; /* 5.3:1 on white */
+  --color-accent-soft: #faf4e8;
 
+  /* Neutrals — near-white with a faint blue cast so they sit with the crest */
+  --color-bg: #ffffff;
+  --color-bg-alt: #f4f6fb;
+  --color-surface: #ffffff;
+  --color-panel: #eaeff8;
+  --color-text: #33405a;
+  --color-ink: #001344;
+  --color-text-muted: #566380;
+  --color-faint: #8791a8;
+  --color-border: #e2e7f0;
+  --color-hairline: #ecf0f6;
+
+  --color-dark: #001344;
+  --color-footer: #000c2e;
   --color-success: #15803d;
   --color-error: #b91c1c;
 
-  /* Radius — crisp corporate surfaces */
-  --radius-btn: 0.5625rem; /* 9px — buttons, chips */
-  --radius-card: 0.875rem; /* 14px — cards */
-  --radius-lg: 1rem; /* 16px — hero frame, gallery tiles */
-  --radius-xl: 1.375rem; /* 22px — CTA card */
+  /* Radius — generous and rounded */
+  --radius-btn: 999px;
+  --radius-card: 1.25rem;
+  --radius-lg: 1.5rem;
+  --radius-xl: 2rem;
   --radius-pill: 999px;
 
-  /* Shadows — whisper depth, structure comes from hairlines */
-  --shadow-card: 0 6px 20px rgba(30, 45, 80, 0.04);
-  --shadow-card-hover: 0 18px 40px rgba(20, 28, 44, 0.15);
-  --shadow-frame: 0 16px 44px rgba(30, 45, 80, 0.1); /* hero/story frames */
+  /* Shadows */
+  --shadow-card: 0 4px 18px rgba(0, 19, 68, 0.06);
+  --shadow-card-hover: 0 18px 38px rgba(0, 19, 68, 0.14);
+  --shadow-frame: 0 18px 46px rgba(0, 19, 68, 0.14);
 
   /* Layout */
-  --container-content: 72.5rem; /* 1160px */
+  --container-content: 100rem; /* 1600px cap */
   --breakpoint-sm: 30rem;
   --breakpoint-md: 48rem;
   --breakpoint-lg: 64rem;
   --breakpoint-xl: 80rem;
+  --breakpoint-2xl: 96rem;
 }
 
 @theme inline {
   /* Fonts — variables set by next/font in the root layout */
-  --font-heading: var(--font-sora), var(--font-instrument), system-ui, sans-serif;
-  --font-body: var(--font-instrument), system-ui, sans-serif;
+  --font-heading: var(--font-display), var(--font-body-sans), system-ui, sans-serif;
+  --font-body: var(--font-body-sans), system-ui, sans-serif;
   --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
-  --font-sans: var(--font-instrument), system-ui, sans-serif;
+  --font-sans: var(--font-body-sans), system-ui, sans-serif;
 }
 
 /* Brand gradient — logo tile, Apply buttons, gallery CTA. */
 :root {
-  --gradient-brand: linear-gradient(135deg, #4c6fe6, #6e8ef2);
+  --gradient-brand: linear-gradient(135deg, #d6a53f, #a8802f);
 }
 
 @layer base {
@@ -82,7 +95,7 @@
   body {
     background-color: var(--color-bg);
     color: var(--color-text);
-    font-family: var(--font-instrument), system-ui, sans-serif;
+    font-family: var(--font-body-sans), system-ui, sans-serif;
     line-height: 1.65;
     text-rendering: optimizeLegibility;
     -webkit-font-smoothing: antialiased;
@@ -94,7 +107,7 @@
   h4,
   h5,
   h6 {
-    font-family: var(--font-sora), var(--font-instrument), system-ui, sans-serif;
+    font-family: var(--font-display), var(--font-body-sans), system-ui, sans-serif;
     line-height: 1.15;
     font-weight: 600;
     letter-spacing: -0.02em;
@@ -109,7 +122,7 @@
   /* Corporate eyebrow — small bold sans, uppercase, widely letter-spaced.
      Call sites usually pair it with a 26px dash (SectionHeading). */
   .eyebrow {
-    font-family: var(--font-instrument), system-ui, sans-serif;
+    font-family: var(--font-body-sans), system-ui, sans-serif;
     font-size: 0.75rem;
     line-height: 1;
     font-weight: 600;
@@ -124,7 +137,7 @@
   }
 
   ::selection {
-    background-color: #d6e0fb;
+    background-color: #f3e2b8;
     color: var(--color-text);
   }
 }
@@ -210,7 +223,7 @@
   --radius-card: 0.875rem;
   --radius-lg: 1rem;
 
-  font-family: var(--font-instrument), system-ui, sans-serif;
+  font-family: var(--font-body-sans), system-ui, sans-serif;
   color: var(--color-text);
 }
 
@@ -222,15 +235,39 @@
 .admin-scope h5,
 .admin-scope h6,
 .admin-scope .font-heading {
-  font-family: var(--font-sora), var(--font-instrument), system-ui, sans-serif;
+  font-family: var(--font-display), var(--font-body-sans), system-ui, sans-serif;
   font-weight: 600;
   letter-spacing: -0.02em;
 }
 
 .admin-scope .eyebrow {
-  font-family: var(--font-instrument), system-ui, sans-serif;
+  font-family: var(--font-body-sans), system-ui, sans-serif;
   font-size: 0.6875rem;
   font-weight: 600;
   letter-spacing: 0.12em;
   text-transform: uppercase;
+}
+
+/* Header dropdown entrance — panels are mounted on open, so a keyframe rather
+   than a transition. Animates `translate`, which is the property Tailwind v4's
+   translate utilities set. */
+@keyframes ngs-menu-in {
+  from {
+    opacity: 0;
+    translate: 0 -0.375rem;
+  }
+  to {
+    opacity: 1;
+    translate: 0 0;
+  }
+}
+
+.menu-in {
+  animation: ngs-menu-in 0.18s ease-out both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .menu-in {
+    animation: none;
+  }
 }

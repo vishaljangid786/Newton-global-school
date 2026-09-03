@@ -39,7 +39,7 @@ export default async function BranchesPage() {
 
       {/* §4.3.3 — One large card per branch */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Find Your Campus"
             title="Choose the Newton Campus Nearest You"
@@ -138,7 +138,7 @@ export default async function BranchesPage() {
 
       {/* §4.3.4 — Comparison table */}
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="At a Glance"
             title="Compare Our Campuses"
@@ -223,7 +223,7 @@ export default async function BranchesPage() {
 
       {/* §4.3.2 — Campus locations (MapEmbed panels in place of a combined map) */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Locations"
             title="Find Us Across Jaipur"

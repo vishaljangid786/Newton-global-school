@@ -30,7 +30,7 @@ interface StatsBandProps {
  */
 export default function StatsBand({ stats, className = "" }: StatsBandProps) {
   return (
-    <div className={`mx-auto max-w-content px-4 py-10 md:py-12 ${className}`}>
+    <div className={`mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20 py-10 md:py-12 ${className}`}>
       <dl className="grid grid-cols-2 gap-y-10 rounded-[1.125rem] border border-[#e1e8f6] bg-panel px-6 py-10 md:grid-cols-4 md:gap-y-0 md:px-10">
         {stats.map((stat, index) => (
           <div

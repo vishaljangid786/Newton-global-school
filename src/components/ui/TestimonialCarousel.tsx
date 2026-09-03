@@ -41,7 +41,7 @@ export default function TestimonialCarousel({
                 inert={!current}
                 className="w-full shrink-0 px-1"
               >
-                <figure className="mx-auto max-w-3xl px-2 text-center md:px-6">
+                <figure className="mx-auto max-w-3xl text-center px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
                   <div
                     aria-hidden="true"
                     className="font-heading text-6xl leading-[0.6] text-[#c6d2f0]"

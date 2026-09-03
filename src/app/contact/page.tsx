@@ -53,7 +53,7 @@ export default async function ContactPage() {
 
       {/* §4.9.2 — Head office card + map embed */}
       <section className="py-12 md:py-14">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Reach Us"
             title="Head Office"
@@ -151,7 +151,7 @@ export default async function ContactPage() {
 
       {/* §4.9.3 — Campus directory: one hairline panel, numbered rows */}
       <section className="border-t border-hairline py-12 md:py-14">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Campus Contacts"
             title="Contact a Campus Directly"
@@ -258,7 +258,7 @@ export default async function ContactPage() {
 
       {/* §4.9.4 — General inquiry form */}
       <section className="border-t border-hairline py-12 md:py-14">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Write to Us"
             title="Send Us a Message"

@@ -119,7 +119,7 @@ export default async function BranchFacilitiesPage({ params }: BranchPageProps) 
 
       {/* §5.6 — alternating image/text rows */}
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <SectionHeading
             overline="Campus tour"
             title="Built for Safe, Hands-On Learning"

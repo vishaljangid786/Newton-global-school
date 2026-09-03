@@ -10,6 +10,7 @@ import {
 } from "react";
 import { getBranchBySlug, isBranchSlug } from "@/data/branches";
 import { useBranches } from "@/components/hooks/useBranches";
+import { BTN_BASE, BTN_TONE } from "@/components/site/school-kit";
 import { site } from "@/data/site";
 import type { BranchSlug } from "@/data/types";
 
@@ -38,6 +39,25 @@ const NAV_ITEMS: NavItem[] = [
 ];
 
 /**
+ * Sub-pages built from the document's class and admission tabs. "Academics"
+ * gets these as a desktop dropdown (mirroring "Branches"); the drawer nests
+ * both groups under their parent.
+ */
+const SUBNAV: Record<string, NavItem[]> = {
+  "/academics": [
+    { label: "Nursery", href: "/academics/nursery" },
+    { label: "Primary", href: "/academics/primary" },
+    { label: "Secondary", href: "/academics/secondary" },
+    { label: "Senior Secondary", href: "/academics/senior-secondary" },
+  ],
+  "/admissions": [
+    { label: "Admission Process", href: "/admissions/process" },
+    { label: "Fee Structure", href: "/admissions/fees" },
+    { label: "Eligibility Criteria", href: "/admissions/eligibility" },
+  ],
+};
+
+/**
  * Trimmed desktop nav: "Home" lives on the logo, "Admissions" on the CTA
  * button, and "News & Events" shortens to "News" — keeps the glass bar airy.
  */
@@ -63,10 +83,30 @@ function branchSlugFromPath(pathname: string): BranchSlug | null {
   return null;
 }
 
+/*
+ * Nav items carry a gold rule that draws in from the left on hover and stays
+ * put on the current page. The rule animates `scale` (not width) so it is
+ * composited rather than re-laid-out on every frame — and the transition
+ * names transform, which in Tailwind v4 covers scale.
+ */
 const desktopLinkBase =
-  "rounded-btn px-2.5 py-2 text-[0.90625rem] font-medium transition-colors";
-const desktopLinkActive = "text-primary font-semibold";
-const desktopLinkIdle = "text-text-muted hover:text-ink";
+  "group relative inline-flex items-center gap-1 px-1 py-2 text-[clamp(0.78rem,0.73rem+0.12vw,0.875rem)] font-semibold transition-colors duration-200";
+const desktopLinkActive = "text-[#154a8a]";
+const desktopLinkIdle = "text-text-muted hover:text-[#154a8a]";
+
+/** The sliding rule. `active` pins it open; otherwise it follows hover/focus. */
+function NavRule({ active }: { active: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`pointer-events-none absolute inset-x-0 bottom-0.5 h-[2px] origin-left rounded-pill bg-[#a8802f] transition-transform duration-300 ease-out motion-reduce:transition-none ${
+        active
+          ? "scale-x-100"
+          : "scale-x-0 group-hover:scale-x-100 group-focus-visible:scale-x-100"
+      }`}
+    />
+  );
+}
 
 export default function Header() {
   const pathname = usePathname();
@@ -74,28 +114,31 @@ export default function Header() {
 
   const [scrolled, setScrolled] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
-  const [branchesOpen, setBranchesOpen] = useState(false);
+  const [openMenu, setOpenMenu] = useState<string | null>(null);
   const [lastBranch, setLastBranch] = useState<BranchSlug | null>(null);
+  /** Bar slides away going down the page and returns on any upward scroll. */
+  const [hidden, setHidden] = useState(false);
+  const lastScrollY = useRef(0);
 
   const drawerRef = useRef<HTMLDivElement>(null);
   const drawerCloseRef = useRef<HTMLButtonElement>(null);
   const hamburgerRef = useRef<HTMLButtonElement>(null);
-  const branchesMenuRef = useRef<HTMLLIElement>(null);
+  const menuBarRef = useRef<HTMLUListElement>(null);
 
-  /* ——— Branches dropdown: close on outside click / Esc / route change ——— */
+  /* ——— Desktop dropdowns: close on outside click / Esc / route change ——— */
   useEffect(() => {
-    setBranchesOpen(false);
+    setOpenMenu(null);
   }, [pathname]);
 
   useEffect(() => {
-    if (!branchesOpen) return;
+    if (!openMenu) return;
     const onPointerDown = (event: PointerEvent) => {
-      if (!branchesMenuRef.current?.contains(event.target as Node)) {
-        setBranchesOpen(false);
+      if (!menuBarRef.current?.contains(event.target as Node)) {
+        setOpenMenu(null);
       }
     };
     const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setBranchesOpen(false);
+      if (event.key === "Escape") setOpenMenu(null);
     };
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
@@ -103,15 +146,28 @@ export default function Header() {
       document.removeEventListener("pointerdown", onPointerDown);
       document.removeEventListener("keydown", onKeyDown);
     };
-  }, [branchesOpen]);
+  }, [openMenu]);
 
-  /* ——— Sticky shadow after 8px of scroll (design.md §3.1, §7) ——— */
+  /* ——— Sticky shadow, and hide-on-scroll-down / show-on-scroll-up ———
+     The bar leaves once the reader is well past it and returns on a
+     deliberate upward scroll. The delta threshold is what stops trackpad
+     jitter and momentum from flicking it in and out — too small a value and
+     the movement reads as a snap rather than a slide. ——— */
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    lastScrollY.current = window.scrollY;
+    const onScroll = () => {
+      const y = window.scrollY;
+      setScrolled(y > 8);
+      const delta = y - lastScrollY.current;
+      if (Math.abs(delta) < 12) return;
+      setHidden(delta > 0 && y > 140);
+      lastScrollY.current = y;
+    };
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
 
   /* ——— F1: remember the last-visited branch in localStorage ——— */
   useEffect(() => {
@@ -176,23 +232,30 @@ export default function Header() {
 
   const lastBranchData = lastBranch ? getBranchBySlug(lastBranch) : undefined;
 
+  /* Keep the bar in place while the drawer or a dropdown is open — derived
+     rather than pushed through an effect, which would cost a second render. */
+  const barHidden = hidden && !drawerOpen && !openMenu;
+
   const renderDesktopLink = (item: NavItem) => {
     const active = isActive(pathname, item.href);
 
     /* "Branches" gets a dynamic submenu listing every published campus. */
     if (item.href === "/branches") {
       return (
-        <li key={item.href} ref={branchesMenuRef} className="relative">
+        <li key={item.href} className="relative">
           <button
             type="button"
-            aria-expanded={branchesOpen}
+            aria-expanded={openMenu === item.href}
             aria-haspopup="menu"
-            onClick={() => setBranchesOpen((open) => !open)}
-            className={`${desktopLinkBase} inline-flex items-center gap-1 ${
+            onClick={() =>
+              setOpenMenu((open) => (open === item.href ? null : item.href))
+            }
+            className={`${desktopLinkBase} ${
               active ? desktopLinkActive : desktopLinkIdle
             }`}
           >
             {item.label}
+            <NavRule active={active} />
             <span
               className={`ml-0.5 rounded-pill px-1.5 py-0.5 text-[0.65625rem] font-semibold leading-none ${
                 active
@@ -206,7 +269,7 @@ export default function Header() {
               viewBox="0 0 24 24"
               aria-hidden="true"
               focusable="false"
-              className={`h-3.5 w-3.5 transition-transform ${branchesOpen ? "rotate-180" : ""}`}
+              className={`h-3.5 w-3.5 transition-transform duration-300 ease-out ${openMenu === item.href ? "rotate-180" : ""}`}
             >
               <path
                 d="m6 9 6 6 6-6"
@@ -219,8 +282,8 @@ export default function Header() {
             </svg>
           </button>
 
-          {branchesOpen ? (
-            <div className="absolute left-1/2 top-full z-50 mt-2 w-72 -translate-x-1/2 overflow-hidden rounded-card border border-hairline bg-surface shadow-card-hover">
+          {openMenu === item.href ? (
+            <div className="menu-in absolute left-1/2 top-full z-50 mt-2 w-72 -translate-x-1/2 overflow-hidden rounded-card border border-hairline bg-surface shadow-card-hover">
               <ul className="max-h-[19.5rem] overflow-y-auto overscroll-contain p-1.5">
                 {campuses.map((campus) => (
                   <li key={campus.slug}>
@@ -257,6 +320,72 @@ export default function Header() {
       );
     }
 
+    /* "Academics" lists the four class-stage pages from the document. */
+    if (item.href === "/academics") {
+      const stages = SUBNAV["/academics"];
+      return (
+        <li key={item.href} className="relative">
+          <button
+            type="button"
+            aria-expanded={openMenu === item.href}
+            aria-haspopup="menu"
+            onClick={() =>
+              setOpenMenu((open) => (open === item.href ? null : item.href))
+            }
+            className={`${desktopLinkBase} ${
+              active ? desktopLinkActive : desktopLinkIdle
+            }`}
+          >
+            {item.label}
+            <NavRule active={active} />
+            <svg
+              viewBox="0 0 24 24"
+              aria-hidden="true"
+              focusable="false"
+              className={`h-3.5 w-3.5 transition-transform duration-300 ease-out ${openMenu === item.href ? "rotate-180" : ""}`}
+            >
+              <path
+                d="m6 9 6 6 6-6"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              />
+            </svg>
+          </button>
+
+          {openMenu === item.href ? (
+            <div className="menu-in absolute left-1/2 top-full z-50 mt-2 w-64 -translate-x-1/2 overflow-hidden rounded-card border border-hairline bg-surface shadow-card-hover">
+              <ul className="p-1.5">
+                {stages.map((stage) => (
+                  <li key={stage.href}>
+                    <Link
+                      href={stage.href}
+                      className="flex items-center gap-2.5 rounded-btn px-3 py-2.5 text-sm font-medium text-ink transition-colors hover:bg-bg-alt"
+                    >
+                      <span
+                        aria-hidden="true"
+                        className="h-1.5 w-1.5 shrink-0 rounded-pill bg-[#a8802f]"
+                      />
+                      {stage.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+              <Link
+                href="/academics"
+                className="block border-t border-hairline px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary-soft"
+              >
+                View all academics
+                <span aria-hidden="true"> →</span>
+              </Link>
+            </div>
+          ) : null}
+        </li>
+      );
+    }
+
     return (
       <li key={item.href}>
         <Link
@@ -265,6 +394,7 @@ export default function Header() {
           className={`${desktopLinkBase} ${active ? desktopLinkActive : desktopLinkIdle}`}
         >
           {item.label}
+          <NavRule active={active} />
         </Link>
       </li>
     );
@@ -290,6 +420,29 @@ export default function Header() {
             </span>
           ) : null}
         </Link>
+        {/* Nested sub-pages under "Academics" and "Admissions" */}
+        {SUBNAV[item.href] ? (
+          <ul className="mb-1 ml-3 mt-0.5 space-y-0.5 border-l border-hairline pl-3">
+            {SUBNAV[item.href].map((sub) => {
+              const subActive = isActive(pathname, sub.href);
+              return (
+                <li key={sub.href}>
+                  <Link
+                    href={sub.href}
+                    aria-current={subActive ? "page" : undefined}
+                    className={`block rounded-btn px-3 py-2 text-sm ${
+                      subActive
+                        ? "bg-primary-soft font-medium text-primary"
+                        : "text-text-muted hover:bg-bg-alt hover:text-text"
+                    }`}
+                  >
+                    {sub.label}
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        ) : null}
         {/* Nested campus list under "Branches" */}
         {item.href === "/branches" ? (
           <ul className="mb-1 ml-3 mt-0.5 space-y-0.5 border-l border-hairline pl-3">
@@ -323,16 +476,16 @@ export default function Header() {
   return (
     <>
       <header
-        className={`sticky top-0 z-50 border-b bg-bg/90 backdrop-blur-lg transition-[border-color,box-shadow] ${
-          scrolled
-            ? "border-hairline shadow-[0_8px_30px_-16px_rgba(27,37,54,0.16)]"
-            : "border-hairline shadow-none"
+        className={`sticky top-0 z-50 bg-surface [will-change:transform] transition-[translate,box-shadow] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
+          barHidden ? "-translate-y-full" : "translate-y-0"
+        } ${
+          scrolled ? "shadow-[0_8px_28px_-18px_rgba(20,30,50,0.25)]" : "shadow-none"
         }`}
       >
       {/* Main bar — single glass sticky bar (utility bar removed; phone/email
           and socials live in the footer, F1 quick link moved inline). */}
       <div>
-        <div className="mx-auto flex max-w-content items-center justify-between gap-4 px-4 py-3">
+        <div className="mx-auto max-w-content flex items-center justify-between gap-4 py-3 px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           {/* Logo */}
           <Link
             href="/"
@@ -343,13 +496,13 @@ export default function Header() {
             <img
               src="/newton-logo.png"
               alt={`${site.name} logo`}
-              className="h-10 w-auto md:h-12"
+              className="h-8 w-auto md:h-10"
             />
           </Link>
 
           {/* Desktop nav */}
           <nav aria-label="Main" className="hidden lg:block">
-            <ul className="flex items-center gap-1">
+            <ul ref={menuBarRef} className="flex items-center gap-5 xl:gap-7">
               {DESKTOP_NAV_ITEMS.map(renderDesktopLink)}
             </ul>
           </nav>
@@ -357,7 +510,11 @@ export default function Header() {
           <div className="flex items-center gap-2">
             <Link
               href="/admissions"
-              className="hidden rounded-btn bg-[image:var(--gradient-brand)] px-5 py-2.5 text-sm font-semibold text-white transition hover:brightness-[1.06] md:inline-block"
+              /* max-md:hidden, not `hidden md:inline-flex` — the shared base
+                 already sets inline-flex, and a bare `hidden` loses to it in
+                 the cascade, which would leak this button onto mobile where
+                 the drawer carries its own. */
+              className={`max-md:hidden ${BTN_BASE} ${BTN_TONE.teal}`}
             >
               Apply Now
             </Link>

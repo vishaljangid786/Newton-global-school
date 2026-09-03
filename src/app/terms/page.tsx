@@ -40,7 +40,7 @@ export default function TermsOfUsePage() {
       />
 
       <section className="bg-bg py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <div className="max-w-3xl">
             <p className="text-sm font-medium text-text-muted">
               Last updated: {formatDate(LAST_UPDATED)}
@@ -172,7 +172,7 @@ export default function TermsOfUsePage() {
       </section>
 
       <section className="bg-bg-alt py-10 md:py-16">
-        <div className="mx-auto max-w-content px-4">
+        <div className="mx-auto px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <div className="max-w-3xl">
             <h2 className="text-xl text-text md:text-2xl">
               Questions about these terms?

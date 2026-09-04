@@ -34,6 +34,7 @@ export default async function BranchContentPage({ params }: PageProps) {
     principalName: content.principal.name,
     principalMessage: content.principal.message,
     principalPhotoUrl: content.principal.photoUrl ?? "",
+    heroImageUrl: content.heroImageUrl ?? "",
     students: String(content.quickFacts.students),
     campusSize: content.quickFacts.campusSize,
     grades: content.grades,

@@ -14,10 +14,10 @@ const SCHOOL_LINKS = [
 ];
 
 const ADMISSION_LINKS = [
-  { label: "Admissions", href: "/admissions" },
-  { label: "Admission Process", href: "/admissions/process" },
-  { label: "Fee Structure", href: "/admissions/fees" },
-  { label: "Eligibility Criteria", href: "/admissions/eligibility" },
+  { label: "Registration Form", href: "/registration-form" },
+  { label: "Admission Process", href: "/admission-process" },
+  { label: "Fee Structure", href: "/fee-structure" },
+  { label: "Eligibility Criteria", href: "/eligibility-criteria" },
   { label: "Contact", href: "/contact" },
 ];
 

@@ -41,6 +41,42 @@ export const STRONG = {
 };
 
 /**
+ * Split one of the document's run-in list items into its two halves, so a list
+ * can render the title as a real heading instead of a bold span inside a
+ * paragraph.
+ *
+ * The document writes these three ways, and each tab is consistent with
+ * itself:
+ *
+ *   **Discipline** - Building responsibility from an early age
+ *   **In the classroom:** Teachers encourage questions rather than …
+ *   **1. Well-Equipped Classrooms** Learning happens best in a space that …
+ *
+ * Only the first is safe to detect on its own: a bold run followed by anything
+ * at all also describes ordinary body copy ("**School Admission in Kotputli**
+ * is now open …"), which must not be torn in half. So the dash is required by
+ * default, and a caller that knows its data is a run-in list opts into the
+ * looser match.
+ *
+ * Returns an empty title when there is no run-in, and the caller then renders
+ * the text as ordinary copy.
+ */
+export function splitRunIn(
+  text: string,
+  { separator = "dash" }: { separator?: "dash" | "any" } = {}
+): { title: string; body: string } {
+  const match = text.match(
+    separator === "dash"
+      ? /^\s*\*\*(.+?)\*\*\s*[-\u2013\u2014]\s*([\s\S]*)$/
+      : /^\s*\*\*(.+?)\*\*\s*[-\u2013\u2014:]?\s*([\s\S]*)$/
+  );
+  if (!match) return { title: "", body: text };
+  /* "In the classroom:" keeps its colon inside the bold run; a heading does
+     not want it. */
+  return { title: match[1].replace(/[:\s]+$/, ""), body: match[2].trim() };
+}
+
+/**
  * Render document copy: `**…**` runs become <strong>, everything else passes
  * through character-for-character.
  */
@@ -257,11 +293,14 @@ export function Photo({
   img,
   sizes,
   priority = false,
+  skeleton = true,
   className = "",
 }: {
   img: Img;
   sizes?: string;
   priority?: boolean;
+  /** Turn off for artwork with transparency — see .img-skeleton in globals. */
+  skeleton?: boolean;
   className?: string;
 }) {
   return (
@@ -272,7 +311,7 @@ export function Photo({
       height={img.h}
       sizes={sizes}
       priority={priority}
-      className={className}
+      className={`${skeleton ? "img-skeleton" : ""} ${className}`}
     />
   );
 }
@@ -283,6 +322,7 @@ export function Cover({
   sizes,
   priority = false,
   decorative = false,
+  skeleton = true,
   className = "",
 }: {
   img: Img;
@@ -295,6 +335,8 @@ export function Cover({
    * in the middle of the section.
    */
   decorative?: boolean;
+  /** Turn off for artwork with transparency — see .img-skeleton in globals. */
+  skeleton?: boolean;
   className?: string;
 }) {
   return (
@@ -305,7 +347,7 @@ export function Cover({
       fill
       sizes={sizes}
       priority={priority}
-      className={`object-cover ${className}`}
+      className={`object-cover ${skeleton ? "img-skeleton" : ""} ${className}`}
     />
   );
 }
@@ -320,6 +362,15 @@ export function Cover({
  */
 export const CONTAINER =
   "mx-auto w-full max-w-content px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20";
+
+/**
+ * CONTAINER without its width cap, for a section that sets its own narrower
+ * measure. Writing `${CONTAINER} max-w-3xl` looks right but does nothing:
+ * both are max-width utilities, and Tailwind emits `max-w-content` last, so
+ * it wins the cascade regardless of the order they appear in the class list.
+ */
+export const CONTAINER_FLUID =
+  "mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20";
 /**
  * One section fills the screen, so only one is in view at a time. svh rather
  * than vh keeps mobile browser chrome from shifting it, and min- (not fixed)
@@ -369,6 +420,101 @@ export function GoldLink({
 
 
 /**
+ * A run-in list item rendered as a heading plus its description, which is what
+ * the document's `**Title** - body` lines actually are. Falls back to plain
+ * copy when the line has no run-in, so a list that mixes the two still reads.
+ */
+export function RunInText({
+  text,
+  separator = "dash",
+  titleClass = "text-[1.0625rem] leading-[1.35] text-ink",
+  bodyClass = "mt-2 break-words text-[0.9375rem] leading-[1.85] text-text-muted",
+  strongClass = "font-semibold text-ink",
+}: {
+  text: string;
+  separator?: "dash" | "any";
+  titleClass?: string;
+  bodyClass?: string;
+  strongClass?: string;
+}) {
+  const { title, body } = splitRunIn(text, { separator });
+  if (!title) {
+    return <p className={bodyClass}>{rich(text, strongClass)}</p>;
+  }
+  return (
+    <>
+      <h3 className={titleClass}>{title}</h3>
+      <p className={bodyClass}>{rich(body, strongClass)}</p>
+    </>
+  );
+}
+
+/**
+ * A plain data table, styled to match the one the rich-text editor produces
+ * for blog posts so the two never look like different sites. The wrapper
+ * scrolls on its own, which is what keeps a wide table from dragging the whole
+ * page sideways on a phone.
+ */
+export function DataTable({
+  head,
+  rows,
+  caption,
+  className = "",
+}: {
+  head: readonly string[];
+  rows: readonly (readonly ReactNode[])[];
+  /** Screen-reader description; also printed above the table when given. */
+  caption?: string;
+  className?: string;
+}) {
+  return (
+    <div
+      className={`overflow-x-auto rounded-[1.25rem] border border-hairline bg-surface shadow-card ${className}`}
+    >
+      <table className="w-full min-w-[36rem] border-collapse text-left text-[0.875rem]">
+        {caption ? (
+          <caption className="border-b border-hairline px-5 py-4 text-left text-[0.875rem] text-text-muted">
+            {caption}
+          </caption>
+        ) : null}
+        <thead className="bg-[#001344] text-white">
+          <tr>
+            {head.map((cell) => (
+              <th
+                key={cell}
+                scope="col"
+                className="px-5 py-3.5 font-heading text-[0.8125rem] font-bold uppercase tracking-[0.04em]"
+              >
+                {cell}
+              </th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {rows.map((row, rowIndex) => (
+            <tr
+              key={rowIndex}
+              className="border-t border-hairline even:bg-bg-alt"
+            >
+              {row.map((cell, cellIndex) => (
+                <td
+                  key={cellIndex}
+                  className={`px-5 py-3.5 align-top leading-[1.7] ${
+                    cellIndex === 0 ? "font-bold text-ink" : "text-text-muted"
+                  }`}
+                >
+                  {cell}
+                </td>
+              ))}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );
+}
+
+/**
  * Section header — a gold dash-led eyebrow above a Sora h2 whose keyword runs
  * carry the crest gold.
  */
@@ -380,7 +526,8 @@ export function SectionTitle({
   tone = "light",
   className = "",
 }: {
-  eyebrow: string;
+  /** Optional: SectionHeading delegates here and some of its callers omit it. */
+  eyebrow?: string;
   title: string;
   align?: "center" | "left";
   /** Measure of the heading block — narrow it for side-by-side split headers. */
@@ -403,15 +550,17 @@ export function SectionTitle({
     <div
       className={`${centered ? "mx-auto text-center" : ""} ${width} ${className}`}
     >
-      <p
-        className={`eyebrow flex items-center gap-2.5 ${
-          dark ? "text-[#d6a53f]" : "text-[#87661f]"
-        } ${centered ? "justify-center" : ""}`}
-      >
-        {dash}
-        {eyebrow}
-        {centered ? dash : null}
-      </p>
+      {eyebrow ? (
+        <p
+          className={`eyebrow flex items-center gap-2.5 ${
+            dark ? "text-[#d6a53f]" : "text-[#87661f]"
+          } ${centered ? "justify-center" : ""}`}
+        >
+          {dash}
+          {eyebrow}
+          {centered ? dash : null}
+        </p>
+      ) : null}
       <h2
         className={`mt-4 text-[clamp(1.3rem,1rem+0.9vw,2.05rem)] leading-[1.24] ${
           dark ? "text-white" : ""
@@ -512,7 +661,7 @@ export function PageHero({
   sub,
   body,
   cta,
-  ctaHref = "/admissions",
+  ctaHref = "/registration-form",
   secondaryCta,
   secondaryHref,
   cutout,
@@ -549,7 +698,7 @@ export function PageHero({
               {crumbs ? <Breadcrumbs items={crumbs} className="mb-4" /> : null}
               {/* Rule and sub-heading share a line, so the rule reads as an
                   eyebrow marker rather than floating on its own. */}
-              <p className="flex items-start gap-2.5 text-[0.6875rem] font-semibold uppercase leading-[1.5] tracking-[0.1em] text-[#154a8a]">
+              <p className="flex items-start gap-2.5 text-[0.75rem] font-semibold uppercase leading-[1.5] tracking-[0.1em] text-[#154a8a] sm:text-[0.6875rem]">
                 <span
                   aria-hidden="true"
                   className="mt-[0.45rem] h-[2px] w-8 shrink-0 rounded-pill bg-[#a8802f]"
@@ -607,6 +756,7 @@ export function PageHero({
                     height={cutout.h}
                     priority={priority}
                     sizes="(max-width: 768px) 70vw, (max-width: 1280px) 38vw, 32rem"
+                    /* transparent PNG: no skeleton, it would show through */
                     className="relative z-10 h-auto w-full object-contain"
                   />
                 ) : (

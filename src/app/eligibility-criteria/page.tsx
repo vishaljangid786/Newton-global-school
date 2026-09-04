@@ -2,9 +2,6 @@ import type { Metadata } from "next";
 import {
   CONTAINER,
   DoodleWash,
-  Cover,
-  Wave,
-  GoldLink,
   Icon,
   type Img,
   PageHero,
@@ -15,6 +12,7 @@ import {
   STRONG,
 } from "@/components/site/school-kit";
 import Accordion, { type AccordionEntry } from "@/components/ui/Accordion";
+import EnquiryBand from "@/components/site/EnquiryBand";
 import Reveal from "@/components/ui/Reveal";
 import { eligibility } from "@/data/pages/eligibility";
 
@@ -110,15 +108,12 @@ export default function EligibilityCriteriaPage() {
       <PageHero
         image={IMG.heroBanner}
         priority
-        crumbs={[
-          { label: "Admissions", href: "/admissions" },
-          { label: "Eligibility Criteria" },
-        ]}
+        crumbs={[{ label: "Eligibility Criteria" }]}
         h1={hero.h1}
         sub={hero.sub}
         body={hero.body}
         cta={hero.cta}
-        ctaHref="/contact"
+        ctaHref="#enquiry"
       />
 
       {/* ——— §2 Why Age Criteria Matters — the two-paragraph overview ——— */}
@@ -318,34 +313,13 @@ export default function EligibilityCriteriaPage() {
         </div>
       </section>
 
-      {/* ——— §5 Call-To-Action Section ———
-          The Age Criteria tab supplies no separate closing heading, so the
-          band reuses the document's own line rather than inventing copy, and
-          the button carries hero.cta verbatim. */}
-      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
-        <Wave className="z-20 text-bg" />
-        <Cover img={IMG.ctaCampus} sizes="100vw" decorative className="opacity-[0.28]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-pill bg-[radial-gradient(circle,rgba(214,165,63,0.24),transparent_70%)]"
-        />
-        <Reveal className={`relative ${CONTAINER}`}>
-          <span
-            aria-hidden="true"
-            className="mx-auto block h-[3px] w-16 rounded-pill bg-[#d6a53f]"
-          />
-          <h2 className="mx-auto mt-6 max-w-3xl text-[1.5rem] leading-[1.2] text-white sm:text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] xl:text-[2.4rem]">
-            {rich(hero.sub, STRONG.headingDark)}
-          </h2>
-          <GoldLink href="/contact" className="mt-8 w-full sm:w-auto">
-            {rich(hero.cta, "font-bold")}
-          </GoldLink>
-        </Reveal>
-      </section>
+      {/* ——— §5 Call-To-Action — the document supplies no closing heading,
+          so the band reuses its own line rather than inventing copy ——— */}
+      <EnquiryBand
+        image={IMG.ctaCampus}
+        h2={hero.sub}
+        formTitle={hero.cta}
+      />
     </>
   );
 }

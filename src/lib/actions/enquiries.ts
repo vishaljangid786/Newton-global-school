@@ -4,6 +4,7 @@ import { revalidatePath } from "next/cache";
 import { mutate } from "@/lib/db";
 import { authorizeAction } from "@/lib/dal";
 import { isValidBranchRef } from "@/lib/branches-store";
+import { LIMITS, checkEmail, checkPhone, checkText, collect } from "@/lib/validate";
 
 export interface EnquiryInput {
   studentName: string;
@@ -15,32 +16,41 @@ export interface EnquiryInput {
   message: string;
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const PHONE_RE = /^\+?[0-9]{10,15}$/;
-
 /**
  * Public submission from the admission InquiryForm. Validates server-side and
  * persists to the enquiries table. Throws a user-facing message on bad input
  * or DB failure (surfaced by the form).
  */
 export async function submitEnquiry(input: EnquiryInput): Promise<void> {
-  const studentName = input.studentName?.trim();
-  const parentName = input.parentName?.trim();
-  const phone = input.phone?.trim();
-  const email = input.email?.trim().toLowerCase();
-  const branch = input.branch?.trim();
-  const grade = input.grade?.trim();
-  const message = input.message?.trim() || null;
+  const checked = collect({
+    studentName: checkText(input.studentName, {
+      label: "Student name",
+      max: LIMITS.personName,
+      required: true,
+    }),
+    parentName: checkText(input.parentName, {
+      label: "Parent or guardian name",
+      max: LIMITS.personName,
+      required: true,
+    }),
+    grade: checkText(input.grade, {
+      label: "Grade",
+      max: LIMITS.grade,
+      required: true,
+    }),
+    phone: checkPhone(input.phone, { required: true }),
+    email: checkEmail(input.email, { required: true }),
+    message: checkText(input.message, { label: "Message", max: LIMITS.message }),
+    branch: checkText(input.branch, {
+      label: "Campus",
+      max: LIMITS.branchRef,
+      required: true,
+    }),
+  });
+  if ("error" in checked) throw new Error(checked.error);
+  const { studentName, parentName, grade, phone, email, message, branch } =
+    checked.values;
 
-  if (!studentName || !parentName || !grade) {
-    throw new Error("Please complete all required fields.");
-  }
-  if (!PHONE_RE.test(phone.replace(/[\s()-]/g, ""))) {
-    throw new Error("Please enter a valid phone number.");
-  }
-  if (!EMAIL_RE.test(email)) {
-    throw new Error("Please enter a valid email address.");
-  }
   if (branch === "all" || !(await isValidBranchRef(branch))) {
     throw new Error("Please select a valid campus.");
   }
@@ -50,7 +60,7 @@ export async function submitEnquiry(input: EnquiryInput): Promise<void> {
       `INSERT INTO enquiries
          (student_name, parent_name, phone, email, branch_slug, grade, message)
        VALUES (?, ?, ?, ?, ?, ?, ?)`,
-      [studentName, parentName, phone, email, branch, grade, message]
+      [studentName, parentName, phone, email, branch, grade, message || null]
     );
   } catch {
     throw new Error(

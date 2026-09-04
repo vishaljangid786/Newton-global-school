@@ -2,6 +2,7 @@
 
 import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
 import type { GalleryItem } from "@/data/types";
 
 /**
@@ -34,11 +35,19 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
 
   const [active, setActive] = useState<string>("All");
   const [lightbox, setLightbox] = useState<number | null>(null);
+  /*
+   * Rendering all 156 tiles at once put ~1,500 srcset URLs and 156 <img>
+   * elements into one document. The whole set still filters and paginates
+   * client-side; only the slice on screen is mounted.
+   */
+  const PAGE = 40;
+  const [limit, setLimit] = useState(PAGE);
 
   const shown = useMemo(
     () => (active === "All" ? items : items.filter((i) => i.category === active)),
     [items, active],
   );
+  const visible = useMemo(() => shown.slice(0, limit), [shown, limit]);
 
   const move = useCallback(
     (delta: number) =>
@@ -73,6 +82,7 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
       onClick={() => {
         setActive(label);
         setLightbox(null);
+        setLimit(PAGE);
       }}
       aria-pressed={on}
       className={`group inline-flex items-center gap-2 rounded-pill border-2 px-4 py-2 text-[0.8125rem] font-bold transition duration-200 sm:text-sm ${
@@ -104,7 +114,7 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
 
       {/* ——— The mosaic ——— */}
       <ul className="mt-9 grid auto-rows-[9rem] grid-cols-2 gap-2.5 [grid-auto-flow:dense] sm:auto-rows-[11rem] sm:grid-cols-4 sm:gap-3 lg:auto-rows-[12rem] lg:grid-cols-6">
-        {shown.map((item, index) => (
+        {visible.map((item, index) => (
           <li
             key={item.id}
             className={`group relative overflow-hidden rounded-[1.1rem] bg-bg-alt shadow-card ${SHAPES[index % SHAPES.length]}`}
@@ -120,7 +130,7 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
                 alt={item.caption}
                 fill
                 sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
-                className="object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                className="img-skeleton object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
               />
               {/* Caption rides up out of the bottom edge on hover. */}
               <span
@@ -146,8 +156,32 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
         </p>
       ) : null}
 
-      {/* ——— Lightbox ——— */}
-      {current ? (
+      {visible.length < shown.length ? (
+        <div className="mt-9 text-center">
+          <button
+            type="button"
+            onClick={() => setLimit((n) => n + PAGE)}
+            className="inline-flex items-center gap-2 rounded-pill border-2 border-[#a8802f] px-6 py-3 text-[0.9375rem] font-bold text-[#87661f] transition duration-200 hover:bg-[#faf4e8]"
+          >
+            Show more
+            <span className="text-[0.8125rem] font-semibold text-faint">
+              {visible.length} / {shown.length}
+            </span>
+          </button>
+        </div>
+      ) : null}
+
+      {/*
+        * ——— Lightbox ———
+        * Portalled to <body> on purpose. This component renders inside a
+        * <Reveal>, which animates `translate` — and a transformed ancestor
+        * becomes the containing block for `position: fixed`, so an overlay
+        * left in place here sizes itself to the 9,000px mosaic instead of the
+        * viewport. Escaping to <body> is the only reliable fix.
+        */}
+      {/* `current` is only set by a click, so this never runs during SSR. */}
+      {current
+        ? createPortal(
         <div
           role="dialog"
           aria-modal="true"
@@ -186,8 +220,10 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
               </svg>
             </button>
 
-            <figure className="flex h-full max-h-full flex-col items-center justify-center">
-              <div className="relative h-full max-h-[72vh] w-full max-w-5xl">
+            {/* w-full matters: the figure is a flex item under `items-center`, so
+                without it it shrinks to its caption and the picture with it. */}
+            <figure className="flex h-full w-full max-w-5xl flex-col items-center justify-center">
+              <div className="relative min-h-0 w-full flex-1">
                 <Image
                   src={current.imageUrl ?? ""}
                   alt={current.caption}
@@ -216,8 +252,10 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
               </svg>
             </button>
           </div>
-        </div>
-      ) : null}
+        </div>,
+            document.body,
+          )
+        : null}
     </div>
   );
 }

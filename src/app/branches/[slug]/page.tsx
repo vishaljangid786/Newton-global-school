@@ -9,6 +9,7 @@ import CTABand from "@/components/ui/CTABand";
 import FactTile from "@/components/ui/FactTile";
 import MapEmbed from "@/components/ui/MapEmbed";
 import NoticeRow from "@/components/ui/NoticeRow";
+import Image from "next/image";
 import PlaceholderImage from "@/components/ui/PlaceholderImage";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -186,7 +187,8 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
     "@context": "https://schema.org",
     "@type": "School",
     name: `${site.name}, ${branch.name}`,
-    url: `https://sunrise-school.example/branches/${branch.slug}`,
+    /* Relative: Next resolves it against metadataBase in the root layout. */
+    url: `/branches/${branch.slug}`,
     telephone: branch.phone,
     email: branch.email,
     foundingDate: String(branch.established),
@@ -215,14 +217,25 @@ export default async function BranchHomePage({ params }: BranchPageProps) {
         <div className="mx-auto pb-10 pt-8 md:pt-10 px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
           <div className="relative overflow-hidden rounded-lg border border-[#e1e7f0] shadow-frame">
             <div className="relative">
-              <PlaceholderImage fill tone={heroTone} />
+              {branch.heroImageUrl ? (
+                <Image
+                  src={branch.heroImageUrl}
+                  alt={branch.name}
+                  fill
+                  sizes="100vw"
+                  priority
+                  className="img-skeleton object-cover"
+                />
+              ) : (
+                <PlaceholderImage fill tone={heroTone} />
+              )}
               <div
                 aria-hidden="true"
                 className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,rgba(16,24,44,0.84),rgba(16,24,44,0.5)_56%,rgba(16,24,44,0.12))]"
               />
               <div className="relative flex min-h-[22rem] max-w-2xl flex-col justify-center px-6 py-10 md:min-h-[24rem] md:px-14">
                 <Breadcrumbs
-                  tone="light"
+                  tone="onDark"
                   items={[
                     { label: "Branches", href: "/branches" },
                     { label: branch.name },

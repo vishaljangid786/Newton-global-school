@@ -173,8 +173,18 @@ export function FieldLabel({
   );
 }
 
-export const adminInputClasses =
-  "w-full rounded-btn border border-border bg-surface px-3.5 py-2.5 text-base text-text transition-shadow placeholder:text-faint focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 sm:text-sm";
+const adminFieldBase =
+  "w-full border border-border bg-surface px-3.5 py-2.5 text-base text-text transition-shadow placeholder:text-faint focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/15 sm:text-sm";
+
+/** Single-line fields: the pill radius reads as intended at input height. */
+export const adminInputClasses = `rounded-btn ${adminFieldBase}`;
+
+/**
+ * Multi-line fields. `--radius-btn` is 999px, which on a tall box becomes an
+ * ellipse that eats the first and last characters of every line — so text
+ * areas get a corner radius instead of a pill.
+ */
+export const adminTextareaClasses = `rounded-card ${adminFieldBase} leading-relaxed`;
 
 export const adminButtonPrimary =
   "inline-flex items-center justify-center gap-2 rounded-btn bg-primary px-4 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-primary-dark disabled:cursor-not-allowed disabled:opacity-60";

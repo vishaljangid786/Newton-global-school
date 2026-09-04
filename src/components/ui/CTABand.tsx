@@ -21,7 +21,7 @@ export default function CTABand({
   subtitle,
   eyebrow = "Enrolment open",
   ctaLabel = "Apply for Admission",
-  ctaHref = "/admissions",
+  ctaHref = "/registration-form",
   className = "",
 }: CTABandProps) {
   return (

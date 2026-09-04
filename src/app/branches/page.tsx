@@ -4,6 +4,7 @@ import ButtonLink from "@/components/ui/Button";
 import Card from "@/components/ui/Card";
 import MapEmbed from "@/components/ui/MapEmbed";
 import PageHero from "@/components/ui/PageHero";
+import Image from "next/image";
 import PlaceholderImage from "@/components/ui/PlaceholderImage";
 import Reveal from "@/components/ui/Reveal";
 import SectionHeading from "@/components/ui/SectionHeading";
@@ -50,11 +51,21 @@ export default async function BranchesPage() {
               <Reveal key={branch.slug} delay={index * 100}>
                 <Card className="grid md:grid-cols-5">
                   <div className="relative min-h-52 sm:min-h-64 md:col-span-2 md:min-h-0">
+                    {branch.heroImageUrl ? (
+                      <Image
+                        src={branch.heroImageUrl}
+                        alt={branch.name}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 40vw"
+                        className="img-skeleton object-cover"
+                      />
+                    ) : (
                     <PlaceholderImage
-                      fill
-                      tone={CARD_TONES[index % CARD_TONES.length]}
-                      label={branch.name}
-                    />
+                        fill
+                        tone={CARD_TONES[index % CARD_TONES.length]}
+                        label={branch.name}
+                      />
+                    )}
                   </div>
                   <div className="flex flex-col p-6 md:col-span-3 md:p-8">
                     <h3 className="font-heading text-2xl font-semibold text-primary">

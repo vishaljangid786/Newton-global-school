@@ -5,6 +5,7 @@ import { mutate } from "@/lib/db";
 import { authorizeAction } from "@/lib/dal";
 import { canManageBranch } from "@/lib/rbac";
 import { isValidBranchRef } from "@/lib/branches-store";
+import { LIMITS, checkText, collect } from "@/lib/validate";
 
 export interface NotificationFormState {
   error?: string;
@@ -24,7 +25,12 @@ export async function createNotification(
   const level = String(formData.get("level") ?? "info");
   const branchRaw = String(formData.get("branch_ref") ?? "");
 
-  if (!title) return { error: "A title is required." };
+  const checked = collect({
+    title: checkText(title, { label: "Title", max: LIMITS.title, required: true }),
+    /* The body was not checked at all before — not even for emptiness. */
+    body: checkText(body, { label: "Message", max: LIMITS.message, required: true }),
+  });
+  if ("error" in checked) return { error: checked.error };
   const ref = branchRaw;
   if (!(await isValidBranchRef(ref))) {
     return { error: "Please choose a valid audience." };

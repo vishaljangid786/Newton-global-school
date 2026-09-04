@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Fragment } from "react";
 import Accordion, { type AccordionEntry } from "@/components/ui/Accordion";
+import EnquiryBand from "@/components/site/EnquiryBand";
 import Reveal from "@/components/ui/Reveal";
 import type { StageCopy } from "@/data/pages/types";
 import {
@@ -9,13 +10,13 @@ import {
   DoodleWash,
   Cover,
   Wave,
-  GoldLink,
   Icon,
   PageHero,
   type IconName,
   type Img,
   Photo,
   rich,
+  RunInText,
   SECTION,
   SectionTitle,
   STAGE_COLOURS,
@@ -64,13 +65,13 @@ export interface StageChrome {
  * matched first so "Secondary School (Class 6-10)" wins over "Secondary".
  */
 const LINK_ROUTES: Array<[RegExp, string]> = [
-  [/senior secondary/i, "/academics/senior-secondary"],
-  [/secondary school \(class 6-10\)|secondary school/i, "/academics/secondary"],
-  [/primary school/i, "/academics/primary"],
-  [/nursery/i, "/academics/nursery"],
-  [/eligibility criteria/i, "/admissions/eligibility"],
-  [/fee structure/i, "/admissions/fees"],
-  [/admission process/i, "/admissions/process"],
+  [/senior secondary/i, "/senior-secondary"],
+  [/secondary school \(class 6-10\)|secondary school/i, "/secondary"],
+  [/primary school/i, "/primary"],
+  [/nursery/i, "/nursery"],
+  [/eligibility criteria/i, "/eligibility-criteria"],
+  [/fee structure/i, "/fee-structure"],
+  [/admission process/i, "/admission-process"],
   [/about us/i, "/about"],
   [/home/i, "/"],
 ];
@@ -138,6 +139,9 @@ export default function StagePage({
         h1={copy.hero.h1}
         sub={copy.hero.sub}
         body={copy.hero.body}
+        /* The enquiry form is at the foot of this page now, so the masthead
+           button scrolls to it instead of loading another page. */
+        ctaHref="#enquiry"
         cta={copy.hero.cta}
       />
 
@@ -217,9 +221,12 @@ export default function StagePage({
                           className="h-6 w-6"
                         />
                       </span>
-                      <p className="mt-5 break-words text-[0.9375rem] leading-[1.8] text-text-muted">
-                        {rich(item, STRONG.runIn)}
-                      </p>
+                      <RunInText
+                        text={item}
+                        separator="any"
+                        titleClass="mt-5 text-[1.0625rem] leading-[1.35] text-ink"
+                        bodyClass="mt-2 break-words text-[0.9375rem] leading-[1.8] text-text-muted"
+                      />
                     </article>
                   </Reveal>
                 </li>
@@ -358,9 +365,14 @@ export default function StagePage({
                           className="h-[1.2rem] w-[1.2rem]"
                         />
                       </span>
-                      <p className="break-words text-[0.875rem] leading-[1.75] text-text-muted md:text-[0.9375rem]">
-                        {rich(item, STRONG.runIn)}
-                      </p>
+                      <div className="min-w-0">
+                        <RunInText
+                          text={item}
+                          separator="any"
+                          titleClass="text-[0.9375rem] leading-[1.35] text-ink"
+                          bodyClass="mt-1 break-words text-[0.875rem] leading-[1.75] text-text-muted md:text-[0.9375rem]"
+                        />
+                      </div>
                     </div>
                   </Reveal>
                 </li>
@@ -416,34 +428,14 @@ export default function StagePage({
         </div>
       </section>
 
-      {/* ——— §8 Admission CTA Section ——— */}
-      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
-        <Wave className="z-20 text-bg-alt" />
-        <Cover img={images.hero} sizes="100vw" decorative className="opacity-[0.26]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-pill bg-[radial-gradient(circle,rgba(214,165,63,0.24),transparent_70%)]"
-        />
-        <Reveal className={`relative ${CONTAINER}`}>
-          <span
-            aria-hidden="true"
-            className="mx-auto block h-[3px] w-16 rounded-pill bg-[#d6a53f]"
-          />
-          <h2 className="mx-auto mt-6 max-w-3xl text-[1.5rem] leading-[1.2] text-white sm:text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] xl:text-[2.4rem]">
-            {rich(copy.admissionCta.h2, STRONG.headingDark)}
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-[0.9375rem] leading-[1.85] text-[#c2cfe4] md:text-base">
-            {rich(copy.admissionCta.body, STRONG.dark)}
-          </p>
-          <GoldLink href="/admissions" className="mt-8 w-full sm:w-auto">
-            {copy.admissionCta.button}
-          </GoldLink>
-        </Reveal>
-      </section>
+      {/* ——— §8 Admission CTA — with the form, not a link to it ——— */}
+      <EnquiryBand
+        image={images.hero}
+        h2={copy.admissionCta.h2}
+        body={copy.admissionCta.body}
+        waveClass="text-bg-alt"
+        formTitle={copy.admissionCta.button}
+      />
 
       {/* ——— The document's "Internal Linking Note" suggestions ——— */}
       <section className={SECTION}>

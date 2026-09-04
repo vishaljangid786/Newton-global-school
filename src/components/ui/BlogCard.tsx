@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import Card from "./Card";
 import PlaceholderImage from "./PlaceholderImage";
@@ -30,12 +31,26 @@ export default function BlogCard({ post }: { post: PublicBlogCard }) {
   return (
     <Card hoverLift className="group flex h-full flex-col">
       <div className="overflow-hidden">
-        <PlaceholderImage
-          aspect="16/9"
-          tone={post.cover_tone as PlaceholderTone}
-          label="Blog"
-          className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
-        />
+        {/* The uploaded cover when the post has one; the tone placeholder is
+            the fallback, not the default. */}
+        {post.cover_image_url ? (
+          <div className="relative aspect-[16/9] w-full">
+            <Image
+              src={post.cover_image_url}
+              alt=""
+              fill
+              sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 30vw"
+              className="img-skeleton object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
+            />
+          </div>
+        ) : (
+          <PlaceholderImage
+            aspect="16/9"
+            tone={post.cover_tone as PlaceholderTone}
+            label="Blog"
+            className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transform-none"
+          />
+        )}
       </div>
       <div className="flex flex-1 flex-col p-6">
         <div className="flex flex-wrap items-center gap-x-2 gap-y-1 text-xs text-faint">

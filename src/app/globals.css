@@ -155,8 +155,87 @@
   margin-top: 1rem;
 }
 .admin-prose p {
-  line-height: 1.7;
+  line-height: 1.85;
 }
+
+/* Long-form articles need more air between blocks than an admin preview. */
+.admin-prose > * + * {
+  margin-top: 1.15rem;
+}
+.admin-prose ul,
+.admin-prose ol {
+  padding-left: 1.35rem;
+  list-style-position: outside;
+}
+.admin-prose ul {
+  list-style-type: disc;
+}
+.admin-prose ol {
+  list-style-type: decimal;
+}
+.admin-prose li + li {
+  margin-top: 0.5rem;
+}
+.admin-prose li::marker {
+  color: var(--color-accent);
+}
+.admin-prose a {
+  color: var(--color-primary);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+.admin-prose a:hover {
+  color: var(--color-accent-ink);
+}
+.admin-prose blockquote {
+  border-left: 3px solid var(--color-accent);
+  padding: 0.25rem 0 0.25rem 1.15rem;
+  color: var(--color-ink);
+  font-style: normal;
+}
+.admin-prose hr {
+  border: 0;
+  border-top: 1px solid var(--color-hairline);
+  margin: 2rem 0;
+}
+/* Rich-text posts can carry tables — the document's article has two. They get
+   their own scroll box so a wide table never drags the page sideways. */
+.admin-prose table {
+  display: block;
+  width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1.75rem 0;
+  border: 1px solid var(--color-hairline);
+  border-radius: 0.75rem;
+  font-size: 0.875rem;
+}
+
+.admin-prose thead {
+  background: var(--color-navy);
+  color: #fff;
+}
+
+.admin-prose th,
+.admin-prose td {
+  padding: 0.75rem 1rem;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.65;
+}
+
+.admin-prose th {
+  font-weight: 700;
+}
+
+.admin-prose tbody tr {
+  border-top: 1px solid var(--color-hairline);
+}
+
+.admin-prose tbody tr:nth-child(2n) {
+  background: var(--color-bg-alt);
+}
+
 .admin-prose h2 {
   font-family: var(--font-heading);
   font-size: 1.5rem;
@@ -286,5 +365,44 @@
 @media (min-width: 48rem) {
   :root {
     --header-h: 5rem;
+  }
+}
+
+/*
+ * Image skeleton. Painted as the <img> element's own background, so it shows
+ * while the bitmap is still arriving and is covered the instant it paints —
+ * no JavaScript, no onLoad state, no layout shift. The sweep borrows the two
+ * brand colours at low opacity rather than the usual grey, so a page that is
+ * still loading already looks like this school's page.
+ *
+ * Not for artwork with transparency: a cut-out PNG would let the skeleton
+ * show through for good. Those pass skeleton={false}.
+ */
+.img-skeleton {
+  background-color: var(--color-bg-alt);
+  background-image: linear-gradient(
+    100deg,
+    transparent 18%,
+    rgba(21, 74, 138, 0.07) 38%,
+    rgba(214, 165, 63, 0.11) 52%,
+    transparent 72%
+  );
+  background-repeat: no-repeat;
+  background-size: 220% 100%;
+  animation: img-skeleton-sweep 1.5s linear infinite;
+}
+
+@keyframes img-skeleton-sweep {
+  from {
+    background-position: 170% 0;
+  }
+  to {
+    background-position: -70% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .img-skeleton {
+    animation: none;
   }
 }

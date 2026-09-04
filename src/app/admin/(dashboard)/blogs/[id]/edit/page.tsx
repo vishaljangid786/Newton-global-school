@@ -59,6 +59,7 @@ export default async function EditBlogPage({ params }: PageProps) {
             excerpt: post.excerpt,
             body: post.body,
             cover_tone: post.cover_tone,
+            cover_image_url: post.cover_image_url,
           }}
         />
       </AdminCard>

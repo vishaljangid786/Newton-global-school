@@ -7,6 +7,7 @@ import {
   adminButtonOutline,
   adminButtonPrimary,
   adminInputClasses,
+  adminTextareaClasses,
 } from "@/components/admin/ui";
 
 type BranchAction = (
@@ -27,6 +28,7 @@ export interface BranchManagerValues {
   principalMessage: string;
   /** Currently saved principal photo, "" when none. */
   principalPhotoUrl: string;
+  heroImageUrl: string;
   students: string;
   campusSize: string;
   heroTone: string;
@@ -134,7 +136,7 @@ export default function BranchManagerForm({
 
       <div>
         <FieldLabel htmlFor="principal_message">Principal&apos;s message</FieldLabel>
-        <textarea id="principal_message" name="principal_message" rows={4} defaultValue={initial.principalMessage} className={adminInputClasses} />
+        <textarea id="principal_message" name="principal_message" rows={4} defaultValue={initial.principalMessage} className={adminTextareaClasses} />
       </div>
 
       <div>
@@ -174,12 +176,50 @@ export default function BranchManagerForm({
               </label>
             ) : null}
           </div>
+
+      <div>
+        <FieldLabel htmlFor="hero_image">Campus photo</FieldLabel>
+        <div className="mt-2 flex flex-wrap items-start gap-4">
+          {mode === "edit" && initial.heroImageUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={initial.heroImageUrl}
+              alt="Current campus photo"
+              className="h-24 w-40 rounded-card border border-border object-cover"
+            />
+          ) : null}
+          <div className="min-w-[min(16rem,100%)] flex-1">
+            <input
+              id="hero_image"
+              name="hero_image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              className={`${adminInputClasses} file:mr-3 file:rounded-btn file:border-0 file:bg-primary-soft file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary`}
+            />
+            <p className="mt-1 text-xs text-text-muted">
+              Shown on the campus card and at the top of the branch page.
+              Without one, the hero colour is used.
+            </p>
+            {mode === "edit" && initial.heroImageUrl ? (
+              <label className="mt-2 flex items-center gap-2 text-sm text-text">
+                <input
+                  type="checkbox"
+                  name="hero_image_remove"
+                  value="1"
+                  className="h-4 w-4 rounded border-border text-primary"
+                />
+                Remove the current photo
+              </label>
+            ) : null}
+          </div>
+        </div>
+      </div>
         </div>
       </div>
 
       <div>
         <FieldLabel htmlFor="facilities">Facilities (one per line)</FieldLabel>
-        <textarea id="facilities" name="facilities" rows={6} defaultValue={initial.facilities} className={`${adminInputClasses} font-mono text-xs`} placeholder={"Library\nScience Lab\nSports Ground"} />
+        <textarea id="facilities" name="facilities" rows={6} defaultValue={initial.facilities} className={`${adminTextareaClasses} font-mono text-xs`} placeholder={"Library\nScience Lab\nSports Ground"} />
       </div>
 
       <div className="flex flex-wrap gap-3">

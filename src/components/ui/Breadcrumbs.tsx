@@ -12,20 +12,25 @@ interface BreadcrumbsProps {
    * The last item is the current page (aria-current="page").
    */
   items: Crumb[];
-  /** "light" for primary/dark backgrounds (PageHero), "dark" for light ones. */
-  tone?: "light" | "dark";
+  /**
+   * Which background the trail sits on — not the colour of its own text.
+   * The old names were "light" and "dark", which every caller read as the
+   * background and set backwards: the page heroes ended up with white text on
+   * a white masthead and the blog hero with near-black text on navy.
+   */
+  tone?: "onLight" | "onDark";
   className?: string;
 }
 
 const TONE_CLASSES = {
-  light: {
-    link: "text-white/75 transition-colors hover:text-white hover:underline",
+  onDark: {
+    link: "-my-1 py-1 text-white/75 transition-colors hover:text-white hover:underline",
     current: "font-medium text-white",
     separator: "text-white/40",
   },
-  dark: {
-    link: "text-text-muted transition-colors hover:text-primary hover:underline",
-    current: "font-medium text-text",
+  onLight: {
+    link: "-my-1 py-1 text-text-muted transition-colors hover:text-[#87661f] hover:underline",
+    current: "font-medium text-ink",
     separator: "text-text-muted/60",
   },
 } as const;
@@ -33,7 +38,7 @@ const TONE_CLASSES = {
 /** Breadcrumb trail — design.md §3.3: Home / Section / Page on inner pages. */
 export default function Breadcrumbs({
   items,
-  tone = "light",
+  tone = "onLight",
   className = "",
 }: BreadcrumbsProps) {
   const classes = TONE_CLASSES[tone];

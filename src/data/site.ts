@@ -6,16 +6,21 @@ export const site: SiteInfo = {
   established: 1998,
   headOffice: {
     /*
-     * Address assembled from the school's own document (Sangteda, Babera Road,
-     * near NH8, Kotputli-Behror district, Rajasthan).
+     * Address and phone taken from the school's RBSE affiliation form, which
+     * is the authoritative record: Sangteda / NH-8 / Babera Road, Kotputli,
+     * district Kotputli-Behror, PIN 303108, phone 9216072030.
      *
-     * TODO: phone and email below are still the original template's Jaipur
-     * placeholders — the document gives no contact number. Replace them with
-     * the school's real details; they surface on /contact, in the footer, and
-     * the top bar is ready to show them once they are correct.
+     * The PIN matters. Searching Google Maps for "Newton Global School"
+     * returns a different school of the same name at Udaipuria Mod, Chomu,
+     * Jaipur 303804 — that is the pin the map used to drop, and it is not
+     * this school. See LOCATION.mapQuery on the home page.
+     *
+     * TODO: the affiliation form leaves SCHOOL EMAIL blank, so the address
+     * below is still the original template's placeholder. Replace it with the
+     * school's real address; it surfaces on /contact and in the footer.
      */
-    address: "Sangteda, Babera Road, Kotputli-Behror, Rajasthan",
-    phone: "+91-141-4102000",
+    address: "Sangteda, Babera Road, NH-8, Kotputli, Kotputli-Behror, Rajasthan 303108",
+    phone: "+91 92160 72030",
     email: "info@sunrise-school.example",
     officeHours: "Monday to Saturday, 8:00 AM to 4:00 PM",
   },

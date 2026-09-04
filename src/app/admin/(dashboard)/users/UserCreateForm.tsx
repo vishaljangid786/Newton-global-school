@@ -7,6 +7,7 @@ import {
   adminButtonPrimary,
   adminInputClasses,
 } from "@/components/admin/ui";
+import { useDialogClose } from "@/components/admin/AdminDialog";
 
 interface BranchOption {
   slug: string;
@@ -24,13 +25,16 @@ export default function UserCreateForm({
   );
   const [role, setRole] = useState("branch_admin");
   const formRef = useRef<HTMLFormElement>(null);
+  /* No-op unless this form is rendered inside an AdminDialog. */
+  const closeDialog = useDialogClose();
 
   useEffect(() => {
     if (state?.ok) {
       formRef.current?.reset();
       setRole("branch_admin");
+      closeDialog();
     }
-  }, [state?.ok]);
+  }, [state?.ok, closeDialog]);
 
   return (
     <form ref={formRef} action={action} className="grid gap-4">

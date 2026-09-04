@@ -5,14 +5,27 @@
  * and event handlers. Content of disallowed tags is preserved as text.
  */
 
+/*
+ * Tables are on this list because the school's own articles use them — a
+ * board-comparison grid and an online-vs-traditional grid. They were being
+ * stripped here at save time, which left the cell text run together into one
+ * unreadable paragraph ("BoardFull FormGoverning Body…"). None of these tags
+ * can carry script, and every attribute is removed below regardless.
+ */
 const ALLOWED_TAGS = new Set([
   "p",
   "br",
+  "hr",
   "strong",
   "b",
   "em",
   "i",
   "u",
+  "s",
+  "sub",
+  "sup",
+  "code",
+  "pre",
   "h2",
   "h3",
   "h4",
@@ -21,6 +34,14 @@ const ALLOWED_TAGS = new Set([
   "ol",
   "li",
   "a",
+  "table",
+  "thead",
+  "tbody",
+  "tfoot",
+  "tr",
+  "th",
+  "td",
+  "caption",
 ]);
 
 export function sanitizeHtml(input: string): string {

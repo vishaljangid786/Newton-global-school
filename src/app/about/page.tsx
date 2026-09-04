@@ -6,18 +6,19 @@ import {
   DoodleWash,
   Cover,
   Wave,
-  GoldLink,
   Icon,
   type IconName,
   type Img,
   PageHero,
   Photo,
   rich,
+  RunInText,
   SECTION,
   SectionTitle,
   STRONG,
   TINTS,
 } from "@/components/site/school-kit";
+import EnquiryBand from "@/components/site/EnquiryBand";
 import Reveal from "@/components/ui/Reveal";
 
 export const metadata: Metadata = {
@@ -147,47 +148,32 @@ const CTA = {
 const IMG = {
   heroBanner: {
     src: "/images/school/school-bus.webp",
-
     w: 1600,
-
     h: 1200,
-
     alt: "A Newton Global School bus outside the main building",
   },
   storyGate: {
-    src: "/images/school/founders-wall.webp",
-
-    w: 1140,
-
-    h: 1600,
-
-    alt: "The reception shrine and the founders' photographs",
+    src: "/images/school/reception.webp",
+    w: 1600,
+    h: 1200,
+    alt: "The school reception desk and waiting area",
   },
   storyCorridor: {
-    src: "/images/school/corridor.webp",
-
-    w: 1200,
-
+    src: "/images/school/founders-wall.webp",
+    w: 1140,
     h: 1600,
-
-    alt: "A corridor lined with classrooms inside the school",
+    alt: "The reception shrine and the founders' photographs",
   },
   institution: {
     src: "/images/school/campus-grounds.webp",
-
     w: 1600,
-
     h: 900,
-
     alt: "The school building across its green grounds",
   },
   managementOffice: {
     src: "/images/school/reception.webp",
-
     w: 1600,
-
     h: 1200,
-
     alt: "The school reception desk and waiting area",
   },
   whyLibrary: {
@@ -204,29 +190,20 @@ const IMG = {
   },
   whyActivityRoom: {
     src: "/images/school/kindergarten-room.webp",
-
     w: 1600,
-
     h: 1200,
-
     alt: "The pre-primary activity room with its play equipment",
   },
   campusPlayground: {
     src: "/images/school/playground.webp",
-
     w: 1600,
-
     h: 1200,
-
     alt: "The school playground with its swings and climbing frame",
   },
   campusSports: {
     src: "/images/school/sports-store.webp",
-
     w: 1600,
-
     h: 1200,
-
     alt: "The sports room where games equipment is kept",
   },
   campusScience: {
@@ -241,22 +218,22 @@ const IMG = {
     h: 1200,
     alt: "Pupils lining up to board the school bus",
   },
+  visionCorridor: {
+    src: "/images/school/corridor.webp",
+    w: 1200,
+    h: 1600,
+    alt: "A corridor lined with classrooms inside the school",
+  },
   governance: {
     src: "/images/school/reception.webp",
-
     w: 1600,
-
     h: 1200,
-
     alt: "The school reception desk and waiting area",
   },
   ctaCampus: {
     src: "/images/school/campus-side-buses.webp",
-
     w: 1600,
-
     h: 1200,
-
     alt: "Newton Global School buses parked beside the campus building",
   },
 } as const satisfies Record<string, Img>;
@@ -304,19 +281,14 @@ export default function AboutPage() {
                 aria-hidden="true"
                 className="absolute -left-3 -top-3 hidden h-full w-full rounded-[1.75rem] border-2 border-[#a8802f]/45 sm:block"
               />
-              <div className="relative overflow-hidden rounded-[1.75rem] shadow-frame">
-                <Photo
+              <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.75rem] shadow-frame">
+                <Cover
                   img={IMG.storyGate}
                   sizes="(max-width: 768px) 92vw, (max-width: 1200px) 46vw, 540px"
-                  className="h-auto w-full"
                 />
               </div>
-              <div className="absolute -bottom-8 -right-2 hidden w-36 overflow-hidden rounded-[1.25rem] border-4 border-bg shadow-frame sm:block lg:w-44">
-                <Photo
-                  img={IMG.storyCorridor}
-                  sizes="(max-width: 1024px) 144px, 176px"
-                  className="h-auto w-full"
-                />
+              <div className="absolute -bottom-8 -right-2 hidden aspect-[3/4] w-36 overflow-hidden rounded-[1.25rem] border-4 border-bg shadow-frame sm:block lg:w-44">
+                <Cover img={IMG.storyCorridor} sizes="(max-width: 1024px) 144px, 176px" />
               </div>
             </div>
           </Reveal>
@@ -339,7 +311,7 @@ export default function AboutPage() {
       {/* ——— §3 Vision & Mission — text-led navy band (no heavy image) ——— */}
       <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg" />
-        <Cover img={IMG.storyCorridor} sizes="100vw" decorative className="opacity-[0.14]" />
+        <Cover img={IMG.visionCorridor} sizes="100vw" decorative className="opacity-[0.14]" />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,rgba(0,19,68,0.96),rgba(0,19,68,0.8))]"
@@ -497,9 +469,11 @@ export default function AboutPage() {
                       >
                         <Icon name={value.icon} className="h-6 w-6" />
                       </span>
-                      <p className="mt-5 break-words text-[0.9375rem] leading-[1.8] text-text-muted">
-                        {rich(value.text, STRONG.runIn)}
-                      </p>
+                      <RunInText
+                        text={value.text}
+                        titleClass="mt-5 text-[1.0625rem] leading-[1.35] text-ink"
+                        bodyClass="mt-2 break-words text-[0.9375rem] leading-[1.8] text-text-muted"
+                      />
                     </article>
                   </Reveal>
                 </li>
@@ -625,34 +599,14 @@ export default function AboutPage() {
         </div>
       </section>
 
-      {/* ——— §10 Call-To-Action Section ——— */}
-      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
-        <Wave className="z-20 text-bg-alt" />
-        <Cover img={IMG.ctaCampus} sizes="100vw" decorative className="opacity-[0.28]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-pill bg-[radial-gradient(circle,rgba(214,165,63,0.24),transparent_70%)]"
-        />
-        <Reveal className={`relative ${CONTAINER}`}>
-          <span
-            aria-hidden="true"
-            className="mx-auto block h-[3px] w-16 rounded-pill bg-[#d6a53f]"
-          />
-          <h2 className="mx-auto mt-6 max-w-3xl text-[1.5rem] leading-[1.2] text-white sm:text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] xl:text-[2.4rem]">
-            {rich(CTA.h2, STRONG.headingDark)}
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-[0.9375rem] leading-[1.85] text-[#c2cfe4] md:text-base">
-            {rich(CTA.body, STRONG.dark)}
-          </p>
-          <GoldLink href="/admissions" className="mt-8 w-full sm:w-auto">
-            {CTA.cta}
-          </GoldLink>
-        </Reveal>
-      </section>
+      {/* ——— §10 Call-To-Action — the enquiry form itself, not a button ——— */}
+      <EnquiryBand
+        image={IMG.ctaCampus}
+        h2={CTA.h2}
+        body={CTA.body}
+        waveClass="text-bg-alt"
+        formTitle={CTA.cta}
+      />
     </>
   );
 }

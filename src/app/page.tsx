@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Image from "next/image";
 import Link from "next/link";
 import Accordion, { type AccordionEntry } from "@/components/ui/Accordion";
 import {
@@ -15,14 +16,27 @@ import {
   rich,
   SECTION,
   SectionTitle,
+  splitRunIn,
   STAGE_COLOURS,
   STRONG,
   TINTS,
 } from "@/components/site/school-kit";
+import EnquiryBand from "@/components/site/EnquiryBand";
 import Reveal from "@/components/ui/Reveal";
 import { getUpcomingEvents } from "@/data/events";
 import { getAllNotices } from "@/data/notices";
 import { formatDate } from "@/lib/format";
+import { facultyPortraits, facultyPromise } from "@/data/pages/faculty";
+import {
+  achievements as ACHIEVEMENTS,
+  resultImages,
+  resultStats,
+} from "@/data/pages/results";
+import BlogCard from "@/components/ui/BlogCard";
+import TestimonialSlider from "@/components/ui/TestimonialSlider";
+import { getTestimonialFeed } from "@/lib/testimonials-store";
+import { getMergedGalleryItems } from "@/lib/gallery-store";
+import { getPublishedBlogs } from "@/lib/blog";
 
 export const metadata: Metadata = {
   description:
@@ -38,13 +52,15 @@ export const metadata: Metadata = {
 /* §1 Banner Section (Hero) */
 const HERO = {
   h1: `Newton Global School - **Best School in Kotputli**`,
-  sub: ` **RBSE** Education`,
+  sub: `Nurturing Young Minds at Sangteda, Kotputli with Quality **RBSE** Education`,
   body: `Welcome to Newton Global School, recognized as one of the **best schools in Kotputli** for quality, values-based education. As a trusted **English Medium School in Kotputli**, we are committed to building strong academic foundations and confident personalities in every child. Located in Sangteda on **Babera Road**, **Newton Global School Kotputli** proudly follows the **RBSE** curriculum with a focus on holistic learning.`,
   cta: `Apply for Admission 2026-27`,
 };
 
 /* §2 About School Section */
 const ABOUT = {
+  /* The document has no button here; the label just names its destination. */
+  cta: `Read More About Us →`,
   h2: `About Newton Global School - A **Top School in Kotputli**`,
   body: `Newton Global School is widely regarded as one of the **best schools in Sangteda**, Kotputli, committed to giving every child a safe, encouraging, and disciplined environment to grow. As a **RBSE School in Kotputli**, we blend traditional values with modern teaching methods to prepare students for both academics and life. Parents across the region trust us as a **best RBSE school in Kotputli** because of our consistent focus on discipline, care, and results. Our experienced teachers and caring staff work together to make sure every child feels supported, whether it's their first day in Nursery or their final year at our **Senior Secondary School in Kotputli**.`,
 };
@@ -91,6 +107,9 @@ const PROGRAMS = [
 
 /* §5 Facilities Section */
 const FACILITIES_H2 = `Facilities at Newton Global School - A **Best English Medium School in Kotputli**`;
+/** Six of the document's twelve; the Facilities page carries all of them. */
+const HOME_FACILITY_COUNT = 6;
+
 const FACILITIES_LEDE = `Newton Global School offers well-planned infrastructure and facilities that support every child's academic, physical, and personal growth.`;
 const FACILITIES: Array<{ icon: IconName; text: string }> = [
   {
@@ -143,17 +162,11 @@ const FACILITIES: Array<{ icon: IconName; text: string }> = [
   },
 ];
 
-/* §6 Achievements/Results Section */
-const ACHIEVEMENTS = {
-  h2: `Our Achievements - Proud Moments of the **Best School in Kotputli**`,
-  body: `Every year, our students make us proud with their performance in **RBSE** board exams and various co-curricular activities. From academic toppers to sports champions, Newton Global School continues to nurture talent in every field and strengthen its position as a **top school in Kotputli**.`,
-  statsLabel: `Stat Highlights:`,
-  stats: [
-    { value: `XX%`, label: `Pass Result in Last **RBSE** Board Exams` },
-    { value: `XX+`, label: `Students Scoring Distinction` },
-    { value: `XX+`, label: `Years of Educational Excellence in Kotputli` },
-  ],
-};
+/** Counted off the list rather than written out, so the two cannot disagree. */
+const FACILITIES_CTA = `See All ${FACILITIES.length} Facilities →`;
+
+/* §6 Achievements/Results Section — copy and figures live in
+   src/data/pages/results.ts, shared with the /results page. */
 
 /* §7 Gallery Preview Section */
 const GALLERY = {
@@ -162,26 +175,28 @@ const GALLERY = {
   cta: `View Full Gallery →`,
 };
 
-/* §8 Testimonials Section */
+/* §8 Testimonials Section — the two quotes the document prints live on in
+   src/data/testimonials-seed.ts, and are shown only until Admin →
+   Testimonials has something published. */
 const TESTIMONIALS = {
   h2: `What Parents Say About Us`,
   lede: `Hear directly from the families who trust Newton Global School as the **best school in Sangteda** for their children's education.`,
-  quotes: [
-    {
-      quote: `"Newton Global School has been a wonderful choice for my daughter. As a leading **English medium school in Kotputli**, the teachers are supportive and the environment feels like a second home."`,
-      attribution: `- Parent, Kotputli`,
-    },
-    {
-      quote: `"We chose this **RBSE School in Kotputli** because of its discipline and caring teachers. Our son has grown so much in confidence."`,
-      attribution: `- Parent, Sangteda`,
-    },
-  ],
+};
+
+/* Latest Blogs — the document has no blog section; these three lines are
+   authored, and every post below comes from Admin → Blogs. */
+const BLOGS = {
+  h2: `Latest Articles & Blogs`,
+  body: `Admission guidance, exam tips and school updates, written by the Newton Global School team.`,
+  cta: `Read All Blogs →`,
 };
 
 /* §9 News & Events Section */
 const NEWS = {
   h2: `Latest News & Events at Newton Global School`,
   body: `Stay updated with admission dates, school events, and important announcements from Kotputli's **best school**.`,
+  /* Not in the document; the label just names where the button goes. */
+  cta: `View All News & Events →`,
 };
 
 /* §10 Admission CTA Section */
@@ -195,8 +210,16 @@ const ADMISSION = {
 const LOCATION = {
   h2: `Visit Us - **School in Sangteda**, Kotputli`,
   body: `Newton Global School is conveniently located in Sangteda, near **NH8 Kotputli**, on **Babera Road**. As one of the well-known **schools near Sangteda**, we welcome parents to visit our campus and experience our learning environment firsthand.`,
-  /* "(Google Map embed here)" — rendered as a live Google Maps embed below. */
-  mapQuery: `Newton Global School, Sangteda, Babera Road, Kotputli, Rajasthan`,
+  /*
+   * "(Google Map embed here)" — rendered as a live Google Maps embed below.
+   *
+   * Deliberately an address with no school name in it. A different Newton
+   * Global School is listed at Udaipuria Mod, Chomu, Jaipur 303804, and
+   * including the name made Google match that business and drop the pin ~90km
+   * away in Chomu. This campus is not listed on Maps, so the query geocodes
+   * the road and PIN instead, which puts the map on the right place.
+   */
+  mapQuery: `Sangteda, Babera Road, NH-8, Kotputli, Rajasthan 303108`,
 };
 
 /* §12 FAQ Section */
@@ -409,16 +432,16 @@ const IMG = {
     h: 1200,
     alt: "Pupils working at computers in the school lab",
   },
-} as const;
+} as const satisfies Record<string, Img>;
 
 /* ——— Derived / dynamic data ——————————————————————————————————— */
 
 /** §4 — each programme opens its own stage page. */
 const PROGRAM_LINKS = [
-  "/academics/nursery",
-  "/academics/primary",
-  "/academics/secondary",
-  "/academics/senior-secondary",
+  "/nursery",
+  "/primary",
+  "/secondary",
+  "/senior-secondary",
 ];
 
 /** §4 — the four stages carry the same colours as /academics. */
@@ -445,24 +468,18 @@ const FACILITY_BAND = [
   IMG.facilityMedical,
 ];
 
-/** §7 — gallery mosaic tiles, paired with their placement in the grid. */
-const GALLERY_TILES: Array<{ img: Img; span: string; wide?: boolean }> = [
-  {
-    img: IMG.galleryRunning,
-    span: "md:col-start-1 md:row-start-1 md:row-span-2",
-  },
-  { img: IMG.galleryDrawing, span: "md:col-start-2 md:row-start-1" },
-  {
-    img: IMG.gallerySwing,
-    span: "md:col-start-3 md:row-start-1 md:row-span-2",
-  },
-  { img: IMG.galleryMusic, span: "md:col-start-2 md:row-start-2" },
-  {
-    img: IMG.galleryPlayground,
-    span: "md:col-span-2 md:col-start-1 md:row-start-3",
-    wide: true,
-  },
-  { img: IMG.galleryPaint, span: "md:col-start-3 md:row-start-3" },
+/**
+ * Mosaic geometry only. The photographs themselves come from the database
+ * (admin uploads first, then the seed set), so the layout survives whatever
+ * the school uploads — it just fills these six slots in order.
+ */
+const GALLERY_SPANS: Array<{ span: string; wide?: boolean }> = [
+  { span: "md:col-start-1 md:row-start-1 md:row-span-2" },
+  { span: "md:col-start-2 md:row-start-1" },
+  { span: "md:col-start-3 md:row-start-1 md:row-span-2" },
+  { span: "md:col-start-2 md:row-start-2" },
+  { span: "md:col-span-2 md:col-start-1 md:row-start-3", wide: true },
+  { span: "md:col-start-3 md:row-start-3" },
 ];
 
 /** §9 — "(3-4 dynamic notice/event cards here)": upcoming events + notices. */
@@ -499,10 +516,25 @@ const faqEntries: AccordionEntry[] = FAQS.map((faq, index) => ({
   content: <p className="text-[0.9375rem] leading-[1.75]">{rich(faq.a)}</p>,
 }));
 
-export default function HomePage() {
+export default async function HomePage() {
+  /* Six is two full slides plus a third to page to; the rest live on
+     /testimonials. Falls back to the document's own quotes when the table is
+     empty or MySQL is down, so this band is never blank. */
+  const testimonials = await getTestimonialFeed({ limit: 6 });
+
+  /* Photographs an admin uploads should reach the home page too, not only
+     /gallery. The mosaic below lays out six tiles, and tone-only placeholders
+     have no file to show, so those are filtered out first. */
+  const galleryTiles = (await getMergedGalleryItems())
+    .filter((item) => Boolean(item.imageUrl))
+    .slice(0, GALLERY_SPANS.length);
+
+  /* Newest four posts; publishing one in Admin → Blogs revalidates this page. */
+  const latestPosts = (await getPublishedBlogs()).slice(0, 4);
+
   return (
     <>
-      {/* ——— §1 Banner Section (Hero) — full-bleed classroom under navy ——— */}
+      {/* ——— 1. Banner Section (doc §1) — full-bleed classroom under navy ——— */}
       <PageHero
         image={IMG.heroCampus}
         priority
@@ -521,7 +553,7 @@ export default function HomePage() {
         secondaryHref="/contact"
       />
 
-      {/* ——— §2 About School Section — photo cluster with a gold offset frame ——— */}
+      {/* ——— 2. About School (doc §2) — photo cluster with a gold offset frame ——— */}
       <section className={`relative overflow-hidden bg-bg ${SECTION}`}>
         <div
           aria-hidden="true"
@@ -557,11 +589,14 @@ export default function HomePage() {
             <p className="mt-5 text-[0.9375rem] leading-[1.85] text-text-muted md:text-base">
               {rich(ABOUT.body)}
             </p>
+            <GoldLink href="/about" className="mt-7 w-full sm:w-auto">
+              {ABOUT.cta}
+            </GoldLink>
           </Reveal>
         </div>
       </section>
 
-      {/* ——— §3 Why Choose Us — a navy block, typographic ———
+      {/* ——— 3. Why Choose Us (doc §3) — a navy block, typographic ———
           Six white cards on a light band was the third grid in a row and read
           as filler. This one is a colour block with big numerals instead: no
           boxes, no icons, and the section raises its voice for the first time
@@ -596,8 +631,11 @@ export default function HomePage() {
                     aria-hidden="true"
                     className="mt-4 block h-px w-full bg-white/15"
                   />
-                  <p className="mt-4 text-[0.9375rem] leading-[1.85] text-[#c2cfe4]">
-                    {rich(item.text, "font-bold text-white")}
+                  <h3 className="mt-4 text-[1.0625rem] leading-[1.35] text-white">
+                    {splitRunIn(item.text).title}
+                  </h3>
+                  <p className="mt-2 text-[0.9375rem] leading-[1.85] text-[#c2cfe4]">
+                    {rich(splitRunIn(item.text).body, "font-semibold text-white")}
                   </p>
                 </Reveal>
               </li>
@@ -606,7 +644,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ——— §4 Academic Programs — one photo card per stage ——— */}
+      {/* ——— 4. Academic Programs (doc §4) — one photo card per stage ——— */}
       <section className={SECTION}>
         <div className={CONTAINER}>
           <Reveal>
@@ -654,8 +692,11 @@ export default function HomePage() {
                         </span>
                       </div>
                       <div className="flex flex-1 flex-col p-5 sm:p-6">
-                        <p className="text-[0.9375rem] leading-[1.75] text-text-muted">
-                          {rich(program, STRONG.runIn)}
+                        <h3 className="text-[1.0625rem] leading-[1.35] text-ink">
+                          {splitRunIn(program).title}
+                        </h3>
+                        <p className="mt-2 text-[0.9375rem] leading-[1.75] text-text-muted">
+                          {rich(splitRunIn(program).body, "font-semibold text-ink")}
                         </p>
                         <span
                           aria-hidden="true"
@@ -673,73 +714,92 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ——— §5 Facilities — photo collage beside the list ———
-          Twelve items in a grid read as a wall however they are styled, and
-          a photo band stacked on top of them made the section heavier still.
-          The photographs carry the visual weight on one side; the list stays
-          quiet on the other and runs two columns so it is scanned, not read. */}
+      {/* ——— 5. Facilities (doc §5) — header, photo band, then a card grid ———
+          Twelve run-in lines squeezed into two narrow columns beside a sticky
+          photo collage: the titles and their descriptions ran together, and at
+          13px in a 7-column well there was nothing to separate one facility
+          from the next. Full width instead — the photographs get their own
+          band across the top, and each facility becomes a card with its title
+          as a real heading, so the twelve are scanned rather than waded
+          through. */}
       <section
         id="facilities"
         className={`scroll-mt-24 border-y border-hairline bg-bg-alt ${SECTION}`}
       >
-        <div
-          className={`${CONTAINER} grid gap-10 lg:grid-cols-12 lg:items-start lg:gap-14`}
-        >
-          <Reveal className="lg:col-span-5 lg:sticky lg:top-24">
-            <div className="grid grid-cols-2 gap-3 sm:gap-4">
+        <div className={CONTAINER}>
+          <Reveal>
+            <SectionTitle
+              eyebrow="Facilities"
+              title={FACILITIES_H2}
+              align="center"
+              width="max-w-4xl"
+            />
+            <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-[1.8] text-text-muted">
+              {rich(FACILITIES_LEDE)}
+            </p>
+          </Reveal>
+
+          <Reveal delay={100}>
+            <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-12 lg:grid-cols-4">
               {FACILITY_BAND.map((img, index) => (
                 <div
                   key={img.src}
-                  className={`relative aspect-square overflow-hidden rounded-[1.25rem] shadow-card ${
-                    index % 2 ? "translate-y-5" : ""
+                  className={`group relative aspect-[4/3] overflow-hidden rounded-[1.25rem] shadow-card ${
+                    index % 2 ? "lg:translate-y-6" : ""
                   }`}
                 >
                   <Cover
                     img={img}
-                    sizes="(max-width: 1024px) 46vw, 260px"
-                    className="transition-transform duration-500 hover:scale-105 motion-reduce:transition-none motion-reduce:hover:scale-100"
+                    sizes="(max-width: 640px) 46vw, (max-width: 1024px) 46vw, 22vw"
+                    className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                   />
                 </div>
               ))}
             </div>
           </Reveal>
 
-          <div className="lg:col-span-7">
-            <Reveal>
-              <SectionTitle eyebrow="Facilities" title={FACILITIES_H2} />
-              <p className="mt-4 text-[0.9375rem] leading-[1.8] text-text-muted">
-                {rich(FACILITIES_LEDE)}
-              </p>
-            </Reveal>
-            <ul className="mt-8 grid gap-x-8 gap-y-5 sm:grid-cols-2">
-              {FACILITIES.map((facility, index) => {
-                const tint = TINTS[index % TINTS.length];
-                return (
-                  <li key={facility.icon}>
-                    <Reveal delay={(index % 2) * 60}>
-                      <div className="flex gap-3">
-                        <span
-                          className={`mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-[0.5rem] ${tint.well}`}
-                        >
-                          <Icon
-                            name={facility.icon}
-                            className="h-[0.9rem] w-[0.9rem]"
-                          />
-                        </span>
-                        <p className="text-[0.8125rem] leading-[1.7] text-text-muted">
-                          {rich(facility.text, STRONG.runIn)}
+          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3 lg:gap-5">
+            {FACILITIES.slice(0, HOME_FACILITY_COUNT).map((facility, index) => {
+              const tint = TINTS[index % TINTS.length];
+              const { title, body } = splitRunIn(facility.text);
+              return (
+                <li key={facility.icon} className="h-full">
+                  <Reveal delay={(index % 3) * 70} className="h-full">
+                    <div
+                      className={`flex h-full gap-4 rounded-[1.25rem] border border-hairline bg-surface p-5 shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0 ${tint.edge}`}
+                    >
+                      <span
+                        className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[0.75rem] ${tint.well}`}
+                      >
+                        <Icon name={facility.icon} className="h-5 w-5" />
+                      </span>
+                      <div className="min-w-0">
+                        <h3 className="text-[1rem] leading-[1.35] text-ink">
+                          {title}
+                        </h3>
+                        <p className="mt-1.5 text-[0.875rem] leading-[1.75] text-text-muted">
+                          {rich(body, "font-semibold text-ink")}
                         </p>
                       </div>
-                    </Reveal>
-                  </li>
-                );
-              })}
-            </ul>
+                    </div>
+                  </Reveal>
+                </li>
+              );
+            })}
+          </ul>
+
+          {/* The document lists twelve; six is as many as this section can
+              carry without becoming the wall it used to be, so the rest are a
+              click away on the Facilities page. */}
+          <div className="mt-12 text-center">
+            <GoldLink href="/facilities" className="w-full sm:w-auto">
+              {FACILITIES_CTA}
+            </GoldLink>
           </div>
         </div>
       </section>
 
-      {/* ——— §6 Achievements — the page's loud moment ———
+      {/* ——— 6. Achievements (doc §6) — the page's loud moment ———
           The figures were 2.4rem in glass boxes in the corner of a full-height
           band, which wasted the one place the page is allowed to shout. They
           now run the width at display size, stacked over the copy. */}
@@ -772,7 +832,7 @@ export default function HomePage() {
               {ACHIEVEMENTS.statsLabel}
             </p>
             <dl className="mt-8 grid gap-y-12 sm:grid-cols-3 sm:gap-x-10">
-              {ACHIEVEMENTS.stats.map((stat, index) => (
+              {resultStats.map((stat, index) => (
                 <div
                   key={stat.label}
                   className={`flex flex-col-reverse ${
@@ -792,98 +852,35 @@ export default function HomePage() {
               ))}
             </dl>
           </Reveal>
-        </div>
-      </section>
 
-      {/* ——— §7 Gallery Preview — photo mosaic ——— */}
-      <section className={SECTION}>
-        <div className={CONTAINER}>
-          <Reveal>
-            <SectionTitle eyebrow="Gallery" title={GALLERY.h2} align="center" />
-            <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-[1.8] text-text-muted">
-              {rich(GALLERY.body)}
-            </p>
-          </Reveal>
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 md:grid-rows-[repeat(3,10rem)] lg:mt-12 lg:grid-rows-[repeat(3,12.5rem)] xl:grid-rows-[repeat(3,14rem)]">
-            {GALLERY_TILES.map((tile, index) => (
-              <Reveal
-                key={tile.img.src}
-                delay={index * 70}
-                className={tile.span}
-              >
-                <div className="group relative h-full min-h-[9rem] overflow-hidden rounded-[1.25rem] shadow-card">
+          <Reveal delay={200}>
+            {/* Our own students, so the figures above have faces beside them. */}
+            <ul className="mt-14 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+              {resultImages.map((img, index) => (
+                <li
+                  key={img.src}
+                  className={`relative aspect-[4/3] overflow-hidden rounded-[1.25rem] ring-1 ring-white/15 ${
+                    index % 2 ? "lg:translate-y-6" : ""
+                  }`}
+                >
                   <Cover
-                    img={tile.img}
-                    sizes={
-                      tile.wide
-                        ? "(max-width: 768px) 46vw, 780px"
-                        : "(max-width: 768px) 46vw, 400px"
-                    }
-                    className="transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                    img={img}
+                    sizes="(max-width: 640px) 46vw, (max-width: 1024px) 46vw, 22vw"
                   />
-                  <span
-                    aria-hidden="true"
-                    className="pointer-events-none absolute inset-0 rounded-[1.25rem] ring-0 ring-[#d6a53f] transition-all duration-300 group-hover:ring-[3px]"
-                  />
-                </div>
-              </Reveal>
-            ))}
-          </div>
-          <div className="mt-10 text-center">
-            <GoldLink href="/gallery" className="w-full sm:w-auto">
-              {GALLERY.cta}
-            </GoldLink>
-          </div>
-        </div>
-      </section>
+                </li>
+              ))}
+            </ul>
 
-      {/* ——— §8 Testimonials — pull-quotes, not cards ———
-          Two bordered cards sat in the middle of a page already full of
-          cards. A parent's words carry further set large and unboxed. */}
-      <section
-        className={`border-y border-[#a8802f]/20 bg-[#faf4e8] ${SECTION}`}
-      >
-        <div className={CONTAINER}>
-          <Reveal>
-            <SectionTitle
-              eyebrow="Testimonials"
-              title={TESTIMONIALS.h2}
-              align="center"
-            />
-            <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-[1.8] text-text-muted">
-              {rich(TESTIMONIALS.lede)}
-            </p>
+            <div className="mt-14 lg:mt-20">
+              <GoldLink href="/results" className="w-full sm:w-auto">
+                {ACHIEVEMENTS.cta}
+              </GoldLink>
+            </div>
           </Reveal>
-          <div className="mt-14 grid gap-14 lg:mt-16 lg:grid-cols-2 lg:gap-16">
-            {TESTIMONIALS.quotes.map((item, index) => (
-              <Reveal key={item.attribution} delay={index * 110}>
-                <figure>
-                  <span
-                    aria-hidden="true"
-                    className="block font-heading text-[3.5rem] font-bold leading-[0.6] text-[#a8802f]/35"
-                  >
-                    &ldquo;
-                  </span>
-                  <blockquote className="mt-4 text-[clamp(1.05rem,0.95rem+0.5vw,1.5rem)] font-medium leading-[1.6] text-ink">
-                    {rich(item.quote, "font-bold text-[#87661f]")}
-                  </blockquote>
-                  <figcaption className="mt-7 flex items-center gap-3.5 text-sm font-bold text-[#87661f]">
-                    <span
-                      aria-hidden="true"
-                      className="flex h-12 w-12 shrink-0 items-center justify-center rounded-pill bg-[#faf4e8] ring-2 ring-[#a8802f]/35"
-                    >
-                      <Icon name="quote" className="h-5 w-5 text-[#87661f]" />
-                    </span>
-                    {item.attribution}
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
-          </div>
         </div>
       </section>
 
-      {/* ——— §9 News & Events Section ——— */}
+      {/* ——— 7. News & Events (doc §9) ——— */}
       <section className={SECTION}>
         <div className={CONTAINER}>
           <Reveal>
@@ -936,44 +933,237 @@ export default function HomePage() {
               </li>
             ))}
           </ul>
+
+          <div className="mt-12 text-center">
+            <GoldLink href="/news" className="w-full sm:w-auto">
+              {NEWS.cta}
+            </GoldLink>
+          </div>
         </div>
       </section>
 
-      {/* ——— §10 Admission CTA Section — navy band over a campus photo ——— */}
-      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
-        <Wave className="z-20 text-bg" />
-        <Cover
-          img={IMG.ctaCampus}
-          sizes="100vw"
-          decorative
-          className="opacity-[0.28]"
-        />
+      {/*
+        * ——— 8. Our Teachers (not in the document) ———
+        * The document has no faculty section; the school asked for one here,
+        * after News & Events. Every word in it is still the document's own —
+        * the "Why Choose Us" line about the teachers.
+        */}
+      <section className="relative overflow-hidden border-y border-hairline bg-bg-alt py-16 sm:py-20">
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
+          className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-pill bg-[#faf4e8] opacity-80 blur-3xl"
         />
         <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-pill bg-[radial-gradient(circle,rgba(214,165,63,0.24),transparent_70%)]"
-        />
-        <Reveal className={`relative ${CONTAINER}`}>
-          <span
-            aria-hidden="true"
-            className="mx-auto block h-[3px] w-16 rounded-pill bg-[#d6a53f]"
-          />
-          <h2 className="mx-auto mt-6 max-w-3xl text-[1.55rem] leading-[1.2] text-white sm:text-[1.85rem] md:text-[2.25rem]">
-            {rich(ADMISSION.h2, STRONG.headingDark)}
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-[0.9375rem] leading-[1.85] text-[#c2cfe4] md:text-base">
-            {rich(ADMISSION.body, STRONG.dark)}
-          </p>
-          <GoldLink href="/admissions" className="mt-8 w-full sm:w-auto">
-            {ADMISSION.cta}
-          </GoldLink>
-        </Reveal>
+          className={`relative ${CONTAINER} grid items-center gap-12 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1fr)] lg:gap-16`}
+        >
+          <Reveal>
+            <p className="eyebrow flex items-center gap-2.5 text-[#87661f]">
+              <span
+                aria-hidden="true"
+                className="h-[3px] w-7 rounded-pill bg-[#a8802f]"
+              />
+              Our Teachers
+            </p>
+            {/* An h2, so this section carries a heading like every other one
+                on the page — and picks up the Sora display face with it. */}
+            <h2 className="mt-5 max-w-xl text-[clamp(1.25rem,1rem+0.85vw,1.9rem)] leading-[1.3]">
+              {rich(facultyPromise, "font-bold text-[#154a8a]")}
+            </h2>
+            <Link
+              href="/faculty"
+              className="group/team mt-8 inline-flex items-center gap-2.5 rounded-pill border border-[#a8802f]/35 bg-surface px-5 py-2.5 text-[0.9375rem] font-bold text-[#87661f] shadow-card transition duration-300 hover:-translate-y-0.5 hover:border-[#a8802f] hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+            >
+              Meet our teachers
+              <span
+                aria-hidden="true"
+                className="transition-transform duration-300 group-hover/team:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover/team:translate-x-0"
+              >
+                →
+              </span>
+            </Link>
+          </Reveal>
+
+          <Reveal delay={120}>
+            {/*
+              * The staff photographs are all the same half-body pose against
+              * the same wall, and they are already 3:4 — so a 3:4 frame crops
+              * nothing and the face ends up a small shape in a lot of empty
+              * wall. Every head sits between 31% and 55% of its frame, so a
+              * square tile scaled in about the centre lands on head-and-
+              * shoulders — the only part of these pictures worth showing.
+              * A dropped middle column breaks the grid up, and the tail tile
+              * carries the count so the link to the full team is part of the
+              * picture rather than an afterthought.
+              */}
+            <ul className="grid grid-cols-3 gap-3 sm:gap-4 sm:pb-8">
+              {facultyPortraits.slice(0, 5).map((person, index) => (
+                <li
+                  key={person.src}
+                  className={index % 3 === 1 ? "sm:translate-y-8" : ""}
+                >
+                  <div className="group relative aspect-square overflow-hidden rounded-[1.25rem] bg-bg shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0">
+                    <Image
+                      src={person.src}
+                      alt={person.alt}
+                      fill
+                      sizes="(max-width: 640px) 40vw, (max-width: 1024px) 36vw, 20vw"
+                      className="img-skeleton scale-[1.3] object-cover object-center transition-transform duration-700 group-hover:scale-[1.37] motion-reduce:transition-none motion-reduce:group-hover:scale-[1.3]"
+                    />
+                  </div>
+                </li>
+              ))}
+
+              <li>
+                <Link
+                  href="/faculty"
+                  className="group/more flex aspect-square flex-col items-center justify-center gap-1 rounded-[1.25rem] border border-[#a8802f]/30 bg-[#faf4e8] text-center shadow-card transition duration-300 hover:-translate-y-1 hover:border-[#a8802f] hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0"
+                >
+                  <span className="font-heading text-[clamp(1.375rem,1.1rem+0.8vw,1.875rem)] font-semibold leading-none text-[#87661f]">
+                    +{facultyPortraits.length - 5}
+                  </span>
+                  <span className="eyebrow mt-1 text-[0.6875rem] text-[#87661f]">
+                    More
+                  </span>
+                  <span
+                    aria-hidden="true"
+                    className="mt-2 text-[#a8802f] transition-transform duration-300 group-hover/more:translate-x-1 motion-reduce:transition-none motion-reduce:group-hover/more:translate-x-0"
+                  >
+                    →
+                  </span>
+                </Link>
+              </li>
+            </ul>
+          </Reveal>
+        </div>
       </section>
 
-      {/* ——— §11 Location/Map Section ——— */}
+      {/* ——— 9. Latest Blogs (not in the document) — straight from Admin → Blogs ———
+          Publishing or unpublishing a post revalidates this page, so the
+          strip keeps itself current with no code change. Hidden entirely
+          while nothing is published rather than showing an empty rail. */}
+      {latestPosts.length > 0 ? (
+        <section className={`border-y border-hairline bg-bg-alt ${SECTION}`}>
+          <div className={CONTAINER}>
+            <Reveal>
+              <SectionTitle eyebrow="Blog" title={BLOGS.h2} align="center" />
+              <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-[1.8] text-text-muted">
+                {rich(BLOGS.body)}
+              </p>
+            </Reveal>
+            {/* Flex rather than a 4-column grid: the school may have one post
+                or twenty, and a grid leaves a lone card stranded against three
+                empty columns. Wrapping and centring reads correctly at every
+                count. */}
+            <ul className="mt-10 flex flex-wrap justify-center gap-5 lg:mt-12 lg:gap-6">
+              {latestPosts.map((post, index) => (
+                <li
+                  key={post.slug}
+                  className="w-full sm:w-[calc(50%-0.625rem)] lg:w-[calc(25%-1.125rem)]"
+                >
+                  <Reveal delay={(index % 4) * 80} className="h-full">
+                    <BlogCard post={post} />
+                  </Reveal>
+                </li>
+              ))}
+            </ul>
+            <div className="mt-10 text-center">
+              <GoldLink href="/blog" className="w-full sm:w-auto">
+                {BLOGS.cta}
+              </GoldLink>
+            </div>
+          </div>
+        </section>
+      ) : null}
+
+      {/* ——— 10. Gallery Preview (doc §7) — photo mosaic ——— */}
+      <section className={SECTION}>
+        <div className={CONTAINER}>
+          <Reveal>
+            <SectionTitle eyebrow="Gallery" title={GALLERY.h2} align="center" />
+            <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-[1.8] text-text-muted">
+              {rich(GALLERY.body)}
+            </p>
+          </Reveal>
+          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 md:grid-rows-[repeat(3,10rem)] lg:mt-12 lg:grid-rows-[repeat(3,12.5rem)] xl:grid-rows-[repeat(3,14rem)]">
+            {galleryTiles.map((item, index) => (
+              <Reveal
+                key={item.id}
+                delay={index * 70}
+                className={GALLERY_SPANS[index].span}
+              >
+                <div className="group relative h-full min-h-[9rem] overflow-hidden rounded-[1.25rem] shadow-card">
+                  <Image
+                    src={item.imageUrl as string}
+                    alt={item.caption}
+                    fill
+                    sizes={
+                      GALLERY_SPANS[index].wide
+                        ? "(max-width: 768px) 46vw, 780px"
+                        : "(max-width: 768px) 46vw, 400px"
+                    }
+                    className="img-skeleton object-cover transition-transform duration-500 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                  />
+                  <span
+                    aria-hidden="true"
+                    className="pointer-events-none absolute inset-0 rounded-[1.25rem] ring-0 ring-[#d6a53f] transition-all duration-300 group-hover:ring-[3px]"
+                  />
+                </div>
+              </Reveal>
+            ))}
+          </div>
+          <div className="mt-10 text-center">
+            <GoldLink href="/gallery" className="w-full sm:w-auto">
+              {GALLERY.cta}
+            </GoldLink>
+          </div>
+        </div>
+      </section>
+
+      {/* ——— 11. Admission CTA (doc §10) — the enquiry form itself ———
+          The document ends this section with "CTA Button: Enquire Now / Book a
+          Visit". A button only moved the visitor one click further from the
+          thing it asks for, so the form is printed in place — the same band
+          every other page now closes with. */}
+      <EnquiryBand
+        image={IMG.ctaCampus}
+        h2={ADMISSION.h2}
+        body={ADMISSION.body}
+        formTitle={ADMISSION.cta}
+      />
+
+      {/* ——— 12. Testimonials (doc §8) — two quotes in view, sliding ———
+          Every quote is managed in Admin → Testimonials; publishing one there
+          replaces the document's seed pair on the next request. */}
+      <section
+        className={`relative overflow-hidden border-y border-[#a8802f]/20 bg-[#faf4e8] ${SECTION}`}
+      >
+        <span
+          aria-hidden="true"
+          className="pointer-events-none absolute -left-28 top-1/4 h-72 w-72 rounded-pill bg-[#a8802f]/10 blur-3xl"
+        />
+        <div className={`relative ${CONTAINER}`}>
+          <Reveal>
+            <SectionTitle
+              eyebrow="Testimonials"
+              title={TESTIMONIALS.h2}
+              align="center"
+            />
+            <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-[1.8] text-text-muted">
+              {rich(TESTIMONIALS.lede)}
+            </p>
+          </Reveal>
+
+          <Reveal delay={120}>
+            <TestimonialSlider
+              items={testimonials}
+              className="mt-12 lg:mt-14"
+            />
+          </Reveal>
+
+        </div>
+      </section>
+
+      {/* ——— 13. Location / Map (doc §11) ——— */}
       <section id="location" className={`border-b border-hairline bg-bg-alt ${SECTION}`}>
         <div
           className={`${CONTAINER} grid items-center gap-10 lg:grid-cols-12 lg:gap-14`}
@@ -1010,7 +1200,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* ——— §12 FAQ Section ———
+      {/* ——— 14. FAQs (doc §12) ———
           The heading spans the section rather than sitting in the left column,
           so the questions line up with the top of the photograph instead of
           starting level with the heading and leaving the image trailing. */}

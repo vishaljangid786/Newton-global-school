@@ -330,7 +330,7 @@ export default async function BranchAdmissionsPage({ params }: BranchPageProps) 
               Admission follows the same five-step process at every campus — see
               the{" "}
               <Link
-                href="/admissions"
+                href="/registration-form"
                 className="font-medium text-primary underline-offset-2 hover:underline"
               >
                 group admissions page

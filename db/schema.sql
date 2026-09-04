@@ -125,6 +125,13 @@ ALTER TABLE branches
 ALTER TABLE branch_overrides
   ADD COLUMN IF NOT EXISTS principal_photo_url VARCHAR(500) NULL AFTER principal_message;
 
+-- Branch hero photographs (added later still; hero_tone remains the gradient
+-- fallback for a campus that has no photo yet).
+ALTER TABLE branches
+  ADD COLUMN IF NOT EXISTS hero_image_url VARCHAR(500) NULL AFTER hero_tone;
+ALTER TABLE branch_overrides
+  ADD COLUMN IF NOT EXISTS hero_image_url VARCHAR(500) NULL AFTER principal_photo_url;
+
 -- ————————————————————————————————————————————————————————————————
 -- Gallery images (admin-uploaded photos per campus; merged ahead of the
 -- static placeholder gallery on the public pages)
@@ -132,7 +139,9 @@ ALTER TABLE branch_overrides
 CREATE TABLE IF NOT EXISTS gallery_images (
   id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
   branch_ref VARCHAR(40) NOT NULL,
-  category   ENUM('Sports', 'Annual Day', 'Classrooms', 'Trips') NOT NULL,
+  -- Widened when the school's own photographs replaced the placeholder set;
+  -- the four original values are kept so older rows still validate.
+  category   ENUM('Campus', 'Classrooms', 'Library', 'Labs', 'Sports', 'Pre-Primary', 'Transport', 'Assembly', 'Our Team', 'Annual Day', 'Trips') NOT NULL,
   caption    VARCHAR(200) NOT NULL,
   -- Site-relative path (e.g. /uploads/gallery-….webp) or an absolute URL.
   image_url  VARCHAR(500) NOT NULL,
@@ -179,6 +188,8 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   excerpt      VARCHAR(400) NOT NULL,
   body         MEDIUMTEXT NOT NULL,
   cover_tone   VARCHAR(20) NOT NULL DEFAULT 'primary',
+  -- Uploaded cover photograph; the tone above is the fallback when absent.
+  cover_image_url VARCHAR(500) NULL,
   status       ENUM('draft', 'published') NOT NULL DEFAULT 'draft',
   author_id    INT UNSIGNED NULL,
   author_name  VARCHAR(120) NOT NULL,
@@ -190,4 +201,30 @@ CREATE TABLE IF NOT EXISTS blog_posts (
   KEY idx_blog_branch (branch_ref),
   KEY idx_blog_status (status),
   CONSTRAINT fk_blog_author FOREIGN KEY (author_id) REFERENCES users (id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+-- ————————————————————————————————————————————————————————————————
+-- Registration form submissions (the public "Apply Now" form). Kept apart
+-- from `enquiries`: an enquiry is a question, a registration is an
+-- application, and it carries the fields an application needs.
+-- ————————————————————————————————————————————————————————————————
+CREATE TABLE IF NOT EXISTS registrations (
+  id              INT UNSIGNED NOT NULL AUTO_INCREMENT,
+  student_name    VARCHAR(120) NOT NULL,
+  date_of_birth   DATE NULL,
+  gender          ENUM('male', 'female', 'other') NULL,
+  class_applied   VARCHAR(60) NOT NULL,
+  father_name     VARCHAR(120) NOT NULL DEFAULT '',
+  mother_name     VARCHAR(120) NOT NULL DEFAULT '',
+  phone           VARCHAR(20) NOT NULL,
+  email           VARCHAR(190) NOT NULL DEFAULT '',
+  address         VARCHAR(300) NOT NULL DEFAULT '',
+  previous_school VARCHAR(160) NOT NULL DEFAULT '',
+  branch_slug     VARCHAR(40) NOT NULL DEFAULT 'all',
+  message         TEXT NULL,
+  status          ENUM('new', 'contacted', 'closed') NOT NULL DEFAULT 'new',
+  created_at      DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  KEY idx_registrations_status (status),
+  KEY idx_registrations_branch (branch_slug)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

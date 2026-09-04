@@ -3,9 +3,9 @@ import Accordion, { type AccordionEntry } from "@/components/ui/Accordion";
 import {
   CARD,
   CONTAINER,
+  CONTAINER_FLUID,
   Cover,
   DoodleWash,
-  GoldLink,
   Icon,
   type IconName,
   type Img,
@@ -13,10 +13,10 @@ import {
   rich,
   SECTION,
   SectionTitle,
-  STRONG,
+  splitRunIn,
   TINTS,
-  Wave,
 } from "@/components/site/school-kit";
+import EnquiryBand from "@/components/site/EnquiryBand";
 import Reveal from "@/components/ui/Reveal";
 import { facilities } from "@/data/pages/facilities";
 
@@ -49,6 +49,75 @@ const IMG = {
     alt: "Newton Global School buses parked beside the campus building",
   },
 } as const satisfies Record<string, Img>;
+
+/**
+ * One photograph per numbered facility, in the document's own order.
+ *
+ * `null` where the school has no photograph of that facility — there is no
+ * picture of the medical room, the CCTV setup or the music and art room, and
+ * standing in an unrelated corridor or play room for them would caption a
+ * photograph with something it does not show. Those three fall back to the
+ * tinted icon panel instead.
+ */
+const FACILITY_PHOTOS: Array<Img | null> = [
+  {
+    src: "/images/school/classroom-students.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Students at their desks in a Newton Global School classroom",
+  },
+  {
+    src: "/images/school/science-experiment.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Students carrying out an experiment in the science lab",
+  },
+  {
+    src: "/images/school/library-reading-group.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Students reading together at a table in the school library",
+  },
+  {
+    src: "/images/school/playground.webp",
+    w: 1600,
+    h: 1200,
+    alt: "The school playground with swings and open ground",
+  },
+  {
+    src: "/images/school/students-boarding-bus.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Students boarding a Newton Global School bus",
+  },
+  {
+    src: "/images/school/pupils-smart-class.webp",
+    w: 1600,
+    h: 1200,
+    alt: "A class watching a lesson on the smart classroom screen",
+  },
+  null, // CCTV Surveillance
+  {
+    src: "/images/school/drinking-water-ro.webp",
+    w: 1600,
+    h: 1200,
+    alt: "Students at the campus RO drinking water unit",
+  },
+  null, // First Aid & Medical Room
+  null, // Music & Art Room
+  {
+    src: "/images/school/sports-store.webp",
+    w: 1600,
+    h: 1200,
+    alt: "The school's sports equipment store",
+  },
+  {
+    src: "/images/school/gallery/campus-green-grounds.webp",
+    w: 1400,
+    h: 1050,
+    alt: "The green grounds and driveway of the Sangteda campus",
+  },
+];
 
 /* One icon per numbered facility, in the document's own order. */
 const FACILITY_ICONS: IconName[] = [
@@ -84,13 +153,13 @@ export default function FacilitiesPage() {
         sub={hero.sub}
         body={hero.body}
         cta={hero.cta}
-        ctaHref="/contact"
+        ctaHref="#enquiry"
       />
 
       {/* ——— §2 Overview ——— */}
       <section className={`relative overflow-hidden bg-bg ${SECTION}`}>
         <DoodleWash className="text-[#000c2e] opacity-[0.045]" />
-        <div className={`relative ${CONTAINER} max-w-4xl text-center`}>
+        <div className={`relative ${CONTAINER_FLUID} max-w-4xl text-center`}>
           <Reveal>
             <SectionTitle eyebrow="Overview" title={overview.h2} align="center" />
             <p className="mt-6 text-[0.9375rem] leading-[1.9] text-text-muted md:text-base">
@@ -109,20 +178,48 @@ export default function FacilitiesPage() {
           <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:mt-12 lg:grid-cols-3 lg:gap-6">
             {detail.items.map((item, index) => {
               const tint = TINTS[index % TINTS.length];
+              const icon = FACILITY_ICONS[index] ?? "check";
+              const photo = FACILITY_PHOTOS[index] ?? null;
+              /* This tab writes its run-ins as "**1. Title** body", with no
+                 dash, so the looser split is the right one here. */
+              const { title, body } = splitRunIn(item, { separator: "any" });
               return (
                 <li key={item.slice(0, 32)}>
                   <Reveal delay={(index % 3) * 90} className="h-full">
                     <article
-                      className={`flex h-full flex-col p-5 sm:p-6 ${CARD} ${tint.edge} ${tint.bar}`}
+                      className={`flex h-full flex-col overflow-hidden ${CARD} ${tint.edge} ${tint.bar}`}
                     >
-                      <span
-                        className={`flex h-12 w-12 shrink-0 items-center justify-center rounded-[1rem] ${tint.well}`}
-                      >
-                        <Icon name={FACILITY_ICONS[index] ?? "check"} className="h-5 w-5" />
-                      </span>
-                      <p className="mt-5 break-words text-[0.9375rem] leading-[1.85] text-text-muted">
-                        {rich(item, STRONG.runIn)}
-                      </p>
+                      {photo ? (
+                        <div className="relative aspect-[16/10] w-full overflow-hidden">
+                          <Cover
+                            img={photo}
+                            sizes="(max-width: 640px) 92vw, (max-width: 1024px) 46vw, 30vw"
+                          />
+                        </div>
+                      ) : (
+                        <div
+                          aria-hidden="true"
+                          className={`flex aspect-[16/10] w-full items-center justify-center ${tint.well}`}
+                        >
+                          <Icon name={icon} className="h-10 w-10 opacity-70" />
+                        </div>
+                      )}
+
+                      <div className="flex flex-1 flex-col p-5 sm:p-6">
+                        <span
+                          className={`flex h-11 w-11 shrink-0 items-center justify-center rounded-[0.875rem] ${tint.well}`}
+                        >
+                          <Icon name={icon} className="h-5 w-5" />
+                        </span>
+                        <h3 className="mt-4 text-[1.0625rem] leading-[1.35] text-ink">
+                          {title || item}
+                        </h3>
+                        {title ? (
+                          <p className="mt-2 break-words text-[0.9375rem] leading-[1.85] text-text-muted">
+                            {rich(body, "font-semibold text-ink")}
+                          </p>
+                        ) : null}
+                      </div>
                     </article>
                   </Reveal>
                 </li>
@@ -134,7 +231,7 @@ export default function FacilitiesPage() {
 
       {/* ——— §4 Why choose our campus ——— */}
       <section className={SECTION}>
-        <div className={`${CONTAINER} max-w-4xl text-center`}>
+        <div className={`${CONTAINER_FLUID} max-w-4xl text-center`}>
           <Reveal>
             <SectionTitle eyebrow="Every Stage" title={whyCampus.h2} align="center" />
             <p className="mt-6 text-[0.9375rem] leading-[1.9] text-text-muted md:text-base">
@@ -156,27 +253,13 @@ export default function FacilitiesPage() {
         </div>
       </section>
 
-      {/* ——— Campus-visit call to action ——— */}
-      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
-        <Wave className="z-20 text-bg-alt" />
-        <Cover img={IMG.ctaCampus} sizes="100vw" decorative className="opacity-[0.28]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
-        />
-        <Reveal className={`relative ${CONTAINER}`}>
-          <span
-            aria-hidden="true"
-            className="mx-auto block h-[3px] w-16 rounded-pill bg-[#d6a53f]"
-          />
-          <h2 className="mx-auto mt-6 max-w-3xl text-[1.5rem] leading-[1.2] text-white sm:text-[1.75rem] md:text-[2rem] lg:text-[2.25rem]">
-            {rich(hero.h1, STRONG.headingDark)}
-          </h2>
-          <GoldLink href="/contact" className="mt-8 w-full sm:w-auto">
-            {hero.cta}
-          </GoldLink>
-        </Reveal>
-      </section>
+      {/* ——— Campus-visit call to action — with the form in it ——— */}
+      <EnquiryBand
+        image={IMG.ctaCampus}
+        h2={hero.h1}
+        waveClass="text-bg-alt"
+        formTitle={hero.cta}
+      />
     </>
   );
 }

@@ -7,6 +7,7 @@ import { canManageBranch } from "@/lib/rbac";
 import { isValidBranchRef } from "@/lib/branches-store";
 import { isGalleryCategory } from "@/lib/gallery-store";
 import { UploadError, fileFromForm, saveUploadedImage } from "@/lib/uploads";
+import { LIMITS, checkText, collect } from "@/lib/validate";
 
 export interface GalleryFormState {
   error?: string;
@@ -16,6 +17,8 @@ export interface GalleryFormState {
 function revalidateGalleryPages(branchRef: string) {
   revalidatePath("/admin/gallery");
   revalidatePath("/gallery");
+  /* The home page carries a gallery strip, so it has to refresh too. */
+  revalidatePath("/");
   revalidatePath(`/branches/${branchRef}`);
   revalidatePath(`/branches/${branchRef}/gallery`);
 }
@@ -31,7 +34,14 @@ export async function uploadGalleryImage(
   const ref = String(formData.get("branch_ref") ?? "");
   const file = fileFromForm(formData, "image");
 
-  if (!caption) return { error: "A caption is required." };
+  const checked = collect({
+    caption: checkText(caption, {
+      label: "Caption",
+      max: LIMITS.caption,
+      required: true,
+    }),
+  });
+  if ("error" in checked) return { error: checked.error };
   if (!isGalleryCategory(category)) {
     return { error: "Choose a valid category." };
   }

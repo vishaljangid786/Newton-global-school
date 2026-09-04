@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import SchoolCalendar from "@/components/site/SchoolCalendar";
 import {
   CONTAINER,
+  DataTable,
   type Img,
   PageHero,
   SECTION,
   SectionTitle,
 } from "@/components/site/school-kit";
 import Reveal from "@/components/ui/Reveal";
+import { holidays, type HolidayScope } from "@/data/holidays";
 
 export const metadata: Metadata = {
   title: "School Calendar",
@@ -26,6 +28,19 @@ const IMG = {
     alt: "A corridor lined with classrooms inside the school",
   },
 } as const satisfies Record<string, Img>;
+
+const SCOPE_LABEL: Record<HolidayScope, string> = {
+  National: "National holiday",
+  Rajasthan: "Rajasthan Government",
+  Festival: "Festival holiday",
+  School: "School break",
+};
+
+/** "01-26" -> "26 January". The year is irrelevant: these repeat annually. */
+function formatFixed(monthDay: string): string {
+  const [month, day] = monthDay.split("-").map(Number);
+  return `${day} ${new Date(2000, month - 1, 1).toLocaleDateString("en-IN", { month: "long" })}`;
+}
 
 /**
  * Today, read in the school's own timezone rather than the server's, so a
@@ -72,11 +87,44 @@ export default function SchoolCalendarPage() {
               todayIso={today.iso}
             />
           </Reveal>
+        </div>
+      </section>
+
+      {/* ——— Public holidays and government leaves ——— */}
+      <section className={`border-y border-hairline bg-bg-alt ${SECTION} !py-16 sm:!py-20`}>
+        <div className={CONTAINER}>
           <Reveal>
-            <p className="mx-auto mt-10 max-w-2xl text-center text-[0.9375rem] leading-[1.85] text-text-muted">
-              Term dates, examination weeks and festival holidays will be marked
-              here once the school publishes the academic calendar for the
-              session. Until then this calendar shows weekly Sunday holidays only.
+            <SectionTitle
+              eyebrow="Holidays"
+              title={`Public Holidays and Government Leaves`}
+              align="center"
+            />
+            <p className="mx-auto mt-4 max-w-2xl text-center text-[0.9375rem] leading-[1.8] text-text-muted">
+              National and Rajasthan Government holidays observed at the
+              Sangteda campus, alongside the school&apos;s own breaks.
+            </p>
+          </Reveal>
+
+          <Reveal delay={110}>
+            <DataTable
+              className="mx-auto mt-10 max-w-3xl lg:mt-12"
+              head={["Date", "Holiday", "Observed as"]}
+              rows={holidays.map((holiday) => [
+                holiday.on ? formatFixed(holiday.on) : (holiday.note ?? "To be confirmed"),
+                holiday.name,
+                SCOPE_LABEL[holiday.scope],
+              ])}
+            />
+          </Reveal>
+
+          <Reveal delay={150}>
+            <p className="mx-auto mt-6 max-w-3xl text-[0.8125rem] leading-[1.8] text-text-muted">
+              Dates shown are the ones that fall on the same day every year and
+              are marked on the calendar above. Festivals that follow the lunar
+              calendar &mdash; Holi, Diwali, Dussehra, Eid and the rest &mdash;
+              move by several weeks each year, so their dates are confirmed
+              against the Rajasthan Government&apos;s gazetted list at the start
+              of every session rather than printed here in advance.
             </p>
           </Reveal>
         </div>

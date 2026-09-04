@@ -6,7 +6,6 @@ import {
   DoodleWash,
   Cover,
   Wave,
-  GoldLink,
   Icon,
   type Img,
   PageHero,
@@ -17,6 +16,7 @@ import {
   STRONG,
 } from "@/components/site/school-kit";
 import Accordion, { type AccordionEntry } from "@/components/ui/Accordion";
+import EnquiryBand from "@/components/site/EnquiryBand";
 import Reveal from "@/components/ui/Reveal";
 import { admissionProcess } from "@/data/pages/admission-process";
 
@@ -137,13 +137,13 @@ const LINK_ROUTES: Record<string, string> = {
   Home: "/",
   "About Us": "/about",
   "Best School in Kotputli": "/about",
-  Nursery: "/academics/nursery",
-  Primary: "/academics/primary",
-  Secondary: "/academics/secondary",
-  "Senior Secondary": "/academics/senior-secondary",
-  "Admission Process": "/admissions/process",
-  "Fee Structure": "/admissions/fees",
-  "Eligibility Criteria": "/admissions/eligibility",
+  Nursery: "/nursery",
+  Primary: "/primary",
+  Secondary: "/secondary",
+  "Senior Secondary": "/senior-secondary",
+  "Admission Process": "/admission-process",
+  "Fee Structure": "/fee-structure",
+  "Eligibility Criteria": "/eligibility-criteria",
 };
 
 const DOC_LINK_CLASS =
@@ -197,15 +197,14 @@ export default function AdmissionProcessPage() {
       <PageHero
         image={IMG.hero}
         priority
-        crumbs={[
-          { label: "Admissions", href: "/admissions" },
-          { label: "Admission Process" },
-        ]}
+        /* Flat URL now, and Registration Form is a sibling page rather than
+           a parent, so the trail is just Home / this page. */
+        crumbs={[{ label: "Admission Process" }]}
         h1={hero.h1}
         sub={hero.sub}
         body={hero.body}
         cta={hero.cta}
-        ctaHref="/contact"
+        ctaHref="#enquiry"
       />
 
       {/* ——— Overview — the gateway photo with the admission office inset ——— */}
@@ -284,12 +283,8 @@ export default function AdmissionProcessPage() {
                   aria-hidden="true"
                   className="absolute -bottom-3 -right-3 hidden h-full w-full rounded-[1.5rem] border-2 border-[#a8802f]/45 sm:block"
                 />
-                <div className="relative overflow-hidden rounded-[1.5rem] shadow-frame">
-                  <Photo
-                    img={IMG.stepsCorridor}
-                    sizes="(max-width: 1024px) 92vw, 440px"
-                    className="h-auto w-full"
-                  />
+                <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] shadow-frame">
+                  <Cover img={IMG.stepsCorridor} sizes="(max-width: 1024px) 92vw, 440px" />
                 </div>
               </div>
             </Reveal>
@@ -332,20 +327,6 @@ export default function AdmissionProcessPage() {
             })}
           </ol>
 
-          {/* The document's closing line on the steps — a warm ribbon */}
-          <Reveal delay={120}>
-            <div className="mx-auto mt-12 flex max-w-3xl items-start gap-4 rounded-[1.25rem] border border-[#a8802f]/25 bg-[#faf4e8] py-5 sm:items-center sm:py-6 lg:mt-14 px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20">
-              <span
-                aria-hidden="true"
-                className="flex h-10 w-10 shrink-0 items-center justify-center rounded-[0.875rem] bg-white text-[#87661f]"
-              >
-                <Icon name="target" className="h-5 w-5" />
-              </span>
-              <p className="text-[0.9375rem] leading-[1.8] text-text-muted">
-                {rich(steps.closing)}
-              </p>
-            </div>
-          </Reveal>
         </div>
       </section>
 
@@ -455,12 +436,8 @@ export default function AdmissionProcessPage() {
           className={`${CONTAINER} grid items-center gap-10 lg:grid-cols-12 lg:gap-14`}
         >
           <Reveal className="lg:col-span-5">
-            <div className="overflow-hidden rounded-[1.5rem] shadow-frame">
-              <Photo
-                img={IMG.curriculumBoard}
-                sizes="(max-width: 1024px) 92vw, 440px"
-                className="h-auto w-full"
-              />
+            <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[1.5rem] shadow-frame">
+              <Cover img={IMG.curriculumBoard} sizes="(max-width: 1024px) 92vw, 440px" />
             </div>
           </Reveal>
           <Reveal delay={120} className="lg:col-span-7">
@@ -524,32 +501,14 @@ export default function AdmissionProcessPage() {
         </div>
       </section>
 
-      {/* ——— Closing CTA band — the hero's promise and its button, repeated
-          at the foot of the page so the next step is always in reach ——— */}
-      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
-        <Wave className="z-20 text-bg-alt" />
-        <Cover img={IMG.ctaCampus} sizes="100vw" decorative className="opacity-[0.26]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-pill bg-[radial-gradient(circle,rgba(214,165,63,0.24),transparent_70%)]"
-        />
-        <Reveal className={`relative ${CONTAINER}`}>
-          <span
-            aria-hidden="true"
-            className="mx-auto block h-[3px] w-16 rounded-pill bg-[#d6a53f]"
-          />
-          <h2 className="mx-auto mt-6 max-w-3xl text-[1.5rem] leading-[1.2] text-white sm:text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] xl:text-[2.4rem]">
-            {rich(hero.sub, STRONG.headingDark)}
-          </h2>
-          <GoldLink href="/contact" className="mt-8 w-full sm:w-auto">
-            {hero.cta}
-          </GoldLink>
-        </Reveal>
-      </section>
+      {/* ——— Closing CTA band — the hero's promise, with the form under it
+          so the next step is not another page load ——— */}
+      <EnquiryBand
+        image={IMG.ctaCampus}
+        h2={hero.sub}
+        waveClass="text-bg-alt"
+        formTitle={hero.cta}
+      />
     </>
   );
 }

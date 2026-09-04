@@ -7,7 +7,9 @@ import { authorizeAction } from "@/lib/dal";
 import { canManageBranch } from "@/lib/rbac";
 import { isValidBranchRef } from "@/lib/branches-store";
 import { htmlToText, sanitizeHtml } from "@/lib/sanitize-html";
+import { LIMITS, checkText, collect } from "@/lib/validate";
 import type { BranchRef, BlogPostRow } from "@/lib/admin-types";
+import { UploadError, fileFromForm, saveUploadedImage } from "@/lib/uploads";
 
 export interface BlogFormState {
   error?: string;
@@ -61,8 +63,15 @@ function parseForm(formData: FormData): ParsedFields | { error: string } {
   const ref = String(formData.get("branch_ref") ?? "").trim();
   const publish = String(formData.get("status") ?? "") === "published";
 
-  if (!title) return { error: "A title is required." };
-  if (!excerpt) return { error: "A short excerpt is required." };
+  const checked = collect({
+    title: checkText(title, { label: "Title", max: LIMITS.title, required: true }),
+    excerpt: checkText(excerpt, {
+      label: "Excerpt",
+      max: LIMITS.excerpt,
+      required: true,
+    }),
+  });
+  if ("error" in checked) return { error: checked.error };
   if (!htmlToText(body)) return { error: "Post body cannot be empty." };
   if (!ref) return { error: "Choose a valid audience." };
   const tone = TONES.includes(toneRaw) ? toneRaw : "primary";
@@ -85,12 +94,23 @@ export async function createBlog(
     return { error: "You can only publish for your own branch." };
   }
 
+  let coverUrl: string | null = null;
+  const coverFile = fileFromForm(formData, "cover_image");
+  if (coverFile) {
+    try {
+      coverUrl = await saveUploadedImage(coverFile, "blog");
+    } catch (error) {
+      if (error instanceof UploadError) return { error: error.message };
+      throw error;
+    }
+  }
+
   const slug = await uniqueSlug(slugify(parsed.title));
   await mutate(
     `INSERT INTO blog_posts
-       (slug, title, branch_ref, excerpt, body, cover_tone, status,
-        author_id, author_name, published_at)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+       (slug, title, branch_ref, excerpt, body, cover_tone, cover_image_url,
+        status, author_id, author_name, published_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       slug,
       parsed.title,
@@ -98,6 +118,7 @@ export async function createBlog(
       parsed.excerpt,
       parsed.body,
       parsed.tone,
+      coverUrl,
       parsed.publish ? "published" : "draft",
       user.id,
       user.name,
@@ -145,10 +166,21 @@ export async function updateBlog(
   const publishedAt =
     nowPublished && !wasPublished ? new Date() : post.published_at;
 
+  let coverUrl = post.cover_image_url;
+  const coverFile = fileFromForm(formData, "cover_image");
+  if (coverFile) {
+    try {
+      coverUrl = await saveUploadedImage(coverFile, "blog");
+    } catch (error) {
+      if (error instanceof UploadError) return { error: error.message };
+      throw error;
+    }
+  }
+
   await mutate(
     `UPDATE blog_posts SET
        title = ?, branch_ref = ?, excerpt = ?, body = ?, cover_tone = ?,
-       status = ?, published_at = ?
+       cover_image_url = ?, status = ?, published_at = ?
      WHERE id = ?`,
     [
       parsed.title,
@@ -156,6 +188,7 @@ export async function updateBlog(
       parsed.excerpt,
       parsed.body,
       parsed.tone,
+      coverUrl,
       nowPublished ? "published" : "draft",
       publishedAt,
       id,
@@ -215,6 +248,8 @@ export async function deleteBlog(id: number): Promise<void> {
 function revalidateBlogPublic(ref: BranchRef, slug: string): void {
   revalidatePath("/blog");
   revalidatePath(`/blog/${slug}`);
+  /* The home page lists the latest posts. */
+  revalidatePath("/");
   if (ref === "all") {
     // Group posts appear on every branch blog.
     revalidatePath("/branches/[slug]/blog", "page");

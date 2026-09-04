@@ -45,6 +45,7 @@ export interface BranchOverrideRow {
   principal_name: string | null;
   principal_message: string | null;
   principal_photo_url: string | null;
+  hero_image_url: string | null;
   students: number | null;
   campus_size: string | null;
   grades: string | null;
@@ -63,6 +64,7 @@ export interface BlogPostRow {
   excerpt: string;
   body: string;
   cover_tone: string;
+  cover_image_url: string | null;
   status: "draft" | "published";
   author_id: number | null;
   author_name: string;

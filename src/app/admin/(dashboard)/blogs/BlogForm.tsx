@@ -8,6 +8,7 @@ import {
   adminButtonOutline,
   adminButtonPrimary,
   adminInputClasses,
+  adminTextareaClasses,
 } from "@/components/admin/ui";
 
 type BlogAction = (
@@ -27,6 +28,7 @@ export interface BlogFormValues {
   excerpt: string;
   body: string;
   cover_tone: string;
+  cover_image_url?: string | null;
 }
 
 const TONES = ["primary", "accent", "mist", "forest", "dusk", "stone"];
@@ -86,6 +88,30 @@ export default function BlogForm({
           </select>
         </div>
         <div>
+          <FieldLabel htmlFor="cover_image">Cover photo</FieldLabel>
+          <input
+            id="cover_image"
+            name="cover_image"
+            type="file"
+            accept="image/png,image/jpeg,image/webp"
+            className={adminInputClasses}
+          />
+          <p className="mt-1.5 text-xs text-faint">
+            JPG, PNG or WebP up to 5&nbsp;MB.{" "}
+            {initial.cover_image_url
+              ? "Uploading replaces the current photo."
+              : "Without one, the cover colour below is used."}
+          </p>
+          {initial.cover_image_url ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={initial.cover_image_url}
+              alt="Current cover"
+              className="mt-3 h-24 w-40 rounded-card border border-border object-cover"
+            />
+          ) : null}
+        </div>
+        <div>
           <FieldLabel htmlFor="cover_tone">Cover colour</FieldLabel>
           <select
             id="cover_tone"
@@ -110,7 +136,7 @@ export default function BlogForm({
           rows={2}
           required
           defaultValue={initial.excerpt}
-          className={adminInputClasses}
+          className={adminTextareaClasses}
           placeholder="One or two sentences shown on cards and previews."
         />
       </div>

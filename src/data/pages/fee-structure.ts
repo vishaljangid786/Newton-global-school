@@ -81,3 +81,49 @@ export const feeStructure = {
     `"Explore our academic programs: **Nursery | Primary | Secondary | Senior Secondary →**"`,
   ],
 } as const;
+
+/**
+ * The fee page in table form.
+ *
+ * `amount` is deliberately empty on every row. The document publishes no
+ * figures at all — it says in as many words that the school "prefer[s] to
+ * share exact numbers directly rather than publishing a generic figure" — and
+ * a school's fees are something parents budget around, so inventing them here
+ * would be worse than leaving the column honest. Fill each `amount` in when
+ * the school approves its figures for the session; the table renders whatever
+ * is written here and falls back to "Shared on enquiry" while it is blank.
+ */
+export const feeTable = {
+  head: ["Class", "What the fee covers", "Annual fee (2026-27)"] as const,
+  rows: [
+    {
+      cls: `Pre-Primary (Nursery to KG)`,
+      covers: `Tuition, classroom material, activity sessions`,
+      amount: ``,
+    },
+    {
+      cls: `Primary (Class 1-5)`,
+      covers: `Tuition, library and lab access, term examinations`,
+      amount: ``,
+    },
+    {
+      cls: `Middle & Secondary (Class 6-10)`,
+      covers: `Tuition, science and computer lab access, term examinations`,
+      amount: ``,
+    },
+    {
+      cls: `Senior Secondary (Class 11-12)`,
+      covers: `Tuition by stream, lab access, board practical support`,
+      amount: ``,
+    },
+  ],
+  /** Charges the document lists as handled separately from the core fee. */
+  separate: {
+    head: ["Charged separately", "Notes"] as const,
+    rows: [
+      { item: `Transport`, note: `Depends on the route and distance from campus` },
+      { item: `Uniform`, note: `Purchased once at the start of the session` },
+      { item: `Books & stationery`, note: `Billed at actual cost` },
+    ],
+  },
+} as const;

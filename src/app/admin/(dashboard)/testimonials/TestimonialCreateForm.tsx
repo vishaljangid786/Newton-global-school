@@ -9,7 +9,9 @@ import {
   FieldLabel,
   adminButtonPrimary,
   adminInputClasses,
+  adminTextareaClasses,
 } from "@/components/admin/ui";
+import { useDialogClose } from "@/components/admin/AdminDialog";
 
 interface AudienceOption {
   value: string;
@@ -26,10 +28,15 @@ export default function TestimonialCreateForm({
     FormData
   >(createTestimonial, {});
   const formRef = useRef<HTMLFormElement>(null);
+  /* No-op unless this form is rendered inside an AdminDialog. */
+  const closeDialog = useDialogClose();
 
   useEffect(() => {
-    if (state?.ok) formRef.current?.reset();
-  }, [state?.ok]);
+    if (state?.ok) {
+      formRef.current?.reset();
+      closeDialog();
+    }
+  }, [state?.ok, closeDialog]);
 
   return (
     <form ref={formRef} action={action} className="grid gap-4">
@@ -108,7 +115,7 @@ export default function TestimonialCreateForm({
           rows={3}
           required
           minLength={20}
-          className={adminInputClasses}
+          className={adminTextareaClasses}
           placeholder="The quote as it should appear on the campus page"
         />
       </div>

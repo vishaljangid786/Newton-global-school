@@ -5,6 +5,14 @@ import { redirect } from "next/navigation";
 import { mutate, query } from "@/lib/db";
 import { authorizeAction } from "@/lib/dal";
 import { UploadError, fileFromForm, saveUploadedImage } from "@/lib/uploads";
+import {
+  LIMITS,
+  checkEmail,
+  checkInt,
+  checkPhone,
+  checkText,
+  collect,
+} from "@/lib/validate";
 
 export interface BranchManagerState {
   error?: string;
@@ -41,28 +49,61 @@ interface Parsed {
 }
 
 function parse(formData: FormData): Parsed | { error: string } {
-  const name = String(formData.get("name") ?? "").trim();
-  const area = String(formData.get("area") ?? "").trim();
-  const address = String(formData.get("address") ?? "").trim();
-  const phone = String(formData.get("phone") ?? "").trim();
-  const email = String(formData.get("email") ?? "").trim();
-  if (!name) return { error: "Campus name is required." };
-  if (!area) return { error: "Locality / area is required." };
-  if (!address) return { error: "Address is required." };
-  if (!phone) return { error: "Phone is required." };
-  if (!email) return { error: "Email is required." };
-
-  const estRaw = String(formData.get("established") ?? "").trim();
-  const established = estRaw ? Number(estRaw) : null;
-  if (established !== null && (!Number.isFinite(established) || established < 1800)) {
-    return { error: "Enter a valid establishment year." };
-  }
-
-  const studentsRaw = String(formData.get("students") ?? "").trim();
-  const students = studentsRaw ? Number(studentsRaw) : null;
-  if (students !== null && (!Number.isFinite(students) || students < 0)) {
-    return { error: "Students must be a positive number." };
-  }
+  const checked = collect({
+    name: checkText(formData.get("name"), {
+      label: "Campus name",
+      max: LIMITS.personName,
+      required: true,
+    }),
+    area: checkText(formData.get("area"), {
+      label: "Locality / area",
+      max: LIMITS.personName,
+      required: true,
+    }),
+    address: checkText(formData.get("address"), {
+      label: "Address",
+      max: 255,
+      required: true,
+    }),
+    phone: checkPhone(formData.get("phone"), { required: true }),
+    email: checkEmail(formData.get("email"), { required: true }),
+    grades: checkText(formData.get("grades"), {
+      label: "Grades offered",
+      max: LIMITS.grades,
+    }),
+    principalName: checkText(formData.get("principal_name"), {
+      label: "Principal's name",
+      max: LIMITS.personName,
+    }),
+    principalMessage: checkText(formData.get("principal_message"), {
+      label: "Principal's message",
+      max: LIMITS.message,
+    }),
+    campusSize: checkText(formData.get("campus_size"), {
+      label: "Campus size",
+      max: LIMITS.campusSize,
+    }),
+    established: checkInt(formData.get("established"), {
+      label: "Year established",
+      min: 1800,
+      max: new Date().getFullYear(),
+    }),
+    students: checkInt(formData.get("students"), {
+      label: "Students",
+      min: 0,
+      max: 100000,
+    }),
+  });
+  if ("error" in checked) return { error: checked.error };
+  const {
+    name,
+    area,
+    address,
+    phone,
+    email,
+    established,
+    students,
+  } = checked.values;
 
   const facilities = String(formData.get("facilities") ?? "")
     .split("\n")
@@ -78,11 +119,11 @@ function parse(formData: FormData): Parsed | { error: string } {
     phone,
     email,
     established,
-    grades: String(formData.get("grades") ?? "").trim(),
-    principalName: String(formData.get("principal_name") ?? "").trim(),
-    principalMessage: String(formData.get("principal_message") ?? "").trim(),
+    grades: checked.values.grades,
+    principalName: checked.values.principalName,
+    principalMessage: checked.values.principalMessage,
     students,
-    campusSize: String(formData.get("campus_size") ?? "").trim(),
+    campusSize: checked.values.campusSize,
     facilitiesJson: facilities.length ? JSON.stringify(facilities) : null,
     heroTone: TONES.includes(toneRaw) ? toneRaw : "primary",
     publish: String(formData.get("status") ?? "") === "published",
@@ -97,6 +138,20 @@ async function principalPhotoFromForm(
   if (!file) return { url: null };
   try {
     return { url: await saveUploadedImage(file, "principal") };
+  } catch (error) {
+    if (error instanceof UploadError) return { error: error.message };
+    throw error;
+  }
+}
+
+/** Persist an optional campus hero photo upload; returns its URL or an error. */
+async function heroImageFromForm(
+  formData: FormData
+): Promise<{ url: string | null } | { error: string }> {
+  const file = fileFromForm(formData, "hero_image");
+  if (!file) return { url: null };
+  try {
+    return { url: await saveUploadedImage(file, "branch") };
   } catch (error) {
     if (error instanceof UploadError) return { error: error.message };
     throw error;
@@ -122,13 +177,15 @@ export async function createBranch(
 
   const photo = await principalPhotoFromForm(formData);
   if ("error" in photo) return photo;
+  const hero = await heroImageFromForm(formData);
+  if ("error" in hero) return hero;
 
   await mutate(
     `INSERT INTO branches
        (slug, name, area, address, phone, email, established, grades,
         principal_name, principal_message, principal_photo_url, students,
-        campus_size, facilities, hero_tone, status, created_by)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+        campus_size, facilities, hero_tone, hero_image_url, status, created_by)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     [
       slug,
       parsed.name,
@@ -145,6 +202,7 @@ export async function createBranch(
       parsed.campusSize,
       parsed.facilitiesJson,
       parsed.heroTone,
+      hero.url,
       parsed.publish ? "published" : "draft",
       user.id,
     ]
@@ -165,8 +223,12 @@ export async function updateBranch(
   const parsed = parse(formData);
   if ("error" in parsed) return parsed;
 
-  const existing = await query<{ slug: string; principal_photo_url: string | null }>(
-    "SELECT slug, principal_photo_url FROM branches WHERE slug = ? LIMIT 1",
+  const existing = await query<{
+    slug: string;
+    principal_photo_url: string | null;
+    hero_image_url: string | null;
+  }>(
+    "SELECT slug, principal_photo_url, hero_image_url FROM branches WHERE slug = ? LIMIT 1",
     [slug]
   );
   if (!existing[0]) return { error: "Branch not found." };
@@ -178,12 +240,17 @@ export async function updateBranch(
   const photoUrl =
     photo.url ?? (removePhoto ? null : existing[0].principal_photo_url);
 
+  const hero = await heroImageFromForm(formData);
+  if ("error" in hero) return hero;
+  const removeHero = String(formData.get("hero_image_remove") ?? "") === "1";
+  const heroUrl = hero.url ?? (removeHero ? null : existing[0].hero_image_url);
+
   await mutate(
     `UPDATE branches SET
        name = ?, area = ?, address = ?, phone = ?, email = ?, established = ?,
        grades = ?, principal_name = ?, principal_message = ?,
        principal_photo_url = ?, students = ?, campus_size = ?, facilities = ?,
-       hero_tone = ?, status = ?
+       hero_tone = ?, hero_image_url = ?, status = ?
      WHERE slug = ?`,
     [
       parsed.name,
@@ -200,6 +267,7 @@ export async function updateBranch(
       parsed.campusSize,
       parsed.facilitiesJson,
       parsed.heroTone,
+      heroUrl,
       parsed.publish ? "published" : "draft",
       slug,
     ]

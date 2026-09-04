@@ -11,7 +11,7 @@ import { site } from "@/data/site";
 
 export const metadata: Metadata = {
   title: "Contact Us",
-  description: `Get in touch with ${site.name}, Jaipur — head office address, phone and hours, campus contact pages and a general inquiry form.`,
+  description: `Get in touch with ${site.name}, Sangteda, Kotputli — school address, phone and hours, campus contact pages and a general inquiry form.`,
 };
 
 // Includes published custom branches; falls back to built-ins when DB is offline.
@@ -57,7 +57,7 @@ export default async function ContactPage() {
           <SectionHeading
             overline="Reach Us"
             title="Head Office"
-            subtitle="Our head office in C-Scheme coordinates admissions, transport and administration for all our campuses."
+            subtitle="Our office at the Sangteda campus on Babera Road coordinates admissions, transport and administration."
           />
           <div className="mt-10 grid items-stretch gap-6 lg:grid-cols-2">
             <Reveal className="h-full">

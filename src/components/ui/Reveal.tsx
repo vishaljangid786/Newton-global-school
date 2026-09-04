@@ -39,7 +39,14 @@ export default function Reveal({
           observer.disconnect();
         }
       },
-      { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+      /*
+       * threshold 0 matters as much as the 0.12: a block taller than the
+       * viewport — the gallery mosaic runs to ~9,500px — can never show 12%
+       * of itself at once, so a lone percentage threshold would leave it
+       * stuck at opacity 0 forever. Firing at 0 too means "any part of it has
+       * come into view", which is what the animation actually wants.
+       */
+      { threshold: [0, 0.12], rootMargin: "0px 0px -80px 0px" }
     );
     observer.observe(element);
     return () => observer.disconnect();

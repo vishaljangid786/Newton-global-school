@@ -8,7 +8,9 @@
     "start": "next start",
     "lint": "eslint",
     "db:setup": "node db/apply-schema.mjs",
-    "db:seed": "node db/seed.mjs"
+    "db:seed": "node db/seed.mjs",
+    "db:seed:gallery": "node db/seed-gallery.mjs",
+    "db:seed:blog": "node db/seed-blog.mjs"
   },
   "dependencies": {
     "jose": "^6.2.3",

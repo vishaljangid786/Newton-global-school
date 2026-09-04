@@ -4,8 +4,6 @@ import {
   CARD,
   CONTAINER,
   Cover,
-  Wave,
-  GoldLink,
   Icon,
   type IconName,
   type Img,
@@ -16,6 +14,7 @@ import {
   STAGE_COLOURS,
   STRONG,
 } from "@/components/site/school-kit";
+import EnquiryBand from "@/components/site/EnquiryBand";
 import Reveal from "@/components/ui/Reveal";
 import { hubs } from "@/data/pages/hubs";
 import { nursery } from "@/data/pages/nursery";
@@ -55,7 +54,7 @@ interface StageCard {
 const STAGES: StageCard[] = [
   {
     copy: nursery,
-    href: "/academics/nursery",
+    href: "/nursery",
     label: "Nursery",
     icon: "music",
     img: {
@@ -70,7 +69,7 @@ const STAGES: StageCard[] = [
   },
   {
     copy: primary,
-    href: "/academics/primary",
+    href: "/primary",
     label: "Primary",
     icon: "book",
     img: {
@@ -85,7 +84,7 @@ const STAGES: StageCard[] = [
   },
   {
     copy: secondary,
-    href: "/academics/secondary",
+    href: "/secondary",
     label: "Secondary",
     icon: "flask",
     img: {
@@ -100,7 +99,7 @@ const STAGES: StageCard[] = [
   },
   {
     copy: seniorSecondary,
-    href: "/academics/senior-secondary",
+    href: "/senior-secondary",
     label: "Senior Secondary",
     icon: "chart",
     img: {
@@ -191,42 +190,18 @@ export default function AcademicsPage() {
         </div>
       </section>
 
-      {/* ——— Admission band, using the Home tab's admission copy ——— */}
-      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
-        <Wave className="z-20 text-bg" />
-        <Cover
-          img={{
-            src: "/images/school/parents-with-pupils.webp",
-
-            w: 1448,
-
-            h: 1086,
-
-            alt: "Parents with four Newton Global School pupils in uniform",
-          }}
-          sizes="100vw"
-          className="opacity-[0.28]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
-        />
-        <Reveal className={`relative ${CONTAINER}`}>
-          <span
-            aria-hidden="true"
-            className="mx-auto block h-[3px] w-14 rounded-pill bg-[#d6a53f]"
-          />
-          <h2 className="mx-auto mt-6 max-w-3xl text-[1.5rem] leading-[1.2] text-white sm:text-[1.8rem] md:text-[2.1rem]">
-            {rich(hubs.admissionsH1, STRONG.headingDark)}
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-[0.9375rem] leading-[1.8] text-[#c2cfe4] md:text-base">
-            {rich(hubs.admissionsBody, STRONG.dark)}
-          </p>
-          <GoldLink href="/admissions" className="mt-8 w-full sm:w-auto">
-            {hubs.admissionsCta}
-          </GoldLink>
-        </Reveal>
-      </section>
+      {/* ——— Admission band — the Home tab's copy, with the form in it ——— */}
+      <EnquiryBand
+        image={{
+          src: "/images/school/parents-with-pupils.webp",
+          w: 1448,
+          h: 1086,
+          alt: "Parents with four Newton Global School pupils in uniform",
+        }}
+        h2={hubs.admissionsH1}
+        body={hubs.admissionsBody}
+        formTitle={hubs.admissionsCta}
+      />
     </>
   );
 }

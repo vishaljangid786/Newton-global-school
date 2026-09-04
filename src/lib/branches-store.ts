@@ -29,6 +29,7 @@ export interface CustomBranchRow {
   principal_name: string;
   principal_message: string | null;
   principal_photo_url: string | null;
+  hero_image_url: string | null;
   students: number | null;
   campus_size: string;
   facilities: unknown;
@@ -39,7 +40,7 @@ export interface CustomBranchRow {
 }
 
 const COLS = `slug, name, area, address, phone, email, established, grades,
-  principal_name, principal_message, principal_photo_url, students,
+  principal_name, principal_message, principal_photo_url, hero_image_url, students,
   campus_size, facilities, hero_tone, status, created_at, updated_at`;
 
 function parseFacilities(value: unknown): string[] {
@@ -82,6 +83,7 @@ export function mapCustomBranch(r: CustomBranchRow): Branch {
     heroImage: `branch-${r.slug}-hero`,
     galleryCategoryKey: r.slug,
     heroTone: (r.hero_tone as PlaceholderTone) || "primary",
+    heroImageUrl: r.hero_image_url,
   };
 }
 

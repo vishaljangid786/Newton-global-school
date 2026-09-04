@@ -11,12 +11,14 @@ export interface PublicBlogCard {
   branch_ref: string;
   excerpt: string;
   cover_tone: string;
+  /** Uploaded cover photo; null falls back to the tone placeholder. */
+  cover_image_url: string | null;
   author_name: string;
   published_at: string | null;
 }
 
 const CARD_COLUMNS =
-  "slug, title, branch_ref, excerpt, cover_tone, author_name, published_at";
+  "slug, title, branch_ref, excerpt, cover_tone, cover_image_url, author_name, published_at";
 
 /** All published posts (the group blog hub), newest first. */
 export async function getPublishedBlogs(): Promise<PublicBlogCard[]> {

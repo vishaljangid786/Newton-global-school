@@ -9,6 +9,7 @@ import {
 } from "@/components/admin/ui";
 import { getAllBranches } from "@/lib/branches-store";
 import type { NotificationRow } from "@/lib/admin-types";
+import AdminDialog from "@/components/admin/AdminDialog";
 import NotificationCreateForm from "./NotificationCreateForm";
 import NotificationRowActions from "./NotificationRowActions";
 
@@ -42,12 +43,16 @@ export default async function NotificationsPage() {
       <PageHeader
         title="Notifications"
         description="Publish alerts that appear as a banner on the public site. Deactivate to hide without deleting."
+        action={
+          <AdminDialog
+            label="New notification"
+            title="New notification"
+            description="Appears as a banner on the public site until you deactivate it."
+          >
+            <NotificationCreateForm audiences={audiences} />
+          </AdminDialog>
+        }
       />
-
-      <AdminCard>
-        <h2 className="mb-4 font-heading text-lg text-text">New notification</h2>
-        <NotificationCreateForm audiences={audiences} />
-      </AdminCard>
 
       <section>
         <h2 className="mb-3 font-heading text-lg text-text">Published</h2>

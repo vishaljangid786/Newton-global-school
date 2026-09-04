@@ -52,6 +52,17 @@ const NAV_GROUPS: NavGroup[] = [
     label: "Inbox",
     items: [
       {
+        href: "/admin/submissions",
+        label: "Submissions",
+        icon: (
+          <svg {...ic}>
+            <path d="M6 3h9l4 4v14H6z" />
+            <path d="M15 3v4h4" />
+            <path d="M9 12h7M9 16h4" />
+          </svg>
+        ),
+      },
+      {
         href: "/admin/enquiries",
         label: "Enquiries",
         icon: (

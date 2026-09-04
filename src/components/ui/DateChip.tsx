@@ -27,12 +27,12 @@ export default function DateChip({
       </span>
       <span
         aria-hidden="true"
-        className="mt-1 text-[10px] font-semibold uppercase leading-none tracking-[0.06em]"
+        className="mt-1 text-[11px] font-semibold uppercase leading-none tracking-[0.06em]"
       >
         {parts.month}
       </span>
       {showYear ? (
-        <span aria-hidden="true" className="mt-1 text-[10px] leading-none text-primary/70">
+        <span aria-hidden="true" className="mt-1 text-[11px] leading-none text-primary/70">
           {parts.year}
         </span>
       ) : null}

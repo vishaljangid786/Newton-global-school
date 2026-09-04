@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import {
   CONTAINER,
+  CONTAINER_FLUID,
   type Img,
   PageHero,
   SECTION,
@@ -42,7 +43,7 @@ export default function MandatoryDisclosurePage() {
       />
 
       <section className={`bg-bg ${SECTION}`}>
-        <div className={`${CONTAINER} max-w-3xl text-center`}>
+        <div className={`${CONTAINER_FLUID} max-w-3xl text-center`}>
           <Reveal>
             <SectionTitle
               eyebrow="Public Disclosure"

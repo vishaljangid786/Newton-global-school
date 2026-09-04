@@ -62,6 +62,11 @@ interface InquiryFormProps {
   /** Preselect a campus in the dropdown (branch admissions pages, §5.5). */
   preselectBranch?: BranchSlug;
   className?: string;
+  /**
+   * Tighter spacing for the closing band, where the form sits beside the copy
+   * rather than being the whole page. Same fields either way.
+   */
+  compact?: boolean;
 }
 
 /**
@@ -71,6 +76,7 @@ interface InquiryFormProps {
 export default function InquiryForm({
   preselectBranch,
   className = "",
+  compact = false,
 }: InquiryFormProps) {
   const campuses = useBranches();
   const form = useSimpleForm<FieldName>({
@@ -111,7 +117,7 @@ export default function InquiryForm({
     <form
       noValidate
       onSubmit={form.handleSubmit}
-      className={`relative grid gap-5 md:grid-cols-2 ${className}`}
+      className={`relative grid ${compact ? "gap-3.5" : "gap-5"} md:grid-cols-2 ${className}`}
     >
       <TextField
         id={form.fieldId("studentName")}
@@ -189,6 +195,7 @@ export default function InquiryForm({
       <TextAreaField
         id={form.fieldId("message")}
         label="Message (optional)"
+        rows={compact ? 2 : 4}
         className="md:col-span-2"
         value={form.values.message}
         onChange={form.handleChange("message")}

@@ -9,6 +9,7 @@ import {
   FieldLabel,
   adminButtonPrimary,
   adminInputClasses,
+  adminTextareaClasses,
 } from "@/components/admin/ui";
 
 export interface BranchEditorValues {
@@ -17,6 +18,7 @@ export interface BranchEditorValues {
   principalMessage: string;
   /** Currently saved principal photo (override or branch), "" when none. */
   principalPhotoUrl: string;
+  heroImageUrl: string;
   students: string;
   campusSize: string;
   grades: string;
@@ -83,7 +85,7 @@ export default function BranchEditorForm({
           name="principal_message"
           rows={5}
           defaultValue={values.principalMessage}
-          className={adminInputClasses}
+          className={adminTextareaClasses}
         />
       </div>
 
@@ -117,6 +119,44 @@ export default function BranchEditorForm({
                 <input
                   type="checkbox"
                   name="principal_photo_remove"
+                  value="1"
+                  className="h-4 w-4 rounded border-border text-primary"
+                />
+                Remove the current photo
+              </label>
+            ) : null}
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <FieldLabel htmlFor="hero_image">Campus photo</FieldLabel>
+        <div className="mt-2 flex flex-wrap items-start gap-4">
+          {values.heroImageUrl ? (
+            /* eslint-disable-next-line @next/next/no-img-element */
+            <img
+              src={values.heroImageUrl}
+              alt="Current campus photo"
+              className="h-24 w-40 rounded-card border border-border object-cover"
+            />
+          ) : null}
+          <div className="min-w-[min(16rem,100%)] flex-1">
+            <input
+              id="hero_image"
+              name="hero_image"
+              type="file"
+              accept="image/jpeg,image/png,image/webp,image/avif"
+              className={`${adminInputClasses} file:mr-3 file:rounded-btn file:border-0 file:bg-primary-soft file:px-3 file:py-1.5 file:text-sm file:font-medium file:text-primary`}
+            />
+            <p className="mt-1 text-xs text-text-muted">
+              Shown on the campus card and at the top of the branch page.
+              Without one, the hero colour below is used.
+            </p>
+            {values.heroImageUrl ? (
+              <label className="mt-2 flex items-center gap-2 text-sm text-text">
+                <input
+                  type="checkbox"
+                  name="hero_image_remove"
                   value="1"
                   className="h-4 w-4 rounded border-border text-primary"
                 />
@@ -185,7 +225,7 @@ export default function BranchEditorForm({
           name="facilities"
           rows={8}
           defaultValue={values.facilities}
-          className={`${adminInputClasses} font-mono text-xs`}
+          className={`${adminTextareaClasses} font-mono text-xs`}
         />
         <p className="mt-1 text-xs text-text-muted">
           Leave a field empty to revert it to the site default.

@@ -5,6 +5,7 @@ import { mutate, query } from "@/lib/db";
 import { authorizeAction } from "@/lib/dal";
 import { canManageBranch } from "@/lib/rbac";
 import { isValidBranchRef } from "@/lib/branches-store";
+import { LIMITS, checkText, collect } from "@/lib/validate";
 import { isTestimonialRole } from "@/lib/testimonials-store";
 
 export interface TestimonialFormState {
@@ -15,6 +16,10 @@ export interface TestimonialFormState {
 function revalidateTestimonialPages(branchRef: string) {
   revalidatePath("/admin/testimonials");
   revalidatePath("/admin");
+  /* The home page slider reads every published quote, so it refreshes
+     whichever campus this row belongs to. Without this the statically
+     rendered home page would keep its build-time copy. */
+  revalidatePath("/");
   if (branchRef === "all") {
     revalidatePath("/branches/[slug]", "page");
   } else {
@@ -34,12 +39,26 @@ export async function createTestimonial(
   const quote = String(formData.get("quote") ?? "").trim();
   const ref = String(formData.get("branch_ref") ?? "");
 
-  if (!authorName) return { error: "The author's name is required." };
+  const checked = collect({
+    authorName: checkText(authorName, {
+      label: "Author's name",
+      max: LIMITS.personName,
+      required: true,
+    }),
+    roleDetail: checkText(roleDetail, {
+      label: "Role detail",
+      max: LIMITS.roleDetail,
+    }),
+    quote: checkText(quote, {
+      label: "Quote",
+      max: LIMITS.message,
+      min: 20,
+      required: true,
+    }),
+  });
+  if ("error" in checked) return { error: checked.error };
   if (!isTestimonialRole(authorRole)) {
     return { error: "Choose whether this voice is a student, parent or teacher." };
-  }
-  if (quote.length < 20) {
-    return { error: "The quote is required (at least 20 characters)." };
   }
   if (!(await isValidBranchRef(ref))) {
     return { error: "Please choose a valid campus." };

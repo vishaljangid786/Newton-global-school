@@ -3,18 +3,20 @@ import Accordion, { type AccordionEntry } from "@/components/ui/Accordion";
 import {
   CARD,
   CONTAINER,
+  CONTAINER_FLUID,
   Cover,
-  GoldLink,
   Icon,
   type Img,
   PageHero,
   rich,
+  RunInText,
   SECTION,
   SectionTitle,
   STRONG,
   TINTS,
   Wave,
 } from "@/components/site/school-kit";
+import EnquiryBand from "@/components/site/EnquiryBand";
 import Reveal from "@/components/ui/Reveal";
 import { visionMission } from "@/data/pages/vision-mission";
 
@@ -78,7 +80,7 @@ export default function VisionMissionPage() {
           aria-hidden="true"
           className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,rgba(0,19,68,0.96),rgba(0,19,68,0.8))]"
         />
-        <div className={`relative ${CONTAINER} max-w-4xl`}>
+        <div className={`relative ${CONTAINER_FLUID} max-w-4xl`}>
           <Reveal>
             <SectionTitle
               eyebrow="Our Vision"
@@ -120,9 +122,12 @@ export default function VisionMissionPage() {
                       >
                         <Icon name="target" className="h-5 w-5" />
                       </span>
-                      <p className="mt-5 break-words text-[0.9375rem] leading-[1.85] text-text-muted">
-                        {rich(item, STRONG.runIn)}
-                      </p>
+                      <RunInText
+                        text={item}
+                        separator="any"
+                        titleClass="mt-5 text-[1.0625rem] leading-[1.35] text-ink"
+                        bodyClass="mt-2 break-words text-[0.9375rem] leading-[1.85] text-text-muted"
+                      />
                     </article>
                   </Reveal>
                 </li>
@@ -134,7 +139,7 @@ export default function VisionMissionPage() {
 
       {/* ——— §4 Why this matters to parents ——— */}
       <section className={`border-y border-hairline bg-bg-alt ${SECTION}`}>
-        <div className={`${CONTAINER} max-w-4xl`}>
+        <div className={`${CONTAINER_FLUID} max-w-4xl`}>
           <Reveal>
             <SectionTitle eyebrow="For Parents" title={whyMatters.h2} align="center" />
           </Reveal>
@@ -165,9 +170,14 @@ export default function VisionMissionPage() {
                     >
                       <Icon name="check" className="h-3.5 w-3.5" />
                     </span>
-                    <p className="text-[0.9375rem] leading-[1.85] text-text-muted">
-                      {rich(item, STRONG.runIn)}
-                    </p>
+                    <div className="min-w-0">
+                      <RunInText
+                        text={item}
+                        separator="any"
+                        titleClass="text-[0.9375rem] leading-[1.35] text-ink"
+                        bodyClass="mt-1 text-[0.9375rem] leading-[1.85] text-text-muted"
+                      />
+                    </div>
                   </div>
                 </Reveal>
               </li>
@@ -193,27 +203,13 @@ export default function VisionMissionPage() {
         </div>
       </section>
 
-      {/* ——— Closing call to action ——— */}
-      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
-        <Wave className="z-20 text-bg-alt" />
-        <Cover img={IMG.ctaCampus} sizes="100vw" decorative className="opacity-[0.28]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
-        />
-        <Reveal className={`relative ${CONTAINER}`}>
-          <span
-            aria-hidden="true"
-            className="mx-auto block h-[3px] w-16 rounded-pill bg-[#d6a53f]"
-          />
-          <h2 className="mx-auto mt-6 max-w-3xl text-[1.5rem] leading-[1.2] text-white sm:text-[1.75rem] md:text-[2rem] lg:text-[2.25rem]">
-            {rich(hero.h1, STRONG.headingDark)}
-          </h2>
-          <GoldLink href="/admissions" className="mt-8 w-full sm:w-auto">
-            Enquire Now / Book a Visit
-          </GoldLink>
-        </Reveal>
-      </section>
+      {/* ——— Closing call to action — with the form, not a link to it ——— */}
+      <EnquiryBand
+        image={IMG.ctaCampus}
+        h2={hero.h1}
+        waveClass="text-bg-alt"
+        formTitle="Enquire Now / Book a Visit"
+      />
     </>
   );
 }

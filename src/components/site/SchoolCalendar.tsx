@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { fixedHolidaysByDate } from "@/data/holidays";
 
 /** Sunday-first, matching how a wall calendar is read here. */
 const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"] as const;
@@ -138,27 +139,57 @@ export default function SchoolCalendar({
           {cells.map((day, index) => {
             const isSunday = index % 7 === 0;
             const isToday = day !== null && iso(day) === today;
+            /* Only the fixed-date holidays can be marked. The movable ones
+               have no date in the data yet, by design. */
+            const holiday =
+              day === null
+                ? undefined
+                : fixedHolidaysByDate[
+                    `${String(month + 1).padStart(2, "0")}-${String(day).padStart(2, "0")}`
+                  ];
             return (
               <div
                 key={`${year}-${month}-${index}`}
-                className={`flex aspect-square items-center justify-center border-b border-r border-hairline last:border-r-0 ${
-                  isSunday ? "bg-[#fdf3f2]" : ""
+                title={holiday}
+                className={`flex aspect-square flex-col items-center justify-center gap-0.5 border-b border-r border-hairline px-0.5 last:border-r-0 ${
+                  isSunday ? "bg-[#fdf3f2]" : holiday ? "bg-[#faf4e8]" : ""
                 }`}
               >
                 {day === null ? (
                   <span aria-hidden="true" />
                 ) : (
-                  <span
-                    className={`flex h-9 w-9 items-center justify-center rounded-pill text-[0.9rem] font-semibold sm:h-10 sm:w-10 sm:text-base ${
-                      isToday
-                        ? "bg-[#154a8a] text-white"
-                        : isSunday
-                          ? "text-[#c0392b]"
-                          : "text-ink"
-                    }`}
-                  >
-                    {day}
-                  </span>
+                  <>
+                    <span
+                      className={`flex h-8 w-8 items-center justify-center rounded-pill text-[0.9rem] font-semibold sm:h-9 sm:w-9 sm:text-base ${
+                        isToday
+                          ? "bg-[#154a8a] text-white"
+                          : isSunday
+                            ? "text-[#c0392b]"
+                            : holiday
+                              ? "text-[#87661f]"
+                              : "text-ink"
+                      }`}
+                    >
+                      {day}
+                    </span>
+                    {holiday ? (
+                      <>
+                        {/* A 41px-wide cell on a 320px screen cannot hold
+                            "Independence Day" at a readable size, so the name
+                            only appears once there is room for it. Below that
+                            the gold cell and dot mark the day, and the
+                            holidays table underneath gives the name. */}
+                        <span
+                          aria-hidden="true"
+                          className="mt-0.5 h-1 w-1 rounded-pill bg-[#a8802f] sm:hidden"
+                        />
+                        <span className="hidden w-full text-center text-[0.625rem] font-semibold leading-[1.2] text-[#87661f] sm:line-clamp-2 sm:block">
+                          {holiday}
+                        </span>
+                        <span className="sr-only">{holiday}</span>
+                      </>
+                    ) : null}
+                  </>
                 )}
               </div>
             );
@@ -170,6 +201,10 @@ export default function SchoolCalendar({
         <span className="flex items-center gap-2">
           <span aria-hidden="true" className="h-3 w-3 rounded-pill bg-[#c0392b]" />
           Sunday — holiday
+        </span>
+        <span className="flex items-center gap-2">
+          <span aria-hidden="true" className="h-3 w-3 rounded-pill bg-[#a8802f]" />
+          Public holiday
         </span>
         <span className="flex items-center gap-2">
           <span aria-hidden="true" className="h-3 w-3 rounded-pill bg-[#154a8a]" />

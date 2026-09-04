@@ -155,8 +155,13 @@ export function useSimpleForm<N extends string>({
 
 const LABEL_CLASSES = "mb-1.5 block text-sm font-medium text-text";
 
-function inputClasses(hasError: boolean): string {
-  return `w-full rounded-btn border bg-surface px-3.5 py-3 text-base text-text transition-colors focus:border-primary/40 sm:text-sm ${
+/**
+ * `--radius-btn` is a 999px pill, which is right for a single-line control but
+ * turns a text area into an ellipse that clips the start and end of every
+ * line — so multi-line fields take a corner radius instead.
+ */
+function inputClasses(hasError: boolean, multiline = false): string {
+  return `w-full ${multiline ? "rounded-card leading-relaxed" : "rounded-btn"} border bg-surface px-3.5 py-3 text-base text-text transition-colors focus:border-primary/40 sm:text-sm ${
     hasError ? "border-error" : "border-border"
   }`;
 }
@@ -193,7 +198,7 @@ export function TextField({
   type = "text",
   autoComplete,
 }: CommonFieldProps & {
-  type?: "text" | "email" | "tel";
+  type?: "text" | "email" | "tel" | "date";
   autoComplete?: string;
 }) {
   return (
@@ -243,7 +248,7 @@ export function TextAreaField({
         aria-required={required || undefined}
         aria-invalid={error ? true : undefined}
         aria-describedby={error ? `${id}-error` : undefined}
-        className={inputClasses(Boolean(error))}
+        className={inputClasses(Boolean(error), true)}
       />
       <FieldError id={id} error={error} />
     </div>

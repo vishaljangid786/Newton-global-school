@@ -11,6 +11,7 @@ import {
   listGalleryImagesForAdmin,
   type GalleryImageRow,
 } from "@/lib/gallery-store";
+import AdminDialog from "@/components/admin/AdminDialog";
 import GalleryUploadForm from "./GalleryUploadForm";
 import GalleryRowActions from "./GalleryRowActions";
 
@@ -42,12 +43,16 @@ export default async function AdminGalleryPage() {
         eyebrow="Content"
         title="Gallery"
         description="Upload campus photos. They appear immediately in the public gallery, the campus page strip and the photo viewer, ahead of the placeholder artwork."
+        action={
+          <AdminDialog
+            label="Upload photo"
+            title="Upload a photo"
+            description="Shown in the public gallery as soon as it finishes uploading."
+          >
+            <GalleryUploadForm campuses={campuses} />
+          </AdminDialog>
+        }
       />
-
-      <AdminCard>
-        <h2 className="mb-4 font-heading text-lg text-ink">Upload a photo</h2>
-        <GalleryUploadForm campuses={campuses} />
-      </AdminCard>
 
       <section>
         <h2 className="mb-3 font-heading text-lg text-ink">

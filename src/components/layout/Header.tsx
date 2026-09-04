@@ -19,59 +19,74 @@ const LAST_BRANCH_KEY = "sis:lastBranch";
 interface NavItem {
   label: string;
   href: string;
+  /**
+   * True when the href is only a grouping key, not a page. Admission has no
+   * hub page of its own — its content moved to /registration-form — so the
+   * drawer renders this one as a heading instead of a dead link. The desktop
+   * bar already renders every group as a button.
+   */
+  groupOnly?: boolean;
 }
 
 /**
- * The document's "Header Menu" line, verbatim:
- *
- *   Home | About Us | Academics (dropdown: Nursery, Primary, Secondary,
- *   Senior Secondary) | Admission | Facilities | Gallery | News & Events |
- *   Contact Us
- *
- * Labels, order and grouping follow it exactly, so this array is the single
- * source of truth for both the desktop bar and the mobile drawer. Two notes:
- * Facilities now has a tab of its own in the document, so that entry points
- * at /facilities rather than the home page section. Blog is here because the
- * document's last tab is a full article and the site needs a way in to it.
- * News & Events is held back until there is real news to show — its /news
- * route still works, and so does Branches, which the document never mentions.
+ * The school's running order for the menu, which supersedes the document's
+ * "Header Menu" line. The document listed Facilities at the top level; it now
+ * sits inside About Us, and News & Events takes its place in the bar. This
+ * array is the single source of truth for both the desktop bar and the mobile
+ * drawer. Branches is not in the document either, but the campuses it lists
+ * are managed in the database, so it stays.
  */
 const NAV_ITEMS: NavItem[] = [
   { label: "Home", href: "/" },
   { label: "About Us", href: "/about" },
+  { label: "Branches", href: "/branches" },
   { label: "Academics", href: "/academics" },
-  { label: "Admission", href: "/admissions" },
-  { label: "Facilities", href: "/facilities" },
+  { label: "Admission", href: "/admissions", groupOnly: true },
+  { label: "News & Events", href: "/news" },
+  { label: "Blogs", href: "/blog" },
   { label: "Gallery", href: "/gallery" },
-  { label: "Blog", href: "/blog" },
   { label: "Contact Us", href: "/contact" },
 ];
 
 /**
- * Dropdowns. The document specifies the Academics one (Nursery, Primary,
- * Secondary, Senior Secondary); "Advance Program" is its own tab in the
- * document and sits here because that is where a reader looks for it.
+ * Dropdowns, in the order the school set them out.
  *
- * The About group mirrors the layout the school asked for, with "About Us"
- * as the first row. Every entry points at a page whose copy is in the
- * document, except School Calendar and Mandatory Disclosure: the document has
- * no copy for either, so those two pages carry only what is actually known.
+ * About and Academics lead with their own hub page: on desktop a nav item
+ * that has a dropdown renders as a button rather than a link, so without that
+ * first entry /about and /academics would have no way in at all. Admission has
+ * no hub page — it was removed and its content now opens the Registration Form
+ * page — so that group is marked groupOnly and carries no such row.
+ *
+ * Faculty moved out of About Us and into Academics, and Results out of
+ * Academics and into Admission. School Calendar and Mandatory Disclosure are
+ * the two pages the document has no copy for, so they carry only what is
+ * actually known. Gallery is deliberately not in About Us — it is a top-level
+ * item of its own.
  */
 const SUBNAV: Record<string, NavItem[]> = {
   "/about": [
-    { label: "About Us", href: "/about" },
+    { label: "About", href: "/about" },
     { label: "Facility", href: "/facilities" },
-    { label: "Our mission and vision", href: "/vision-mission" },
+    { label: "Our Mission and Vision", href: "/vision-mission" },
     { label: "School Calendar", href: "/school-calendar" },
     { label: "Location", href: "/#location" },
     { label: "Mandatory Disclosure", href: "/mandatory-disclosure" },
   ],
   "/academics": [
-    { label: "Nursery", href: "/academics/nursery" },
-    { label: "Primary", href: "/academics/primary" },
-    { label: "Secondary", href: "/academics/secondary" },
-    { label: "Senior Secondary", href: "/academics/senior-secondary" },
+    { label: "Academics", href: "/academics" },
+    { label: "Nursery", href: "/nursery" },
+    { label: "Primary", href: "/primary" },
+    { label: "Secondary", href: "/secondary" },
+    { label: "Senior Secondary", href: "/senior-secondary" },
     { label: "Advance Program", href: "/advance-program" },
+    { label: "Faculty", href: "/faculty" },
+  ],
+  "/admissions": [
+    { label: "Admission Process", href: "/admission-process" },
+    { label: "Registration Form", href: "/registration-form" },
+    { label: "Fee Structure", href: "/fee-structure" },
+    { label: "Eligibility Criteria", href: "/eligibility-criteria" },
+    { label: "Results", href: "/results" },
   ],
 };
 
@@ -197,17 +212,30 @@ export default function Header() {
     setDrawerOpen(false);
   }, [pathname]);
 
-  /* ——— Drawer: lock body scroll + move focus in, restore focus out ——— */
+  /* ——— Drawer: lock body scroll + move focus in, restore focus out ———
+   *
+   * Hiding the body's overflow removes the scrollbar, and the page then widens
+   * by its width — which reads as a jolt the moment the menu opens and again
+   * when it closes. Padding the body by exactly that width holds the layout
+   * still. `preventScroll` matters too: focusing a control inside a panel that
+   * is still sliding in makes the browser scroll it into view mid-animation.
+   */
   useEffect(() => {
-    if (drawerOpen) {
-      const previousOverflow = document.body.style.overflow;
-      document.body.style.overflow = "hidden";
-      drawerCloseRef.current?.focus();
-      return () => {
-        document.body.style.overflow = previousOverflow;
-        hamburgerRef.current?.focus();
-      };
-    }
+    if (!drawerOpen) return;
+    const { body, documentElement } = document;
+    const scrollbar = window.innerWidth - documentElement.clientWidth;
+    const previousOverflow = body.style.overflow;
+    const previousPadding = body.style.paddingRight;
+
+    body.style.overflow = "hidden";
+    if (scrollbar > 0) body.style.paddingRight = `${scrollbar}px`;
+    drawerCloseRef.current?.focus({ preventScroll: true });
+
+    return () => {
+      body.style.overflow = previousOverflow;
+      body.style.paddingRight = previousPadding;
+      hamburgerRef.current?.focus({ preventScroll: true });
+    };
   }, [drawerOpen]);
 
   /* ——— Drawer focus trap + Esc (design.md §8) ——— */
@@ -253,7 +281,12 @@ export default function Header() {
      * the trigger with no gap so the pointer cannot fall through the crack on
      * its way down.
      */
-    const group = SUBNAV[item.href];
+    /* Campuses come from the database via useBranches, so this group is built
+       per render rather than read from the static SUBNAV map. */
+    const isBranches = item.href === "/branches";
+    const group = isBranches
+      ? campuses.map((campus) => ({ label: campus.name, href: `/branches/${campus.slug}` }))
+      : SUBNAV[item.href];
     if (group) {
       const open = openMenu === item.href;
       return (
@@ -277,6 +310,15 @@ export default function Header() {
           >
             {item.label}
             <NavRule active={active} />
+            {isBranches ? (
+              <span
+                className={`ml-0.5 rounded-pill px-1.5 py-0.5 text-[0.65625rem] font-semibold leading-none ${
+                  active ? "bg-primary-soft text-primary" : "bg-bg-alt text-faint"
+                }`}
+              >
+                {campuses.length}
+              </span>
+            ) : null}
             <svg
               viewBox="0 0 24 24"
               aria-hidden="true"
@@ -314,6 +356,16 @@ export default function Header() {
                     </li>
                   ))}
                 </ul>
+                {isBranches ? (
+                  <Link
+                    href="/branches"
+                    onClick={() => setOpenMenu(null)}
+                    className="block border-t border-hairline px-4 py-2.5 text-sm font-semibold text-primary transition-colors hover:bg-primary-soft"
+                  >
+                    View all branches
+                    <span aria-hidden="true"> →</span>
+                  </Link>
+                ) : null}
               </div>
             </div>
           ) : null}
@@ -337,24 +389,37 @@ export default function Header() {
 
   const renderDrawerLink = (item: NavItem) => {
     const active = isActive(pathname, item.href);
+    const badge =
+      item.href === "/branches" ? (
+        <span className="ml-2 rounded-pill bg-bg-alt px-2 py-0.5 text-xs font-semibold text-faint">
+          {campuses.length}
+        </span>
+      ) : null;
     return (
       <li key={item.href}>
-        <Link
-          href={item.href}
-          aria-current={active ? "page" : undefined}
-          className={`block rounded-btn px-3 py-2.5 text-base font-medium ${
-            active
-              ? "bg-primary-soft text-primary"
-              : "text-text hover:bg-bg-alt"
-          }`}
-        >
-          {item.label}
-          {item.href === "/branches" ? (
-            <span className="ml-2 rounded-pill bg-bg-alt px-2 py-0.5 text-xs font-semibold text-faint">
-              {campuses.length}
-            </span>
-          ) : null}
-        </Link>
+        {item.groupOnly ? (
+          <p
+            className={`px-3 py-2.5 text-base font-medium ${
+              active ? "text-primary" : "text-text"
+            }`}
+          >
+            {item.label}
+            {badge}
+          </p>
+        ) : (
+          <Link
+            href={item.href}
+            aria-current={active ? "page" : undefined}
+            className={`block rounded-btn px-3 py-2.5 text-base font-medium ${
+              active
+                ? "bg-primary-soft text-primary"
+                : "text-text hover:bg-bg-alt"
+            }`}
+          >
+            {item.label}
+            {badge}
+          </Link>
+        )}
         {/* Nested sub-pages under "Academics" and "Admissions" */}
         {SUBNAV[item.href] ? (
           <ul className="mb-1 ml-3 mt-0.5 space-y-0.5 border-l border-hairline pl-3">
@@ -444,7 +509,7 @@ export default function Header() {
 
           <div className="flex items-center gap-2">
             <Link
-              href="/admissions"
+              href="/registration-form"
               /* max-md:hidden, not `hidden md:inline-flex` — the shared base
                  already sets inline-flex, and a bare `hidden` loses to it in
                  the cascade, which would leak this button onto mobile where
@@ -494,14 +559,16 @@ export default function Header() {
           drawerOpen ? "" : "pointer-events-none"
         }`}
       >
-        {/* Overlay */}
-        {drawerOpen ? (
-          <div
-            className="absolute inset-0 bg-black/40"
-            aria-hidden="true"
-            onClick={() => setDrawerOpen(false)}
-          />
-        ) : null}
+        {/* Overlay. Always mounted, opacity animated: unmounting it on close
+            made the backdrop disappear instantly while the panel still had
+            300ms of travel left, which is what read as a flicker. */}
+        <div
+          className={`absolute inset-0 bg-black/40 transition-opacity duration-300 ease-out motion-reduce:transition-none ${
+            drawerOpen ? "opacity-100" : "pointer-events-none opacity-0"
+          }`}
+          aria-hidden="true"
+          onClick={() => setDrawerOpen(false)}
+        />
 
         {/* Slide-in drawer (design.md §3.1) */}
         <div
@@ -512,7 +579,10 @@ export default function Header() {
           aria-label="Site menu"
           inert={!drawerOpen}
           onKeyDown={onDrawerKeyDown}
-          className={`absolute inset-y-0 right-0 flex w-80 max-w-[85vw] flex-col rounded-l-2xl bg-surface shadow-card-hover transition-transform duration-300 ${
+          /* will-change promotes the panel to its own layer so the slide is
+             composited instead of repainting the page behind it each frame;
+             the easing curve is the same one the sticky bar uses. */
+          className={`absolute inset-y-0 right-0 flex w-80 max-w-[85vw] flex-col rounded-l-2xl bg-surface shadow-card-hover [will-change:transform] transition-transform duration-300 ease-[cubic-bezier(0.22,1,0.36,1)] motion-reduce:transition-none ${
             drawerOpen ? "translate-x-0" : "translate-x-full"
           }`}
         >
@@ -569,7 +639,7 @@ export default function Header() {
 
         <div className="border-t border-hairline p-4">
           <Link
-            href="/admissions"
+            href="/registration-form"
             className="block rounded-btn bg-[image:var(--gradient-brand)] px-4 py-3 text-center text-sm font-semibold text-white transition hover:brightness-[1.06]"
           >
             Admissions Open — Apply

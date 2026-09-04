@@ -6,17 +6,20 @@ import { authorizeAction } from "@/lib/dal";
 import { canManageBranch } from "@/lib/rbac";
 import { isValidBranchRef } from "@/lib/branches-store";
 import { UploadError, fileFromForm, saveUploadedImage } from "@/lib/uploads";
+import {
+  LIMITS,
+  checkEmail,
+  checkInt,
+  checkPhone,
+  checkText,
+  collect,
+} from "@/lib/validate";
 
 export interface BranchFormState {
   error?: string;
   ok?: boolean;
 }
 
-/** Trim to a value or null (null reverts the field to the static default). */
-function orNull(v: FormDataEntryValue | null): string | null {
-  const s = String(v ?? "").trim();
-  return s.length > 0 ? s : null;
-}
 
 export async function saveBranchOverride(
   _prev: BranchFormState | undefined,
@@ -32,23 +35,48 @@ export async function saveBranchOverride(
     return { error: "You can only edit your own branch." };
   }
 
-  const principalName = orNull(formData.get("principal_name"));
-  const principalMessage = orNull(formData.get("principal_message"));
-  const campusSize = orNull(formData.get("campus_size"));
-  const grades = orNull(formData.get("grades"));
-  const phone = orNull(formData.get("phone"));
-  const email = orNull(formData.get("email"));
-  const address = orNull(formData.get("address"));
+  /*
+   * Overrides are all optional — an empty field means "fall back to the
+   * branch record" — but anything that IS given still has to fit its column
+   * and look like what it claims to be.
+   */
+  const checked = collect({
+    principalName: checkText(formData.get("principal_name"), {
+      label: "Principal's name",
+      max: LIMITS.personName,
+    }),
+    principalMessage: checkText(formData.get("principal_message"), {
+      label: "Principal's message",
+      max: LIMITS.message,
+    }),
+    campusSize: checkText(formData.get("campus_size"), {
+      label: "Campus size",
+      max: LIMITS.campusSize,
+    }),
+    grades: checkText(formData.get("grades"), {
+      label: "Grades",
+      max: LIMITS.grades,
+    }),
+    phone: checkPhone(formData.get("phone")),
+    email: checkEmail(formData.get("email")),
+    address: checkText(formData.get("address"), { label: "Address", max: 255 }),
+    students: checkInt(formData.get("students"), {
+      label: "Students",
+      min: 0,
+      max: 100000,
+    }),
+  });
+  if ("error" in checked) return { error: checked.error };
 
-  const studentsRaw = orNull(formData.get("students"));
-  let students: number | null = null;
-  if (studentsRaw !== null) {
-    const n = Number(studentsRaw);
-    if (!Number.isFinite(n) || n < 0) {
-      return { error: "Students must be a positive number." };
-    }
-    students = Math.round(n);
-  }
+  const blank = (v: string) => (v === "" ? null : v);
+  const principalName = blank(checked.values.principalName);
+  const principalMessage = blank(checked.values.principalMessage);
+  const campusSize = blank(checked.values.campusSize);
+  const grades = blank(checked.values.grades);
+  const phone = blank(checked.values.phone);
+  const email = blank(checked.values.email);
+  const address = blank(checked.values.address);
+  const students = checked.values.students;
 
   // Facilities: one per line in the textarea → JSON array (or null).
   const facilitiesRaw = String(formData.get("facilities") ?? "");
@@ -78,16 +106,35 @@ export async function saveBranchOverride(
     photoUrl = prior[0]?.principal_photo_url ?? null;
   }
 
+  // Same handling for the campus photo shown on the card and branch hero.
+  let heroUrl: string | null = null;
+  const heroFile = fileFromForm(formData, "hero_image");
+  if (heroFile) {
+    try {
+      heroUrl = await saveUploadedImage(heroFile, "branch");
+    } catch (error) {
+      if (error instanceof UploadError) return { error: error.message };
+      throw error;
+    }
+  } else if (String(formData.get("hero_image_remove") ?? "") !== "1") {
+    const prior = await query<{ hero_image_url: string | null }>(
+      "SELECT hero_image_url FROM branch_overrides WHERE branch_slug = ? LIMIT 1",
+      [slug]
+    );
+    heroUrl = prior[0]?.hero_image_url ?? null;
+  }
+
   await mutate(
     `INSERT INTO branch_overrides
        (branch_slug, principal_name, principal_message, principal_photo_url,
-        students, campus_size, grades, phone, email, address, facilities,
-        updated_by)
-     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+        hero_image_url, students, campus_size, grades, phone, email, address,
+        facilities, updated_by)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
      ON DUPLICATE KEY UPDATE
        principal_name = VALUES(principal_name),
        principal_message = VALUES(principal_message),
        principal_photo_url = VALUES(principal_photo_url),
+       hero_image_url = VALUES(hero_image_url),
        students = VALUES(students),
        campus_size = VALUES(campus_size),
        grades = VALUES(grades),
@@ -101,6 +148,7 @@ export async function saveBranchOverride(
       principalName,
       principalMessage,
       photoUrl,
+      heroUrl,
       students,
       campusSize,
       grades,

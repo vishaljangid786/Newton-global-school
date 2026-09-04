@@ -9,6 +9,7 @@ import {
 } from "@/components/admin/ui";
 import { getAllBranches } from "@/lib/branches-store";
 import type { UserRow } from "@/lib/admin-types";
+import AdminDialog from "@/components/admin/AdminDialog";
 import UserCreateForm from "./UserCreateForm";
 import UserRowActions from "./UserRowActions";
 
@@ -32,12 +33,16 @@ export default async function UsersPage() {
       <PageHeader
         title="Users"
         description="Manage admin accounts and their access. Super Admins can see and do everything; Branch Admins are scoped to one campus."
+        action={
+          <AdminDialog
+            label="Add user"
+            title="Add a user"
+            description="They can sign in immediately with the password you set here."
+          >
+            <UserCreateForm branches={branchOptions} />
+          </AdminDialog>
+        }
       />
-
-      <AdminCard>
-        <h2 className="mb-4 font-heading text-lg text-text">Add a user</h2>
-        <UserCreateForm branches={branchOptions} />
-      </AdminCard>
 
       <section>
         <h2 className="mb-3 font-heading text-lg text-text">All users</h2>

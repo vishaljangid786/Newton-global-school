@@ -6,13 +6,13 @@ import { authorizeAction } from "@/lib/dal";
 import { hashPassword } from "@/lib/password";
 import { isValidBranchRef } from "@/lib/branches-store";
 import type { Role } from "@/lib/admin-types";
+import { LIMITS, checkEmail, checkText, collect } from "@/lib/validate";
 
 export interface UserFormState {
   error?: string;
   ok?: boolean;
 }
 
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function createUser(
   _prev: UserFormState | undefined,
@@ -26,10 +26,17 @@ export async function createUser(
   const role = String(formData.get("role") ?? "") as Role;
   const branchSlugRaw = String(formData.get("branch_slug") ?? "").trim();
 
-  if (!name) return { error: "Name is required." };
-  if (!EMAIL_RE.test(email)) return { error: "Enter a valid email." };
-  if (password.length < 8) {
-    return { error: "Password must be at least 8 characters." };
+  const checked = collect({
+    name: checkText(name, {
+      label: "Name",
+      max: LIMITS.personName,
+      required: true,
+    }),
+    email: checkEmail(email, { required: true }),
+  });
+  if ("error" in checked) return { error: checked.error };
+  if (password.length < 8 || password.length > 200) {
+    return { error: "Password must be between 8 and 200 characters." };
   }
   if (role !== "super_admin" && role !== "branch_admin") {
     return { error: "Choose a valid role." };

@@ -12,6 +12,18 @@ const nextConfig: NextConfig = {
     // copy for the rest of the day. These are hand-swapped school photos, so
     // seeing the new file matters more than shaving revalidations.
     minimumCacheTTL: 60,
+    // AVIF first: roughly a fifth smaller than WebP on these photographs, and
+    // every browser that cannot take it still gets the WebP below it.
+    formats: ["image/avif", "image/webp"],
+    /*
+     * Next generates a srcset entry per width in these two lists — 15 by
+     * default. On the gallery that meant 1,560 URLs in one HTML document.
+     * No source image here is wider than 1600px, so anything above that was
+     * upscaling, and the small end only needs enough steps for the mosaic
+     * tiles and thumbnails.
+     */
+    deviceSizes: [640, 828, 1080, 1600],
+    imageSizes: [96, 160, 256, 384],
   },
   experimental: {
     serverActions: {

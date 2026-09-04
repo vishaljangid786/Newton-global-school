@@ -67,6 +67,8 @@ export interface Branch {
   galleryCategoryKey: string;
   /** Hero gradient tone; set for custom branches (built-ins use a static map). */
   heroTone?: PlaceholderTone;
+  /** Uploaded hero photograph; the tone above is the fallback without one. */
+  heroImageUrl?: string | null;
 }
 
 export interface Notice {

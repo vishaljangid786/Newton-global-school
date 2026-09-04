@@ -35,7 +35,7 @@ export default function TopBar() {
             RBSE Affiliated
           </span>
           <Link
-            href="/admissions"
+            href="/registration-form"
             className="hidden font-semibold text-white transition-colors hover:text-[#d6a53f] sm:inline"
           >
             Admission Open {site.admissionYear}

@@ -3,25 +3,22 @@ import Link from "next/link";
 import { Fragment } from "react";
 import Accordion, { type AccordionEntry } from "@/components/ui/Accordion";
 import {
-  CARD,
   CONTAINER,
   DoodleWash,
-  Cover,
-  Wave,
-  GoldLink,
   Icon,
   type IconName,
   type Img,
   PageHero,
   Photo,
   rich,
+  splitRunIn,
   SECTION,
+  DataTable,
   SectionTitle,
-  STRONG,
-  TINTS,
 } from "@/components/site/school-kit";
+import EnquiryBand from "@/components/site/EnquiryBand";
 import Reveal from "@/components/ui/Reveal";
-import { feeStructure } from "@/data/pages/fee-structure";
+import { feeStructure, feeTable } from "@/data/pages/fee-structure";
 
 export const metadata: Metadata = {
   title: "Fee Structure",
@@ -39,11 +36,7 @@ export const metadata: Metadata = {
 const { hero, overview, included, byClass, payment, faq, cta, links } =
   feeStructure;
 
-/**
- * CC0 sample photography — public domain, no attribution required.
- * Source list in public/images/school/CREDITS.md. Placeholders only: the alt
- * text describes the picture itself and never claims it shows the school.
- */
+
 const IMG = {
   heroBanner: {
     src: "/images/school/campus-grounds.webp",
@@ -92,18 +85,6 @@ const IMG = {
   },
 } as const satisfies Record<string, Img>;
 
-/** §3 — one icon per "what the fees cover" tile, in document order. */
-const INCLUDED_ICONS: readonly IconName[] = [
-  "book",
-  "library",
-  "flask",
-  "chart",
-  "trophy",
-];
-
-/** §5 — one icon per payment note, in document order. */
-const PAYMENT_ICONS: readonly IconName[] = ["calendar", "monitor", "check"];
-
 /** §6 — the document's five fee questions, wired into the shared Accordion. */
 const faqEntries: AccordionEntry[] = faq.items.map((item, index) => ({
   id: `faq-${index + 1}`,
@@ -118,13 +99,13 @@ const faqEntries: AccordionEntry[] = faq.items.map((item, index) => ({
 const LINK_ROUTES: Record<string, string> = {
   Home: "/",
   "About Us": "/about",
-  Nursery: "/academics/nursery",
-  Primary: "/academics/primary",
-  Secondary: "/academics/secondary",
-  "Senior Secondary": "/academics/senior-secondary",
-  "Admission Process": "/admissions/process",
-  "Fee Structure": "/admissions/fees",
-  "Eligibility Criteria": "/admissions/eligibility",
+  Nursery: "/nursery",
+  Primary: "/primary",
+  Secondary: "/secondary",
+  "Senior Secondary": "/senior-secondary",
+  "Admission Process": "/admission-process",
+  "Fee Structure": "/fee-structure",
+  "Eligibility Criteria": "/eligibility-criteria",
 };
 
 /** §8 — one icon per suggestion, matching the page each one points at. */
@@ -174,15 +155,12 @@ export default function FeeStructurePage() {
       <PageHero
         image={IMG.heroBanner}
         priority
-        crumbs={[
-          { label: "Admissions", href: "/admissions" },
-          { label: "Fee Structure" },
-        ]}
+        crumbs={[{ label: "Fee Structure" }]}
         h1={hero.h1}
         sub={hero.sub}
         body={hero.body}
         cta={hero.cta}
-        ctaHref="/contact"
+        ctaHref="#enquiry"
       />
 
       {/* ——— §2 Our Approach to Fees — copy beside the admission office ——— */}
@@ -239,38 +217,19 @@ export default function FeeStructurePage() {
               {rich(included.lede)}
             </p>
           </Reveal>
-          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:mt-12 lg:grid-cols-6 lg:gap-6">
-            {included.items.map((item, index) => {
-              const tint = TINTS[index % TINTS.length];
-              return (
-                <li
-                  key={item.slice(0, 24)}
-                  className={`lg:col-span-2 ${
-                    index === 3 ? "lg:col-start-2" : ""
-                  }`}
-                >
-                  <Reveal delay={(index % 3) * 90} className="h-full">
-                    <article
-                      className={`flex h-full flex-col p-5 sm:p-6 lg:p-7 ${CARD} ${tint.edge} ${tint.bar}`}
-                    >
-                      <span
-                        aria-hidden="true"
-                        className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-[1.125rem] ${tint.well}`}
-                      >
-                        <Icon
-                          name={INCLUDED_ICONS[index % INCLUDED_ICONS.length]}
-                          className="h-6 w-6"
-                        />
-                      </span>
-                      <p className="mt-5 break-words text-[0.9375rem] leading-[1.8] text-text-muted">
-                        {rich(item, STRONG.runIn)}
-                      </p>
-                    </article>
-                  </Reveal>
-                </li>
-              );
-            })}
-          </ul>
+          {/* A table rather than twelve cards: the school asked for the fee
+              page to read as tables throughout, and this is a two-column list
+              of item and description, which is what a table is for. */}
+          <Reveal delay={110}>
+            <DataTable
+              className="mx-auto mt-10 max-w-4xl lg:mt-12"
+              head={["Included in the fee", "What it covers"]}
+              rows={included.items.map((item) => {
+                const { title, body } = splitRunIn(item);
+                return [title || item, body];
+              })}
+            />
+          </Reveal>
           <Reveal delay={180}>
             <p className="mx-auto mt-10 max-w-3xl text-center text-[0.9375rem] leading-[1.85] text-text-muted md:text-base">
               {rich(included.closing)}
@@ -291,29 +250,35 @@ export default function FeeStructurePage() {
             />
           </Reveal>
           <Reveal delay={110}>
-            <div className="relative mx-auto mt-10 max-w-4xl lg:mt-12">
-              <span
-                aria-hidden="true"
-                className="absolute -bottom-3 -right-3 hidden h-full w-full rounded-[1.5rem] border-2 border-[#a8802f]/45 sm:block"
-              />
-              <div className="relative rounded-[1.5rem] border-2 border-[#a8802f]/35 bg-[#faf4e8] p-5 sm:p-8 lg:p-10">
-                <span
-                  aria-hidden="true"
-                  className="flex h-14 w-14 items-center justify-center rounded-[1.125rem] bg-surface text-[#87661f] shadow-card"
+            <DataTable
+              className="mx-auto mt-10 max-w-4xl lg:mt-12"
+              head={feeTable.head}
+              rows={feeTable.rows.map((row) => [
+                row.cls,
+                row.covers,
+                row.amount || "Shared on enquiry",
+              ])}
+            />
+          </Reveal>
+
+          <Reveal delay={150}>
+            <DataTable
+              className="mx-auto mt-6 max-w-4xl"
+              head={feeTable.separate.head}
+              rows={feeTable.separate.rows.map((row) => [row.item, row.note])}
+            />
+          </Reveal>
+
+          <Reveal delay={190}>
+            <div className="mx-auto mt-8 max-w-4xl space-y-3">
+              {byClass.body.map((paragraph) => (
+                <p
+                  key={paragraph.slice(0, 32)}
+                  className="text-[0.9375rem] leading-[1.85] text-text-muted"
                 >
-                  <Icon name="classroom" className="h-6 w-6" />
-                </span>
-                {byClass.body.map((paragraph, index) => (
-                  <p
-                    key={paragraph.slice(0, 32)}
-                    className={`text-[0.9375rem] leading-[1.85] text-text md:text-base ${
-                      index === 0 ? "mt-6" : "mt-4"
-                    }`}
-                  >
-                    {rich(paragraph)}
-                  </p>
-                ))}
-              </div>
+                  {rich(paragraph)}
+                </p>
+              ))}
             </div>
           </Reveal>
         </div>
@@ -344,28 +309,16 @@ export default function FeeStructurePage() {
             </div>
           </Reveal>
           <div className="lg:col-span-7">
-            <ul className="divide-y divide-hairline border-y border-hairline">
-              {payment.items.map((item, index) => (
-                <li key={item.slice(0, 24)}>
-                  <Reveal delay={index * 90}>
-                    <div className="flex items-start gap-4 py-5">
-                      <span
-                        aria-hidden="true"
-                        className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-pill bg-[#faf4e8] text-[#87661f]"
-                      >
-                        <Icon
-                          name={PAYMENT_ICONS[index % PAYMENT_ICONS.length]}
-                          className="h-4 w-4"
-                        />
-                      </span>
-                      <p className="break-words text-[0.9375rem] leading-[1.8] text-text-muted">
-                        {rich(item, STRONG.runIn)}
-                      </p>
-                    </div>
-                  </Reveal>
-                </li>
-              ))}
-            </ul>
+            <Reveal delay={110}>
+              <DataTable
+                className="mt-8"
+                head={["How payment works", "Detail"]}
+                rows={payment.items.map((item) => {
+                  const { title, body } = splitRunIn(item);
+                  return [title || item, body];
+                })}
+              />
+            </Reveal>
             <Reveal delay={270}>
               <p className="mt-6 text-[0.9375rem] leading-[1.85] text-text-muted md:text-base">
                 {rich(payment.closing)}
@@ -402,44 +355,15 @@ export default function FeeStructurePage() {
         </div>
       </section>
 
-      {/* ——— §7 Call-To-Action — the document's two contact actions ——— */}
-      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 text-center text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
-        <Wave className="z-20 text-bg" />
-        <Cover img={IMG.ctaCampus} sizes="100vw" decorative className="opacity-[0.28]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-pill bg-[radial-gradient(circle,rgba(214,165,63,0.24),transparent_70%)]"
-        />
-        <Reveal className={`relative ${CONTAINER}`}>
-          <span
-            aria-hidden="true"
-            className="mx-auto block h-[3px] w-16 rounded-pill bg-[#d6a53f]"
-          />
-          <h2 className="mx-auto mt-6 max-w-3xl text-[1.5rem] leading-[1.2] text-white sm:text-[1.75rem] md:text-[2rem] lg:text-[2.25rem] xl:text-[2.4rem]">
-            {rich(cta.h2, STRONG.headingDark)}
-          </h2>
-          <p className="mx-auto mt-5 max-w-2xl text-[0.9375rem] leading-[1.85] text-[#c2cfe4] md:text-base">
-            {rich(cta.body, STRONG.dark)}
-          </p>
-          <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row sm:gap-4">
-            <GoldLink href="/contact" className="w-full sm:w-auto">
-              {cta.buttons[0]}
-            </GoldLink>
-            {/* Secondary pill: gold border and gold-ink label. It carries the
-                gold-soft well so the gold ink keeps its contrast on navy. */}
-            <Link
-              href="/contact"
-              className="inline-flex w-full items-center justify-center gap-2 rounded-pill border-2 border-[#a8802f] bg-[#faf4e8] px-7 py-3 text-[0.9375rem] font-bold tracking-tight text-[#87661f] transition duration-200 hover:bg-white sm:w-auto"
-            >
-              {cta.buttons[1]}
-            </Link>
-          </div>
-        </Reveal>
-      </section>
+      {/* ——— §7 Call-To-Action — the document names two contact actions; the
+          first is now the form itself, and the second stays a link ——— */}
+      <EnquiryBand
+        image={IMG.ctaCampus}
+        h2={cta.h2}
+        body={cta.body}
+        formTitle={cta.buttons[0]}
+        formNote={cta.buttons[1]}
+      />
 
       {/* ——— §8 Internal links — the document's own onward suggestions ——— */}
       <section className="border-t border-hairline bg-bg-alt py-10 sm:py-12 lg:py-14">

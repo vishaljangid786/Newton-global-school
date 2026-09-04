@@ -12,6 +12,7 @@ import {
   roleTitle,
   type TestimonialRow,
 } from "@/lib/testimonials-store";
+import AdminDialog from "@/components/admin/AdminDialog";
 import TestimonialCreateForm from "./TestimonialCreateForm";
 import TestimonialRowActions from "./TestimonialRowActions";
 
@@ -46,12 +47,16 @@ export default async function TestimonialsPage() {
         eyebrow="Content"
         title="Testimonials"
         description="Voices from students, parents and teachers, shown on each campus page. Unpublish to hide a quote without deleting it."
+        action={
+          <AdminDialog
+            label="New testimonial"
+            title="New testimonial"
+            description="Published straight away. Unpublish later to hide it without deleting."
+          >
+            <TestimonialCreateForm audiences={audiences} />
+          </AdminDialog>
+        }
       />
-
-      <AdminCard>
-        <h2 className="mb-4 font-heading text-lg text-ink">New testimonial</h2>
-        <TestimonialCreateForm audiences={audiences} />
-      </AdminCard>
 
       <section>
         <h2 className="mb-3 font-heading text-lg text-ink">
@@ -59,9 +64,9 @@ export default async function TestimonialsPage() {
         </h2>
         {rows.length === 0 ? (
           <EmptyState>
-            No testimonials yet. Add a quote above and it will appear in the
-            campus page&apos;s &ldquo;What our school family says&rdquo;
-            section.
+            No testimonials yet. Use &ldquo;New testimonial&rdquo; and the quote
+            will appear in the home page slider and on its campus&apos;s own
+            page.
           </EmptyState>
         ) : (
           <div className="space-y-3">

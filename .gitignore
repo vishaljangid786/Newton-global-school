@@ -45,3 +45,9 @@ next-env.d.ts
 
 # scratch build dir used to verify without disturbing a running dev server
 .next-verify
+
+# Deploy: per-server overrides and the last-good-commit marker
+.env.deploy
+.deploy/
+.next.previous/
+.next.staging/

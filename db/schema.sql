@@ -136,6 +136,10 @@ ALTER TABLE branch_overrides
 -- Gallery images (admin-uploaded photos per campus; merged ahead of the
 -- static placeholder gallery on the public pages)
 -- ————————————————————————————————————————————————————————————————
+-- Photographs AND videos. The table keeps its original name so every existing
+-- row, index and foreign key survives; `media_type` is the discriminator and
+-- defaults to 'image', so rows written before videos existed stay correct.
+-- An existing database is brought up to date by `npm run db:migrate:video`.
 CREATE TABLE IF NOT EXISTS gallery_images (
   id         INT UNSIGNED NOT NULL AUTO_INCREMENT,
   branch_ref VARCHAR(40) NOT NULL,
@@ -143,13 +147,21 @@ CREATE TABLE IF NOT EXISTS gallery_images (
   -- the four original values are kept so older rows still validate.
   category   ENUM('Campus', 'Classrooms', 'Library', 'Labs', 'Sports', 'Pre-Primary', 'Transport', 'Assembly', 'Our Team', 'Annual Day', 'Trips') NOT NULL,
   caption    VARCHAR(200) NOT NULL,
+  media_type ENUM('image', 'video') NOT NULL DEFAULT 'image',
+  -- Photographs: the picture itself. Videos: the poster frame, which may be
+  -- NULL for an uploaded clip (the player shows its own first frame instead).
   -- Site-relative path (e.g. /uploads/gallery-….webp) or an absolute URL.
-  image_url  VARCHAR(500) NOT NULL,
+  image_url  VARCHAR(500) NULL,
+  -- Videos only: an /uploads/… file path, or a YouTube video id.
+  video_url  VARCHAR(500) NULL,
+  -- Videos only: how to read video_url.
+  video_source ENUM('file', 'youtube') NULL,
   created_by INT UNSIGNED NULL,
   created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   KEY idx_gallery_branch (branch_ref),
   KEY idx_gallery_category (category),
+  KEY idx_gallery_media (media_type),
   CONSTRAINT fk_gallery_user FOREIGN KEY (created_by) REFERENCES users (id) ON DELETE SET NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 

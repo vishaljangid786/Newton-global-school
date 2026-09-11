@@ -353,6 +353,76 @@ export function Cover({
 }
 
 
+/* ——— Photo backdrop ————————————————————————————————————————————
+ * A photograph behind a dark band, plus the scrim that keeps white text on it
+ * readable, plus the option to pin it so the page scrolls over the picture.
+ * ——————————————————————————————————————————————————————————— */
+
+/**
+ * How hard the navy scrim presses on the photograph.
+ *
+ * The bands used to run the picture at 18-24% opacity UNDER a 95% navy wash,
+ * which is two scrims doing the same job — the photograph was effectively
+ * invisible and the section read as flat colour. One scrim, tuned per band,
+ * shows the campus and still lands white text on a dark ground.
+ *
+ *   "veil"  — text sits directly on the photo across the whole band.
+ *   "sheer" — the band's text is in one column, so the picture can come up.
+ */
+export type ScrimStrength = "veil" | "sheer";
+
+const SCRIM: Record<ScrimStrength, { image: string; wash: string }> = {
+  veil: {
+    image: "opacity-[0.55]",
+    wash: "bg-[linear-gradient(105deg,rgba(0,19,68,0.92),rgba(0,12,46,0.84))]",
+  },
+  sheer: {
+    image: "opacity-[0.7]",
+    wash: "bg-[linear-gradient(105deg,rgba(0,19,68,0.88),rgba(0,12,46,0.76))]",
+  },
+};
+
+/**
+ * The photograph and its scrim, as the first children of a `relative` band.
+ *
+ * `fixed` pins the picture to the viewport so the band scrolls over it. That
+ * needs a CSS background rather than next/image — `background-attachment` has
+ * no equivalent on an <img> — so a pinned backdrop gives up image optimisation
+ * and is worth spending only on the two or three bands that carry the effect.
+ *
+ * Pinning itself lives in the `.bg-pinned` class in globals.css, which limits
+ * it to wide screens with a real pointer (it is long-broken on iOS Safari) and
+ * drops it under prefers-reduced-motion.
+ */
+export function PhotoBackdrop({
+  img,
+  fixed = false,
+  strength = "veil",
+}: {
+  img: Img;
+  fixed?: boolean;
+  strength?: ScrimStrength;
+}) {
+  const scrim = SCRIM[strength];
+  return (
+    <>
+      {fixed ? (
+        <div
+          aria-hidden="true"
+          style={{ backgroundImage: `url(${img.src})` }}
+          className={`bg-pinned pointer-events-none absolute inset-0 bg-cover bg-center ${scrim.image}`}
+        />
+      ) : (
+        <Cover img={img} sizes="100vw" decorative className={scrim.image} />
+      )}
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-0 ${scrim.wash}`}
+      />
+    </>
+  );
+}
+
 /* ——— Shared section furniture ————————————————————————————————— */
 
 /**
@@ -372,13 +442,28 @@ export const CONTAINER =
 export const CONTAINER_FLUID =
   "mx-auto w-full px-4 sm:px-6 lg:px-10 xl:px-14 2xl:px-20";
 /**
- * One section fills the screen, so only one is in view at a time. svh rather
- * than vh keeps mobile browser chrome from shifting it, and min- (not fixed)
- * height lets the long sections — twelve facility tiles, the age table — grow
- * past the fold instead of clipping.
+ * The vertical rhythm every band shares.
+ *
+ * This used to be `min-h-[calc(100svh-var(--header-h))]` with `justify-center`
+ * — one section per screen. That sounds tidy and is the single reason the page
+ * read as badly spaced: a section's padding was not a spacing decision at all,
+ * it was whatever the viewport had left over after the content. On a 1440x900
+ * laptop the same page handed the About band 393px of dead air and the
+ * Facilities band 182px, and both numbers changed again on the next screen
+ * height. Short sections floated in a void, long ones were cramped, and no two
+ * gaps down the page agreed with each other.
+ *
+ * A fixed ramp instead: 56 / 72 / 88 / 104px. Every band on every page now
+ * breathes by the same amount, the rhythm holds at every screen height, and a
+ * section is exactly as tall as what is inside it.
  */
-export const SECTION =
-  "flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center py-12 sm:py-14 lg:py-16 xl:py-20";
+export const SECTION = "py-14 sm:py-18 lg:py-22 xl:py-26";
+
+/**
+ * Gap between a section's heading block and the grid or list under it.
+ * One constant so the twenty-odd call sites cannot drift apart again.
+ */
+export const HEAD_GAP = "mt-10 lg:mt-12";
 /** Soft, generously rounded card — the school-warm counterpart to a panel. */
 export const CARD =
   "rounded-[1.25rem] border border-hairline bg-surface shadow-card transition duration-300 hover:-translate-y-1 hover:shadow-card-hover motion-reduce:transition-none motion-reduce:hover:translate-y-0";
@@ -468,8 +553,17 @@ export function DataTable({
   className?: string;
 }) {
   return (
+    /*
+     * `min-w-0` is load-bearing, not tidying. The table below sets
+     * `min-w-[36rem]` so its columns stay legible, and this box is meant to
+     * scroll it. But a grid or flex item defaults to `min-width: auto`, which
+     * means "never shrink below your content" — so when this lands in a grid
+     * track, the 576px table pushes the track, the track pushes the page, and
+     * the scroll box never scrolls because it was never the narrow one. That
+     * is what made /fee-structure 594px wide inside a 320px phone.
+     */
     <div
-      className={`overflow-x-auto rounded-[1.25rem] border border-hairline bg-surface shadow-card ${className}`}
+      className={`min-w-0 overflow-x-auto rounded-[1.25rem] border border-hairline bg-surface shadow-card ${className}`}
     >
       <table className="w-full min-w-[36rem] border-collapse text-left text-[0.875rem]">
         {caption ? (
@@ -690,20 +784,36 @@ export function PageHero({
   };
 }) {
   return (
-    <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-surface pb-8 pt-4 sm:pb-10 sm:pt-6 lg:pb-14 lg:pt-8">
+    /*
+     * Padded, not screen-height. This carried the same
+     * `min-h-[calc(100svh-var(--header-h))]` the section band used to, and it
+     * went just as wrong: /about's masthead is a breadcrumb, an eyebrow and one
+     * line of h1 — about 60px of copy — stretched over an 820px band with ~350px
+     * of empty white under it before the page began. A masthead should be as
+     * tall as its own contents plus air, and the pages whose heroes do carry a
+     * paragraph and two buttons still come out substantial on the same ramp.
+     */
+    <section className="relative flex flex-col justify-center overflow-hidden bg-surface py-12 sm:py-14 lg:py-16 xl:py-20">
       <div className={`relative ${CONTAINER}`}>
         <div>
           <div className="relative grid items-center gap-8 md:grid-cols-12 md:gap-6">
             <div className="md:col-span-7">
               {crumbs ? <Breadcrumbs items={crumbs} className="mb-4" /> : null}
               {/* Rule and sub-heading share a line, so the rule reads as an
-                  eyebrow marker rather than floating on its own. */}
+                  eyebrow marker rather than floating on its own.
+
+                  The words go in their own <span>. `rich()` returns a LIST of
+                  nodes — one per `**bold**` run — and dropping that list
+                  straight into a flex row made every run its own flex item, so
+                  a two-phrase eyebrow broke into columns with a 10px gap
+                  stranded mid-sentence. One child, one flex item, one
+                  sentence that wraps normally. */}
               <p className="flex items-start gap-2.5 text-[0.75rem] font-semibold uppercase leading-[1.5] tracking-[0.1em] text-[#154a8a] sm:text-[0.6875rem]">
                 <span
                   aria-hidden="true"
                   className="mt-[0.45rem] h-[2px] w-8 shrink-0 rounded-pill bg-[#a8802f]"
                 />
-                {sub ? rich(sub, "font-bold") : null}
+                <span className="min-w-0">{sub ? rich(sub, "font-bold") : null}</span>
               </p>
               <h1 className="mt-4 text-[clamp(1.4rem,1rem+1.2vw,2.35rem)] leading-[1.2] text-ink">
                 {rich(h1, "font-bold text-[#154a8a]")}
@@ -839,7 +949,7 @@ export function DoodleWash({ className = "" }: { className?: string }) {
  * naming `transform` in an arbitrary transition would animate nothing.
  * ——————————————————————————————————————————————————————————— */
 
-export type BtnTone = "gold" | "teal" | "outline" | "ghost";
+export type BtnTone = "gold" | "teal" | "outline" | "light" | "ghost";
 
 export const BTN_BASE =
   "group/btn relative isolate inline-flex items-center justify-center gap-2 overflow-hidden rounded-pill " +
@@ -862,10 +972,25 @@ export const BTN_SIZE = {
 
 /** face = resting colour, wipe = the shade that fills in on hover. */
 const TONE: Record<BtnTone, { face: string; wipe: string }> = {
+  /*
+   * White label on gold, and the gold darkened to carry it.
+   *
+   * The label was navy on #a8802f. That measures 4.9:1 so it passed on paper,
+   * but dark-on-mid-gold is genuinely hard to pick out at 13px — which is the
+   * call that came back from looking at the real button.
+   *
+   * White on #a8802f would have been worse, not better: 3.62:1, under the 4.5:1
+   * AA floor for text this size. So the face drops to #8a6620, the same crest
+   * hue two steps down, where white measures 5.25:1 — a clearer label than
+   * either of the two options at the old lightness.
+   *
+   * The wipe can go back to being DARKER than the face now. It was lighter
+   * only because navy text needed the extra contrast on hover; white wants the
+   * opposite, and #6d5218 gives it 7.32:1.
+   */
   gold: {
-    face: "bg-[#a8802f] text-[#001344] shadow-[0_8px_18px_-10px_rgba(168,128,47,0.85)] hover:shadow-[0_14px_24px_-10px_rgba(168,128,47,0.9)]",
-    /* lighter, not darker — navy on #8a6620 is only 3.4:1 */
-    wipe: "bg-[#c19a45]",
+    face: "bg-[#8a6620] text-white shadow-[0_8px_18px_-10px_rgba(138,102,32,0.85)] hover:shadow-[0_14px_24px_-10px_rgba(138,102,32,0.9)]",
+    wipe: "bg-[#6d5218]",
   },
   teal: {
     face: "bg-[#154a8a] text-white shadow-[0_8px_18px_-10px_rgba(21,74,138,0.85)] hover:shadow-[0_14px_24px_-10px_rgba(21,74,138,0.9)]",
@@ -874,6 +999,11 @@ const TONE: Record<BtnTone, { face: string; wipe: string }> = {
   outline: {
     face: "border-2 border-[#154a8a] text-[#154a8a] hover:text-white",
     wipe: "bg-[#154a8a]",
+  },
+  /* The outline tone for dark grounds: navy-on-navy is invisible there. */
+  light: {
+    face: "border-2 border-white/70 text-white hover:text-[#001344]",
+    wipe: "bg-white",
   },
   ghost: {
     face: "border-2 border-white/45 text-white",
@@ -885,6 +1015,7 @@ export const BTN_TONE: Record<BtnTone, string> = {
   gold: TONE.gold.face,
   teal: TONE.teal.face,
   outline: TONE.outline.face,
+  light: TONE.light.face,
   ghost: TONE.ghost.face,
 };
 

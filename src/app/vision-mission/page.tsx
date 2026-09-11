@@ -4,10 +4,10 @@ import {
   CARD,
   CONTAINER,
   CONTAINER_FLUID,
-  Cover,
   Icon,
   type Img,
   PageHero,
+  PhotoBackdrop,
   rich,
   RunInText,
   SECTION,
@@ -75,11 +75,7 @@ export default function VisionMissionPage() {
       {/* ——— §2 Our Vision — the navy band the section deserves ——— */}
       <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg" />
-        <Cover img={IMG.heroBanner} sizes="100vw" decorative className="opacity-[0.14]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,rgba(0,19,68,0.96),rgba(0,19,68,0.8))]"
-        />
+        <PhotoBackdrop img={IMG.heroBanner} fixed />
         <div className={`relative ${CONTAINER_FLUID} max-w-4xl`}>
           <Reveal>
             <SectionTitle

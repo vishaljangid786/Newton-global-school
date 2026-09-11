@@ -33,6 +33,24 @@ export const resultStats: readonly ResultStat[] = [
   { value: `XX+`, label: `Years of Educational Excellence in Kotputli` },
 ];
 
+/**
+ * Whether the figures above are real yet.
+ *
+ * They are not invented here on purpose — a school's board pass percentage is
+ * a matter of public record and guessing at one would be publishing a false
+ * claim. But leaving the placeholders on screen was the other failure: the
+ * home page's loudest band rendered "XX%" at 96px, three times across, which
+ * reads as an unfinished site rather than as a school waiting on its results.
+ *
+ * So the page asks this before it prints them, and shows the (entirely
+ * factual) achievement areas instead while the answer is no. Fill in the real
+ * numbers above and the figures return on the next request with no code
+ * change.
+ */
+export const hasRealStats: boolean = !resultStats.some((stat) =>
+  /X/.test(stat.value)
+);
+
 export interface BoardResult {
   exam: string;
   detail: string;

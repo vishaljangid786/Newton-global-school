@@ -15,8 +15,11 @@ import { branchLabel } from "@/lib/format";
 
 export const metadata: Metadata = {
   title: "Careers",
+  /* Was "Newton Global School, Jaipur — … across our three campuses": the
+     template's city and the template's campus count, printed as this page's
+     search-result snippet. */
   description:
-    "Teaching and staff careers at Newton Global School, Jaipur — browse open positions across our three campuses and apply online.",
+    "Teaching and staff careers at Newton Global School, Sangteda, Kotputli — browse open positions and apply online.",
 };
 
 /** §4.8.2 — why work here: three benefit cards. */

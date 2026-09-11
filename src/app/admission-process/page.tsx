@@ -10,6 +10,7 @@ import {
   type Img,
   PageHero,
   Photo,
+  PhotoBackdrop,
   rich,
   SECTION,
   SectionTitle,
@@ -333,11 +334,7 @@ export default function AdmissionProcessPage() {
       {/* ——— When to Apply — navy band, one panel per paragraph ——— */}
       <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] pb-16 pt-20 sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28">
         <Wave className="z-20 text-bg-alt" />
-        <Cover img={IMG.timelineCampus} sizes="100vw" decorative className="opacity-[0.18]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,rgba(0,19,68,0.96),rgba(0,19,68,0.8))]"
-        />
+        <PhotoBackdrop img={IMG.timelineCampus} fixed />
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -left-20 bottom-0 h-72 w-72 rounded-pill bg-[radial-gradient(circle,rgba(214,165,63,0.18),transparent_70%)]"

@@ -75,7 +75,12 @@ export default async function BranchesPage() {
                       {branch.area}
                     </p>
                     <p className="mt-3 text-sm text-text">{branch.address}</p>
-                    <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-4">
+                    {/* Four columns only from lg. `sm` is 30rem in this theme,
+                        so `sm:grid-cols-4` split the card into four ~80px
+                        tracks from 480px up — and "Established", one 12px
+                        uppercase word with letter-spacing, needs 84px. It had
+                        nowhere to wrap and was clipped by its own box. */}
+                    <dl className="mt-5 grid grid-cols-2 gap-x-4 gap-y-4 lg:grid-cols-4">
                       <div>
                         <dt className="text-xs font-semibold uppercase tracking-wide text-text-muted">
                           Grades Offered

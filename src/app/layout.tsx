@@ -48,8 +48,16 @@ export const metadata: Metadata = {
     template: `%s | ${site.name}`,
     default: `${site.name} — ${site.tagline}`,
   },
+  /*
+   * The site-wide description — what a search result prints under the link
+   * for every page that does not set its own. It said "a Jaipur school group
+   * with three campuses — City Center, Green Valley and Riverside", which was
+   * the original template's: wrong city, and three campus names this school
+   * does not have. Replaced with what the home page's own copy says, which is
+   * the school's own wording from the source document.
+   */
   description:
-    "Newton Global School is a Jaipur school group with three campuses — City Center, Green Valley and Riverside — nurturing learners since 1998.",
+    "Newton Global School is an English-medium RBSE school in Sangteda, Kotputli, on Babera Road near NH-8 — teaching Nursery to Senior Secondary (Class 12).",
 };
 
 export default function RootLayout({

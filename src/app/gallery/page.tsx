@@ -30,8 +30,16 @@ const IMG = {
 
 export default async function GalleryPage() {
   const items = await getMergedGalleryItems();
-  /* The mosaic needs a real file to lay out; tone-only placeholders have none. */
-  const withPhotos = items.filter((item) => Boolean(item.imageUrl));
+  /*
+   * The mosaic needs something to lay out. A photograph needs its file; a
+   * video needs either a poster or the clip itself, since a poster-less upload
+   * previews from the <video> element. Tone-only placeholders have neither and
+   * are dropped.
+   */
+  const withMedia = items.filter(
+    (item) => Boolean(item.imageUrl) || Boolean(item.videoUrl)
+  );
+  const videoCount = withMedia.filter((i) => i.mediaType === "video").length;
 
   return (
     <>
@@ -41,7 +49,11 @@ export default async function GalleryPage() {
         crumbs={[{ label: "About Us", href: "/about" }, { label: "Gallery" }]}
         h1={`Gallery`}
         sub={`Life at Newton Global School, Sangteda, Kotputli`}
-        body={`Every photograph here was taken on our own campus. Filter by what you want to see, then open any picture full screen.`}
+        body={
+          videoCount > 0
+            ? `Every photograph and video here was taken on our own campus. Filter by what you want to see, then open anything full screen.`
+            : `Every photograph here was taken on our own campus. Filter by what you want to see, then open any picture full screen.`
+        }
       />
 
       <section className={`bg-bg ${SECTION}`}>
@@ -49,12 +61,12 @@ export default async function GalleryPage() {
           <Reveal>
             <SectionTitle
               eyebrow="Photo Gallery"
-              title={`${withPhotos.length} Moments From Our Campus`}
+              title={`${withMedia.length} Moments From Our Campus`}
               align="center"
             />
           </Reveal>
           <Reveal delay={110} className="mt-10 lg:mt-12">
-            <MosaicGallery items={withPhotos} />
+            <MosaicGallery items={withMedia} />
           </Reveal>
         </div>
       </section>

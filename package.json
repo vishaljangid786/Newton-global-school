@@ -11,7 +11,8 @@
     "db:seed": "node db/seed.mjs",
     "db:seed:gallery": "node db/seed-gallery.mjs",
     "db:seed:blog": "node db/seed-blog.mjs",
-    "deploy": "bash deploy.sh"
+    "deploy": "bash deploy.sh",
+    "db:migrate:video": "node db/migrate-gallery-video.mjs"
   },
   "dependencies": {
     "jose": "^6.2.3",

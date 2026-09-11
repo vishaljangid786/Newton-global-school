@@ -392,6 +392,162 @@
   animation: img-skeleton-sweep 1.5s linear infinite;
 }
 
+/* ——— Home hero ————————————————————————————————————————————————
+ * A navy masthead with a fair amount of movement in it. Everything here is
+ * transform- or opacity-only so it composites on the GPU rather than forcing
+ * layout, and every animation stops dead under prefers-reduced-motion.
+ * ——————————————————————————————————————————————————————————— */
+
+/* Badges drift. Small amplitude — it should read as breathing, not motion. */
+@keyframes ngs-float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
+/*
+ * In `components`, not unlayered.
+ *
+ * `position: relative` here is what the Chip's tooltip is positioned against,
+ * so it has to stay — but written outside a layer it also beat Tailwind's own
+ * `absolute`, because unlayered CSS outranks everything in @layer regardless of
+ * specificity or source order. Anything that was `class="ngs-float absolute"`
+ * silently came out `relative`: the hero's six school motifs, told to ring the
+ * figure, collapsed into a flex row along the bottom edge instead.
+ *
+ * Tailwind emits its utilities in the `utilities` layer, which is declared
+ * after `components`, so from here `absolute` wins the way it reads.
+ */
+/*
+ * Pinned section backdrop — the page scrolls over the photograph.
+ *
+ * A named class rather than Tailwind's `bg-fixed` behind an arbitrary media
+ * variant: `[@media(hover:hover)_and_(min-width:48rem)]:bg-fixed` has to survive
+ * Tailwind's escaping to come out as valid CSS, and it does not — the emitted
+ * rule loses the space and reads `(hover:hover)and(...)`, which fails to parse
+ * and takes the whole stylesheet down with it. Written out, it is also simply
+ * easier to read.
+ *
+ * Scroll is the default and the fallback. Pinning is switched on only for
+ * `(hover: hover)` pointers on a reasonably wide screen: `background-
+ * attachment: fixed` is long-broken on iOS Safari, where it resizes the image
+ * to the viewport and judders or drops out on scroll. It is dropped again under
+ * prefers-reduced-motion, since the parallax is exactly the kind of movement
+ * that setting asks to be spared.
+ */
+@layer components {
+  .bg-pinned {
+    background-attachment: scroll;
+  }
+
+  @media (hover: hover) and (min-width: 48rem) {
+    .bg-pinned {
+      background-attachment: fixed;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bg-pinned {
+      background-attachment: scroll;
+    }
+  }
+}
+
+@layer components {
+  .ngs-float {
+    position: relative;
+    animation: ngs-float 5.5s ease-in-out infinite;
+    animation-delay: inherit;
+  }
+}
+
+/* The aurora behind the navy: two huge blooms wandering slowly. */
+@keyframes ngs-aurora {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(4%, -3%, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-3%, 4%, 0) scale(0.96);
+  }
+}
+
+.ngs-aurora {
+  animation: ngs-aurora 22s ease-in-out infinite;
+  will-change: transform;
+}
+
+/* Concentric rings behind the pupil, turning at different speeds. */
+@keyframes ngs-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.ngs-spin-slow {
+  animation: ngs-spin 34s linear infinite;
+}
+.ngs-spin-rev {
+  animation: ngs-spin 26s linear infinite reverse;
+}
+
+/* Entrance: each line of the masthead rises in, staggered by inline delay. */
+@keyframes ngs-rise {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ngs-rise {
+  opacity: 0;
+  animation: ngs-rise 0.75s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+  animation-delay: inherit;
+}
+
+/* The pupil settles in from below once the copy has landed. */
+@keyframes ngs-rise-figure {
+  from {
+    opacity: 0;
+    transform: translateY(42px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.ngs-rise-figure {
+  opacity: 0;
+  animation: ngs-rise-figure 1.1s cubic-bezier(0.22, 1, 0.36, 1) 0.25s forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ngs-float,
+  .ngs-aurora,
+  .ngs-spin-slow,
+  .ngs-spin-rev {
+    animation: none;
+  }
+  .ngs-rise,
+  .ngs-rise-figure {
+    opacity: 1;
+    animation: none;
+    transform: none;
+  }
+}
+
 @keyframes img-skeleton-sweep {
   from {
     background-position: 170% 0;

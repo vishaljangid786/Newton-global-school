@@ -4,9 +4,9 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import {
   CONTAINER_FLUID,
-  Cover,
   Icon,
   type Img,
+  PhotoBackdrop,
   SECTION,
   Wave,
 } from "@/components/site/school-kit";
@@ -125,11 +125,7 @@ export default async function BlogPostPage({ params }: PageProps) {
           the title sit tucked under the nav. */}
       <section className="relative flex flex-col justify-end overflow-hidden bg-[#001344] pb-16 pt-[calc(var(--header-h)+3.5rem)] text-white sm:pb-20 sm:pt-[calc(var(--header-h)+5rem)] lg:pt-[calc(var(--header-h)+6.5rem)]">
         <Wave className="z-20 text-bg" />
-        <Cover img={BANNER} sizes="100vw" decorative className="opacity-[0.18]" />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(115deg,rgba(0,19,68,0.95),rgba(0,12,46,0.82))]"
-        />
+        <PhotoBackdrop img={BANNER} />
         <div className={`relative ${CONTAINER_FLUID} max-w-3xl`}>
           <Breadcrumbs
             items={[{ label: "Blog", href: "/blog" }, { label: post.title }]}

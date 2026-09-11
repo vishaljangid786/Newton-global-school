@@ -51,3 +51,8 @@ next-env.d.ts
 .deploy/
 .next.previous/
 .next.staging/
+
+# Source document for the site copy — kept locally, not in the repo.
+# Code comments across src/data/pages/ still cite it as the authority for the
+# wording; keep your own copy somewhere safe.
+*.docx

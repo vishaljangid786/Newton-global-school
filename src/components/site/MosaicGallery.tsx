@@ -4,6 +4,7 @@ import Image from "next/image";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import type { GalleryItem } from "@/data/types";
+import { youTubeEmbedUrl, youTubeWatchUrl } from "@/lib/youtube";
 
 /**
  * Tile shapes repeat on a 12-step cycle. Two big squares, a couple of wide
@@ -26,15 +27,55 @@ const SHAPES = [
   "",
 ] as const;
 
-export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
-  const categories = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const item of items) counts.set(item.category, (counts.get(item.category) ?? 0) + 1);
-    return [...counts.entries()].sort((a, b) => b[1] - a[1]);
-  }, [items]);
+/** Play triangle, used on every video tile and nowhere else. */
+function PlayBadge({ big = false }: { big?: boolean }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={`pointer-events-none absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-pill bg-[#001344]/55 text-white ring-1 ring-white/40 backdrop-blur-[2px] transition duration-300 group-hover:scale-110 group-hover:bg-[#8a6620] motion-reduce:transition-none motion-reduce:group-hover:scale-100 ${
+        big ? "h-16 w-16" : "h-11 w-11"
+      }`}
+    >
+      <svg viewBox="0 0 24 24" fill="currentColor" className={big ? "ml-1 h-7 w-7" : "ml-0.5 h-5 w-5"}>
+        <path d="M8 5.5v13l11-6.5z" />
+      </svg>
+    </span>
+  );
+}
 
+/** Photos / Videos / All — the top-level split above the category chips. */
+type MediaTab = "All" | "Photos" | "Videos";
+
+export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
+  const [tab, setTab] = useState<MediaTab>("All");
   const [active, setActive] = useState<string>("All");
   const [lightbox, setLightbox] = useState<number | null>(null);
+
+  const counts = useMemo(() => {
+    const videos = items.filter((i) => i.mediaType === "video").length;
+    return { all: items.length, videos, photos: items.length - videos };
+  }, [items]);
+
+  /*
+   * The media tab narrows first, and the category chips count within it — so
+   * "Sports 3" under Videos means three sports videos, not three sports
+   * photographs of which none is a video.
+   */
+  const inTab = useMemo(
+    () =>
+      tab === "All"
+        ? items
+        : items.filter((i) =>
+            tab === "Videos" ? i.mediaType === "video" : i.mediaType !== "video",
+          ),
+    [items, tab],
+  );
+
+  const categories = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const item of inTab) map.set(item.category, (map.get(item.category) ?? 0) + 1);
+    return [...map.entries()].sort((a, b) => b[1] - a[1]);
+  }, [inTab]);
   /*
    * Rendering all 156 tiles at once put ~1,500 srcset URLs and 156 <img>
    * elements into one document. The whole set still filters and paginates
@@ -44,8 +85,8 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
   const [limit, setLimit] = useState(PAGE);
 
   const shown = useMemo(
-    () => (active === "All" ? items : items.filter((i) => i.category === active)),
-    [items, active],
+    () => (active === "All" ? inTab : inTab.filter((i) => i.category === active)),
+    [inTab, active],
   );
   const visible = useMemo(() => shown.slice(0, limit), [shown, limit]);
 
@@ -61,7 +102,18 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
   useEffect(() => {
     if (lightbox === null) return;
     const onKey = (event: KeyboardEvent) => {
-      if (event.key === "Escape") setLightbox(null);
+      if (event.key === "Escape") {
+        setLightbox(null);
+        return;
+      }
+      /*
+       * Left/Right belong to the video player while it has focus — they seek
+       * five seconds, which is what someone pressing them on a playing clip
+       * means. Paging to the next item at the same time would rip the video
+       * out from under them. Photographs keep the old behaviour.
+       */
+      const target = event.target as HTMLElement | null;
+      if (target && target.closest("video, iframe")) return;
       if (event.key === "ArrowRight") move(1);
       if (event.key === "ArrowLeft") move(-1);
     };
@@ -106,9 +158,62 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
 
   return (
     <div>
+      {/* ——— Photos / Videos tabs ———
+          Only rendered once there is something in both columns: a school with
+          no videos yet should not be shown an empty Videos tab, and one with
+          only videos does not need a Photos tab either. */}
+      {counts.videos > 0 && counts.photos > 0 ? (
+        <div
+          role="tablist"
+          aria-label="Filter by media type"
+          className="mx-auto mb-6 flex w-fit items-center gap-1 rounded-pill border border-hairline bg-bg-alt p-1"
+        >
+          {(
+            [
+              ["All", counts.all],
+              ["Photos", counts.photos],
+              ["Videos", counts.videos],
+            ] as const
+          ).map(([name, count]) => (
+            <button
+              key={name}
+              type="button"
+              role="tab"
+              aria-selected={tab === name}
+              onClick={() => {
+                setTab(name);
+                /* The chosen category may not exist inside the new tab. */
+                setActive("All");
+                setLightbox(null);
+                setLimit(PAGE);
+              }}
+              className={`inline-flex items-center gap-2 rounded-pill px-5 py-2 text-[0.8125rem] font-bold transition duration-200 sm:text-sm ${
+                tab === name
+                  ? "bg-[#001344] text-white shadow-card"
+                  : "text-text-muted hover:text-[#87661f]"
+              }`}
+            >
+              {name === "Videos" ? (
+                <svg viewBox="0 0 24 24" aria-hidden="true" className="h-3.5 w-3.5" fill="currentColor">
+                  <path d="M8 5.5v13l11-6.5z" />
+                </svg>
+              ) : null}
+              {name}
+              <span
+                className={`rounded-pill px-1.5 py-0.5 text-[0.65rem] leading-none ${
+                  tab === name ? "bg-[#d6a53f] text-[#001344]" : "bg-surface text-faint"
+                }`}
+              >
+                {count}
+              </span>
+            </button>
+          ))}
+        </div>
+      ) : null}
+
       {/* ——— Filter rail ——— */}
       <div className="flex flex-wrap items-center justify-center gap-2.5">
-        {chip("All", items.length, active === "All")}
+        {chip("All", inTab.length, active === "All")}
         {categories.map(([name, count]) => chip(name, count, active === name))}
       </div>
 
@@ -123,15 +228,33 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
               type="button"
               onClick={() => setLightbox(index)}
               className="absolute inset-0 h-full w-full cursor-zoom-in text-left focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-[#d6a53f]"
-              aria-label={`Open photo: ${item.caption}`}
+              aria-label={`${item.mediaType === "video" ? "Play video" : "Open photo"}: ${item.caption}`}
             >
-              <Image
-                src={item.imageUrl ?? ""}
-                alt={item.caption}
-                fill
-                sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
-                className="img-skeleton object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
-              />
+              {/*
+                A video with no poster (an uploaded clip whose cover image was
+                left blank) previews as the <video> element itself at
+                preload="metadata" — the browser pulls a frame, not the file.
+                Everything else, photographs and YouTube alike, has a still.
+              */}
+              {item.mediaType === "video" && !item.imageUrl ? (
+                <video
+                  src={item.videoUrl}
+                  muted
+                  playsInline
+                  preload="metadata"
+                  aria-hidden="true"
+                  className="h-full w-full bg-bg-alt object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                />
+              ) : (
+                <Image
+                  src={item.imageUrl ?? ""}
+                  alt={item.caption}
+                  fill
+                  sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 22vw"
+                  className="img-skeleton object-cover transition-transform duration-[900ms] ease-[cubic-bezier(0.22,1,0.36,1)] group-hover:scale-[1.08] motion-reduce:transition-none motion-reduce:group-hover:scale-100"
+                />
+              )}
+              {item.mediaType === "video" ? <PlayBadge /> : null}
               {/* Caption rides up out of the bottom edge on hover. */}
               <span
                 aria-hidden="true"
@@ -152,7 +275,9 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
 
       {shown.length === 0 ? (
         <p className="mt-10 text-center text-sm text-text-muted">
-          No photographs in this category yet.
+          {tab === "Videos"
+            ? "No videos in this category yet."
+            : "No photographs in this category yet."}
         </p>
       ) : null}
 
@@ -224,20 +349,65 @@ export default function MosaicGallery({ items }: { items: GalleryItem[] }) {
                 without it it shrinks to its caption and the picture with it. */}
             <figure className="flex h-full w-full max-w-5xl flex-col items-center justify-center">
               <div className="relative min-h-0 w-full flex-1">
-                <Image
-                  src={current.imageUrl ?? ""}
-                  alt={current.caption}
-                  fill
-                  sizes="100vw"
-                  className="object-contain"
-                  priority
-                />
+                {/*
+                  Three players, one slot.
+
+                  YouTube goes in an iframe on the -nocookie host, and only
+                  once the tile has been opened — an iframe rendered with the
+                  grid would have every video on the page contacting YouTube
+                  before anyone pressed anything.
+
+                  An uploaded clip gets the browser's own <video> controls.
+                  `key` is the item id so that moving to the next video swaps
+                  the source instead of leaving the previous one playing: React
+                  would otherwise reuse the element and keep its media state.
+                */}
+                {current.mediaType === "video" && current.videoSource === "youtube" && current.videoUrl ? (
+                  <iframe
+                    key={current.id}
+                    src={youTubeEmbedUrl(current.videoUrl)}
+                    title={current.caption}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                    allowFullScreen
+                    referrerPolicy="strict-origin-when-cross-origin"
+                    className="absolute inset-0 h-full w-full rounded-[0.75rem] border-0 bg-black"
+                  />
+                ) : current.mediaType === "video" && current.videoUrl ? (
+                  <video
+                    key={current.id}
+                    src={current.videoUrl}
+                    poster={current.imageUrl}
+                    controls
+                    autoPlay
+                    playsInline
+                    className="absolute inset-0 h-full w-full rounded-[0.75rem] bg-black object-contain"
+                  />
+                ) : (
+                  <Image
+                    src={current.imageUrl ?? ""}
+                    alt={current.caption}
+                    fill
+                    sizes="100vw"
+                    className="object-contain"
+                    priority
+                  />
+                )}
               </div>
               <figcaption className="mt-4 max-w-2xl text-center">
                 <span className="block text-[0.6875rem] font-bold uppercase tracking-[0.09em] text-[#d6a53f]">
                   {current.category}
                 </span>
                 <span className="mt-1 block text-sm text-white">{current.caption}</span>
+                {current.mediaType === "video" && current.videoSource === "youtube" && current.videoUrl ? (
+                  <a
+                    href={youTubeWatchUrl(current.videoUrl)}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="mt-2 inline-block text-[0.75rem] font-semibold text-[#d6a53f] underline underline-offset-2 hover:text-white"
+                  >
+                    Watch on YouTube
+                  </a>
+                ) : null}
               </figcaption>
             </figure>
 

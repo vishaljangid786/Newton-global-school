@@ -11,8 +11,9 @@ import {
   Icon,
   type IconName,
   type Img,
-  PageHero,
   Photo,
+  PhotoBackdrop,
+  HEAD_GAP,
   rich,
   SECTION,
   SectionTitle,
@@ -22,13 +23,16 @@ import {
   TINTS,
 } from "@/components/site/school-kit";
 import EnquiryBand from "@/components/site/EnquiryBand";
+import HomeHero, { type HighlightChip } from "@/components/site/HomeHero";
 import Reveal from "@/components/ui/Reveal";
 import { getUpcomingEvents } from "@/data/events";
 import { getAllNotices } from "@/data/notices";
 import { formatDate } from "@/lib/format";
 import { facultyPortraits, facultyPromise } from "@/data/pages/faculty";
 import {
+  achievementAreas,
   achievements as ACHIEVEMENTS,
+  hasRealStats,
   resultImages,
   resultStats,
 } from "@/data/pages/results";
@@ -56,6 +60,31 @@ const HERO = {
   body: `Welcome to Newton Global School, recognized as one of the **best schools in Kotputli** for quality, values-based education. As a trusted **English Medium School in Kotputli**, we are committed to building strong academic foundations and confident personalities in every child. Located in Sangteda on **Babera Road**, **Newton Global School Kotputli** proudly follows the **RBSE** curriculum with a focus on holistic learning.`,
   cta: `Apply for Admission 2026-27`,
 };
+
+/** §1 — floating highlights beside the banner figure. Each line is the
+    document's own, taken from Why Choose Us and Facilities. */
+const HERO_CHIPS: readonly HighlightChip[] = [
+  {
+    icon: "book",
+    label: "RBSE Curriculum",
+    detail:
+      "Structured learning with practical understanding, from Nursery to Class 12.",
+    place: "left-0 top-[14%]",
+  },
+  {
+    icon: "shield",
+    label: "Safe Campus",
+    detail: "CCTV monitoring across the campus and trained staff for child safety.",
+    place: "right-0 top-[44%]",
+  },
+  {
+    icon: "bus",
+    label: "Bus Service",
+    detail:
+      "Reliable transport across Kotputli, Sangteda and nearby areas around NH8.",
+    place: "left-[4%] bottom-[24%]",
+  },
+];
 
 /* §2 About School Section */
 const ABOUT = {
@@ -272,6 +301,16 @@ const IMG = {
     w: 1600,
     h: 900,
     alt: "Pupils gathered in the school assembly hall",
+  },
+  /** §3 — the campus behind the "Why Choose Us" band. Its own frame rather
+      than a reuse of campus-grounds, which already carries the Location and
+      Facilities bands — the same picture three times down one page reads as
+      running out of photographs. */
+  whyChooseUsBg: {
+    src: "/images/school/why-choose-us-campus.webp",
+    w: 1600,
+    h: 900,
+    alt: "The Newton Global School campus with its buses on the driveway",
   },
   ctaCampus: {
     src: "/images/school/campus-side-buses.webp",
@@ -534,23 +573,23 @@ export default async function HomePage() {
 
   return (
     <>
-      {/* ——— 1. Banner Section (doc §1) — full-bleed classroom under navy ——— */}
-      <PageHero
-        image={IMG.heroCampus}
-        priority
+      {/* ——— 1. Banner Section (doc §1) — coloured ground, figure standing
+          on the foot of the section, floating highlights beside it ——— */}
+      <HomeHero
         h1={HERO.h1}
         sub={HERO.sub}
         body={HERO.body}
         cta={HERO.cta}
+        ctaHref="/registration-form"
+        secondaryCta={ADMISSION.cta}
+        secondaryHref="/contact"
         cutout={{
           src: "/images/school/hero-student-thumbsup.png",
           w: 640,
           h: 640,
           alt: "Newton Global School pupil in uniform giving a thumbs up",
-          ownBackdrop: true,
         }}
-        secondaryCta={ADMISSION.cta}
-        secondaryHref="/contact"
+        chips={HERO_CHIPS}
       />
 
       {/* ——— 2. About School (doc §2) — photo cluster with a gold offset frame ——— */}
@@ -601,7 +640,11 @@ export default async function HomePage() {
           as filler. This one is a colour block with big numerals instead: no
           boxes, no icons, and the section raises its voice for the first time
           on the page. */}
-      <section className="relative overflow-hidden bg-[#001344] py-16 sm:py-20 lg:py-24">
+      <section className={`relative overflow-hidden bg-[#001344] ${SECTION}`}>
+        {/* Pinned: the page scrolls over the campus while the six reasons pass
+            across it. This band had no photograph at all before — it was flat
+            navy, which is what made it look like a placeholder. */}
+        <PhotoBackdrop img={IMG.whyChooseUsBg} fixed />
         <Wave className="z-10 text-bg-alt" />
         <Wave flip className="z-10 text-bg" />
         <div
@@ -617,7 +660,7 @@ export default async function HomePage() {
               width="max-w-4xl"
             />
           </Reveal>
-          <ul className="mt-12 grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:mt-16 lg:grid-cols-3">
+          <ul className={`${HEAD_GAP} grid gap-x-12 gap-y-10 sm:grid-cols-2 lg:grid-cols-3`}>
             {WHY_CHOOSE_US.map((item, index) => (
               <li key={item.icon}>
                 <Reveal delay={(index % 3) * 90}>
@@ -659,7 +702,7 @@ export default async function HomePage() {
               </p>
             </div>
           </Reveal>
-          <ul className="mt-10 grid gap-5 lg:mt-12 lg:grid-cols-2 lg:gap-6">
+          <ul className={`${HEAD_GAP} grid gap-5 lg:grid-cols-2 lg:gap-6`}>
             {PROGRAMS.map((program, index) => {
               const colour = PROGRAM_COLOURS[index];
               return (
@@ -740,7 +783,7 @@ export default async function HomePage() {
           </Reveal>
 
           <Reveal delay={100}>
-            <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 lg:mt-12 lg:grid-cols-4">
+            <div className={`${HEAD_GAP} grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4`}>
               {FACILITY_BAND.map((img, index) => (
                 <div
                   key={img.src}
@@ -758,7 +801,7 @@ export default async function HomePage() {
             </div>
           </Reveal>
 
-          <ul className="mt-12 grid gap-4 sm:grid-cols-2 lg:mt-20 lg:grid-cols-3 lg:gap-5">
+          <ul className={`${HEAD_GAP} grid gap-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-5`}>
             {FACILITIES.slice(0, HOME_FACILITY_COUNT).map((facility, index) => {
               const tint = TINTS[index % TINTS.length];
               const { title, body } = splitRunIn(facility.text);
@@ -803,17 +846,10 @@ export default async function HomePage() {
           The figures were 2.4rem in glass boxes in the corner of a full-height
           band, which wasted the one place the page is allowed to shout. They
           now run the width at display size, stacked over the copy. */}
-      <section className="relative flex min-h-[calc(100svh-var(--header-h))] flex-col justify-center overflow-hidden bg-[#001344] py-20 sm:py-24">
-        <Cover
-          img={IMG.achievementsBg}
-          sizes="100vw"
-          decorative
-          className="opacity-[0.18]"
-        />
-        <div
-          aria-hidden="true"
-          className="pointer-events-none absolute inset-0 bg-[linear-gradient(105deg,rgba(0,19,68,0.95),rgba(0,19,68,0.8))]"
-        />
+      <section className={`relative overflow-hidden bg-[#001344] ${SECTION}`}>
+        {/* Was a 18%-opacity photo under a 95% navy wash — two scrims doing
+            the same job, and the assembly hall behind it never showed. */}
+        <PhotoBackdrop img={IMG.achievementsBg} fixed />
         <div className={`relative ${CONTAINER}`}>
           <Reveal>
             <SectionTitle
@@ -827,35 +863,71 @@ export default async function HomePage() {
             </p>
           </Reveal>
 
+          {/*
+            The figures, but only once they are real. `resultStats` still
+            carries the document's own `XX%` / `XX+` placeholders — the school
+            has not supplied its board numbers, and inventing a pass percentage
+            is not an option. Printing the placeholders was the worse of the
+            two failures though: the page's loudest band rendered "XX%" three
+            times at 96px, which reads as a half-built site.
+
+            So while the numbers are unset this band carries the four
+            achievement areas instead — every line of which is factual — and
+            the moment real figures land in src/data/pages/results.ts the
+            display stats come back on their own.
+          */}
           <Reveal delay={120}>
-            <p className="eyebrow mt-14 text-[#d6a53f]">
-              {ACHIEVEMENTS.statsLabel}
-            </p>
-            <dl className="mt-8 grid gap-y-12 sm:grid-cols-3 sm:gap-x-10">
-              {resultStats.map((stat, index) => (
-                <div
-                  key={stat.label}
-                  className={`flex flex-col-reverse ${
-                    index > 0 ? "sm:border-l sm:border-white/12 sm:pl-10" : ""
-                  }`}
-                >
-                  <dt className="mt-4 max-w-[16rem] text-[0.875rem] leading-[1.6] text-[#aebbd2]">
-                    {rich(stat.label, STRONG.dark)}
-                  </dt>
-                  <dd className="font-heading text-[clamp(3.25rem,2rem+4.5vw,6rem)] font-bold leading-[0.9] tracking-tight text-white">
-                    {stat.value.slice(0, -1)}
-                    <span className="text-[#d6a53f]">
-                      {stat.value.slice(-1)}
+            {hasRealStats ? (
+              <>
+                <p className={`eyebrow ${HEAD_GAP} text-[#d6a53f]`}>
+                  {ACHIEVEMENTS.statsLabel}
+                </p>
+                <dl className="mt-8 grid gap-y-12 sm:grid-cols-3 sm:gap-x-10">
+                  {resultStats.map((stat, index) => (
+                    <div
+                      key={stat.label}
+                      className={`flex flex-col-reverse ${
+                        index > 0 ? "sm:border-l sm:border-white/12 sm:pl-10" : ""
+                      }`}
+                    >
+                      <dt className="mt-4 max-w-[16rem] text-[0.875rem] leading-[1.6] text-[#aebbd2]">
+                        {rich(stat.label, STRONG.dark)}
+                      </dt>
+                      <dd className="font-heading text-[clamp(3.25rem,2rem+4.5vw,6rem)] font-bold leading-[0.9] tracking-tight text-white">
+                        {stat.value.slice(0, -1)}
+                        <span className="text-[#d6a53f]">
+                          {stat.value.slice(-1)}
+                        </span>
+                      </dd>
+                    </div>
+                  ))}
+                </dl>
+              </>
+            ) : (
+              <ul className={`${HEAD_GAP} grid gap-4 sm:grid-cols-2 lg:grid-cols-4 lg:gap-5`}>
+                {achievementAreas.map((area) => (
+                  <li
+                    key={area.title}
+                    className="flex h-full flex-col rounded-[1.25rem] border border-white/12 bg-white/[0.06] p-5 backdrop-blur-sm transition duration-300 hover:border-[#d6a53f]/45 hover:bg-white/[0.1] motion-reduce:transition-none"
+                  >
+                    <span className="flex h-11 w-11 items-center justify-center rounded-[0.75rem] bg-[#d6a53f] text-[#001344]">
+                      <Icon name={area.icon} className="h-5 w-5" />
                     </span>
-                  </dd>
-                </div>
-              ))}
-            </dl>
+                    <h3 className="mt-4 text-[1rem] leading-[1.35] text-white">
+                      {area.title}
+                    </h3>
+                    <p className="mt-2 text-[0.875rem] leading-[1.75] text-[#aebbd2]">
+                      {rich(area.body, STRONG.dark)}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </Reveal>
 
           <Reveal delay={200}>
             {/* Our own students, so the figures above have faces beside them. */}
-            <ul className="mt-14 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4">
+            <ul className={`${HEAD_GAP} grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-4`}>
               {resultImages.map((img, index) => (
                 <li
                   key={img.src}
@@ -871,7 +943,7 @@ export default async function HomePage() {
               ))}
             </ul>
 
-            <div className="mt-14 lg:mt-20">
+            <div className="mt-10 lg:mt-12">
               <GoldLink href="/results" className="w-full sm:w-auto">
                 {ACHIEVEMENTS.cta}
               </GoldLink>
@@ -895,7 +967,7 @@ export default async function HomePage() {
               </p>
             </div>
           </Reveal>
-          <ul className="mt-10 grid gap-5 sm:grid-cols-2 lg:mt-12 lg:grid-cols-4 lg:gap-6">
+          <ul className={`${HEAD_GAP} grid gap-5 sm:grid-cols-2 lg:grid-cols-4 lg:gap-6`}>
             {newsFeed.map((item, index) => (
               <li key={item.id}>
                 <Reveal delay={(index % 4) * 90} className="h-full">
@@ -948,7 +1020,7 @@ export default async function HomePage() {
         * after News & Events. Every word in it is still the document's own —
         * the "Why Choose Us" line about the teachers.
         */}
-      <section className="relative overflow-hidden border-y border-hairline bg-bg-alt py-16 sm:py-20">
+      <section className={`relative overflow-hidden border-y border-hairline bg-bg-alt ${SECTION}`}>
         <div
           aria-hidden="true"
           className="pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-pill bg-[#faf4e8] opacity-80 blur-3xl"
@@ -1054,7 +1126,7 @@ export default async function HomePage() {
                 or twenty, and a grid leaves a lone card stranded against three
                 empty columns. Wrapping and centring reads correctly at every
                 count. */}
-            <ul className="mt-10 flex flex-wrap justify-center gap-5 lg:mt-12 lg:gap-6">
+            <ul className={`${HEAD_GAP} flex flex-wrap justify-center gap-5 lg:gap-6`}>
               {latestPosts.map((post, index) => (
                 <li
                   key={post.slug}
@@ -1075,7 +1147,13 @@ export default async function HomePage() {
         </section>
       ) : null}
 
-      {/* ——— 10. Gallery Preview (doc §7) — photo mosaic ——— */}
+      {/* ——— 10. Gallery Preview (doc §7) — photo mosaic ———
+          Hidden outright when there is nothing to show, the way the blog strip
+          is. It used to render regardless: heading, button, and a 500px hole
+          where six photographs should have been, any time the gallery table
+          came back empty. src/data/gallery.ts now keeps a six-photo floor, so
+          this guard is the second line of defence rather than the first. */}
+      {galleryTiles.length > 0 ? (
       <section className={SECTION}>
         <div className={CONTAINER}>
           <Reveal>
@@ -1084,7 +1162,7 @@ export default async function HomePage() {
               {rich(GALLERY.body)}
             </p>
           </Reveal>
-          <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 md:grid-rows-[repeat(3,10rem)] lg:mt-12 lg:grid-rows-[repeat(3,12.5rem)] xl:grid-rows-[repeat(3,14rem)]">
+          <div className={`${HEAD_GAP} grid grid-cols-2 gap-3 sm:gap-4 md:grid-cols-3 md:grid-rows-[repeat(3,10rem)] lg:grid-rows-[repeat(3,12.5rem)] xl:grid-rows-[repeat(3,14rem)]`}>
             {galleryTiles.map((item, index) => (
               <Reveal
                 key={item.id}
@@ -1118,6 +1196,7 @@ export default async function HomePage() {
           </div>
         </div>
       </section>
+      ) : null}
 
       {/* ——— 11. Admission CTA (doc §10) — the enquiry form itself ———
           The document ends this section with "CTA Button: Enquire Now / Book a

@@ -3,6 +3,19 @@ import type { BranchSlug, Notice } from "./types";
 /**
  * Notices for the notice board (F3). Dates are ISO strings; items dated within
  * 7 days of "today" get a "New" badge (see isNoticeNew).
+ *
+ * NEEDS THE SCHOOL: everything below the group-wide block is still the
+ * original template's fiction — a three-campus Jaipur school group with a
+ * swimming pool, a kitchen garden, Ruby/Sapphire/Emerald/Topaz houses and bus
+ * routes around Ajmer Road. None of it describes Newton Global School, and it
+ * is keyed to the `city-center` / `green-valley` / `riverside` branch fixtures
+ * in src/data/branches.ts, which are the same fiction.
+ *
+ * The four group-wide notices are the ones that reach the home page, so those
+ * have been corrected to the single Sangteda campus. The branch-scoped ones
+ * are left alone rather than rewritten into a different invention: replace
+ * them with the school's real notices (or manage them from the admin) along
+ * with the branch fixtures they belong to.
  */
 export const notices: Notice[] = [
   // ——— Group-wide ("all") ———
@@ -10,7 +23,7 @@ export const notices: Notice[] = [
     id: "all-admissions-open",
     title: "Admissions open for Academic Year 2026-27",
     excerpt:
-      "Registration forms for all three campuses are now available online and at the head office. Limited seats in Nursery and Grade 1.",
+      "Registration forms are available online and at the school office on Babera Road. Limited seats in Nursery and Class 1.",
     date: "2026-07-10",
     branch: "all",
   },
@@ -18,7 +31,7 @@ export const notices: Notice[] = [
     id: "all-independence-day",
     title: "Independence Day celebrations — parents invited",
     excerpt:
-      "Flag hoisting at 8:00 AM on 15 August at every campus, followed by a cultural programme. Entry passes will be sent via the school diary.",
+      "Flag hoisting at 8:00 AM on 15 August on the school ground, followed by a cultural programme. Entry passes will be sent via the school diary.",
     date: "2026-07-12",
     branch: "all",
   },
@@ -26,7 +39,7 @@ export const notices: Notice[] = [
     id: "all-school-reopens",
     title: "School reopens after summer break on Monday, 6 July",
     excerpt:
-      "All campuses resume regular timings from 6 July. Please check the updated bus schedules before the first day.",
+      "The school resumes regular timings from 6 July. Please check the updated bus schedules before the first day.",
     date: "2026-06-29",
     branch: "all",
   },
@@ -34,7 +47,7 @@ export const notices: Notice[] = [
     id: "all-transport-routes",
     title: "Revised transport routes effective 1 July",
     excerpt:
-      "Seven routes across Jaipur have been re-sequenced to shorten travel time. Route charts are available on each branch notice board.",
+      "Routes across Kotputli and Sangteda have been re-sequenced to shorten travel time. Route charts are available on the school notice board.",
     date: "2026-06-24",
     branch: "all",
   },

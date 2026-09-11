@@ -1,7 +1,7 @@
 import {
   CONTAINER,
-  Cover,
   type Img,
+  PhotoBackdrop,
   rich,
   STRONG,
   Wave,
@@ -49,11 +49,12 @@ export default function EnquiryBand({
       className="relative scroll-mt-24 overflow-hidden bg-[#001344] pb-16 pt-20 text-white sm:pb-20 sm:pt-24 lg:pb-24 lg:pt-28"
     >
       <Wave className={`z-20 ${waveClass}`} />
-      <Cover img={image} sizes="100vw" decorative className="opacity-[0.24]" />
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(120deg,rgba(0,19,68,0.95),rgba(0,12,46,0.86))]"
-      />
+      {/* The copy lives in the left column and the form sits on its own white
+          card, so the campus can come further up here than on a band whose
+          text runs the full width. Not pinned: this band is the one people
+          actually fill in, and a parallax moving behind a form they are typing
+          into is a distraction rather than an effect. */}
+      <PhotoBackdrop img={image} strength="sheer" />
       <div
         aria-hidden="true"
         className="pointer-events-none absolute -right-20 top-10 h-72 w-72 rounded-pill bg-[radial-gradient(circle,rgba(214,165,63,0.24),transparent_70%)]"

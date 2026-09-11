@@ -56,9 +56,8 @@ export default function PrivacyPolicyPage() {
               <p>
                 This policy applies to information collected through this
                 website — including our admission inquiry, contact and career
-                application forms — and to information you share with our head
-                office or any of our three campuses in person, by phone or by
-                email.
+                application forms — and to information you share with the
+                school office in person, by phone or by email.
               </p>
             </LegalSection>
 

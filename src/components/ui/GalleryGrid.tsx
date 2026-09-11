@@ -13,8 +13,23 @@ import PlaceholderImage from "./PlaceholderImage";
 import { branches } from "@/data/branches";
 import { branchLabel } from "@/lib/format";
 import type { BranchSlug, GalleryItem } from "@/data/types";
+import { youTubeEmbedUrl } from "@/lib/youtube";
 
 /** Uploaded photo when present, tone placeholder otherwise. */
+/** Play triangle over a video tile. */
+function PlayBadge() {
+  return (
+    <span
+      aria-hidden="true"
+      className="pointer-events-none absolute left-1/2 top-1/2 flex h-11 w-11 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-pill bg-[#001344]/55 text-white ring-1 ring-white/40 backdrop-blur-[2px] transition duration-300 group-hover:bg-[#8a6620]"
+    >
+      <svg viewBox="0 0 24 24" fill="currentColor" className="ml-0.5 h-5 w-5">
+        <path d="M8 5.5v13l11-6.5z" />
+      </svg>
+    </span>
+  );
+}
+
 function GalleryImage({
   item,
   aspect,
@@ -24,6 +39,21 @@ function GalleryImage({
   aspect: "4/3" | "16/9";
   className?: string;
 }) {
+  /* A clip uploaded without a cover image has no still to show, so the
+     <video> element previews itself — metadata only, never the whole file. */
+  if (item.mediaType === "video" && !item.imageUrl && item.videoUrl) {
+    return (
+      <video
+        src={item.videoUrl}
+        muted
+        playsInline
+        preload="metadata"
+        aria-hidden="true"
+        style={{ aspectRatio: aspect.replace("/", " / ") }}
+        className={`w-full bg-bg-alt object-cover ${className}`}
+      />
+    );
+  }
   if (item.imageUrl) {
     return (
       // eslint-disable-next-line @next/next/no-img-element
@@ -162,12 +192,13 @@ export default function GalleryGrid({
                 onClick={() => openLightbox(index)}
                 className="group block w-full rounded-card text-left"
               >
-                <span className="block overflow-hidden rounded-card">
+                <span className="relative block overflow-hidden rounded-card">
                   <GalleryImage
                     item={item}
                     aspect="4/3"
                     className="transition-transform duration-300 group-hover:scale-105 motion-reduce:transition-none motion-reduce:group-hover:scale-100"
                   />
+                  {item.mediaType === "video" ? <PlayBadge /> : null}
                 </span>
                 <span className="mt-2 block text-sm font-medium text-text transition-colors group-hover:text-primary">
                   {item.caption}
@@ -230,6 +261,9 @@ function Lightbox({ items, index, onNavigate, onClose }: LightboxProps) {
       onClose();
       return;
     }
+    /* Left/Right belong to the player while a video has focus. */
+    const target = event.target as HTMLElement | null;
+    if (target?.closest("video, iframe")) return;
     if (multiple && event.key === "ArrowRight") {
       event.preventDefault();
       goNext();
@@ -333,7 +367,30 @@ function Lightbox({ items, index, onNavigate, onClose }: LightboxProps) {
 
         <figure className="w-full max-w-3xl">
           <div className="overflow-hidden rounded-card">
-            {item.imageUrl ? (
+            {/* `key` is the item id so paging to the next video swaps the
+                source instead of leaving the previous one playing — React
+                would otherwise reuse the element and keep its media state. */}
+            {item.mediaType === "video" && item.videoSource === "youtube" && item.videoUrl ? (
+              <iframe
+                key={item.id}
+                src={youTubeEmbedUrl(item.videoUrl)}
+                title={item.caption}
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+                allowFullScreen
+                referrerPolicy="strict-origin-when-cross-origin"
+                className="aspect-video max-h-[70vh] w-full border-0 bg-black"
+              />
+            ) : item.mediaType === "video" && item.videoUrl ? (
+              <video
+                key={item.id}
+                src={item.videoUrl}
+                poster={item.imageUrl}
+                controls
+                autoPlay
+                playsInline
+                className="max-h-[70vh] w-full bg-black object-contain"
+              />
+            ) : item.imageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={item.imageUrl}

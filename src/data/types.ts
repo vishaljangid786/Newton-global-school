@@ -131,14 +131,38 @@ export type PlaceholderTone =
   | "dusk"
   | "stone";
 
+/**
+ * Where a gallery video actually lives.
+ *
+ * "file" is an MP4/WebM the school uploaded, served from /uploads like a
+ * photograph. "youtube" is a link to their channel — no storage, no bandwidth,
+ * and the poster frame comes free off YouTube's thumbnail host.
+ */
+export type VideoSource = "file" | "youtube";
+
 export interface GalleryItem {
   id: string;
   caption: string;
   category: GalleryCategory;
   branch: BranchSlug;
   tone: PlaceholderTone;
-  /** Admin-uploaded photo (site-relative /uploads/… path); tone placeholder when absent. */
+  /**
+   * Still image for this item. For a photograph it IS the item; for a video it
+   * is the poster frame shown on the tile before playback.
+   */
   imageUrl?: string;
+  /**
+   * "video" for a clip or a YouTube link. Optional, and absent means a
+   * photograph — which keeps every one of the 140-odd seed entries valid
+   * without a mechanical edit, and matches the column default in MySQL.
+   * Test for videos with `item.mediaType === "video"`, never for images by
+   * equality.
+   */
+  mediaType?: "image" | "video";
+  /** Videos only: the /uploads/… file path, or the YouTube video id. */
+  videoUrl?: string;
+  /** Videos only: how `videoUrl` should be interpreted. */
+  videoSource?: VideoSource;
 }
 
 export type Department =

@@ -308,7 +308,11 @@ export default function FeeStructurePage() {
               </div>
             </div>
           </Reveal>
-          <div className="lg:col-span-7">
+          {/* min-w-0: this is a grid item, and a grid item will not shrink
+              below its content unless told to — the fee table inside is 36rem
+              wide by design and would otherwise drag the whole page sideways
+              on a phone instead of scrolling inside its own box. */}
+          <div className="min-w-0 lg:col-span-7">
             <Reveal delay={110}>
               <DataTable
                 className="mt-8"

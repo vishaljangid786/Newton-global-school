@@ -24,11 +24,21 @@ const nextConfig: NextConfig = {
      */
     deviceSizes: [640, 828, 1080, 1600],
     imageSizes: [96, 160, 256, 384],
+    // Gallery videos added as a YouTube link have no uploaded poster — the
+    // tile shows YouTube's own thumbnail for that video id, and next/image
+    // refuses any host not named here.
+    remotePatterns: [
+      { protocol: "https", hostname: "i.ytimg.com", pathname: "/vi/**" },
+    ],
   },
   experimental: {
     serverActions: {
-      // Image uploads (principal photos, gallery) go through Server Actions.
-      bodySizeLimit: "8mb",
+      // Uploads (principal photos, gallery photographs and videos) go through
+      // Server Actions, which buffer the whole body before the handler runs.
+      // Must stay ABOVE lib/uploads.ts MAX_VIDEO_BYTES (48 MB) — a request over
+      // this limit is rejected by the framework with a far less helpful message
+      // than the size check in saveUploadedVideo. Raise both together.
+      bodySizeLimit: "56mb",
     },
   },
 };

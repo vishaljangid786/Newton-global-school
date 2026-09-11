@@ -47,11 +47,19 @@ export default function Footer() {
               className="h-16 w-auto bg-white p-2 rounded"
             />
           </span>
+          {/* "Three campuses across Jaipur" was the template's, printed under
+              the crest on every page of a Kotputli school's site. */}
           <p className="mt-4 max-w-xs text-sm leading-relaxed">
-            {site.tagline}. Three campuses across Jaipur, one promise: a safe,
-            joyful school where every child is known by name.
+            {site.tagline} — a safe, joyful RBSE school where every child is
+            known by name, not by roll number.
           </p>
-          <ul className="mt-4 flex items-center gap-3">
+          {/* Rendered only when there is something in it: an empty <ul> still
+              took its mt-4, leaving a gap under the copy with nothing in it. */}
+          <ul
+            className={`flex items-center gap-3 ${
+              site.socialLinks.length > 0 ? "mt-4" : ""
+            }`}
+          >
             {site.socialLinks.map((social) => (
               <li key={social.name}>
                 <a
